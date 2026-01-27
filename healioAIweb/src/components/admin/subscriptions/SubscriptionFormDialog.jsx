@@ -93,7 +93,10 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit subscription' : 'Create subscription'}</DialogTitle>
+      <DialogTitle   sx={{
+    backgroundColor: 'primary.main',
+    color: 'white',
+  }}>{isEdit ? 'Edit subscription' : 'Create subscription'}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {error && (

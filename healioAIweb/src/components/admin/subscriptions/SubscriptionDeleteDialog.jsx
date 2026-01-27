@@ -10,7 +10,10 @@ import {
 export default function SubscriptionDeleteDialog({ open, subscriptionName, onClose, onConfirm }) {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Delete subscription</DialogTitle>
+      <DialogTitle         sx={{
+          backgroundColor: 'error.main',
+          color: 'white',
+        }}>Delete subscription</DialogTitle>
       <DialogContent>
         <Typography>
           Are you sure you want to delete {subscriptionName ? <strong>{subscriptionName}</strong> : 'this subscription'}? System plans cannot be deleted. This cannot be undone.

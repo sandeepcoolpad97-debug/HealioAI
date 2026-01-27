@@ -15,7 +15,10 @@ export default function RoleViewDialog({ open, onClose }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Role details</DialogTitle>
+      <DialogTitle   sx={{
+    backgroundColor: 'primary.main',
+    color: 'white',
+  }}>Role details</DialogTitle>
       <DialogContent>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>

@@ -15,7 +15,10 @@ export default function SubscriptionViewDialog({ open, onClose }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Subscription details</DialogTitle>
+      <DialogTitle   sx={{
+    backgroundColor: 'primary.main',
+    color: 'white',
+  }}>Subscription details</DialogTitle>
       <DialogContent>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>

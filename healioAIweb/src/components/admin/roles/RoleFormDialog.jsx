@@ -74,7 +74,10 @@ export default function RoleFormDialog({ open, onClose, onSuccess, mode, roleId 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit role' : 'Create role'}</DialogTitle>
+      <DialogTitle   sx={{
+    backgroundColor: 'primary.main',
+    color: 'white',
+  }}>{isEdit ? 'Edit role' : 'Create role'}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {error && (

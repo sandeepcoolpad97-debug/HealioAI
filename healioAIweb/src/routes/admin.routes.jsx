@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
-import AdminLayout from '../components/admin/AdminLayout';
 import AdminDashboardScreen from '../components/admin/screens/AdminDashboardScreen';
 import AdminUsersScreen from '../components/admin/screens/AdminUsersScreen';
 import AdminSubscriptionsScreen from '../components/admin/screens/AdminSubscriptionsScreen';
 import AdminRolesScreen from '../components/admin/screens/AdminRolesScreen';
+import AdminLayout from '../components/admin/layout/AdminLayout';
 
 /**
  * Admin routing – handles all admin screen routes (/admin, /admin/*).

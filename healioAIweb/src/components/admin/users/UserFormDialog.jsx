@@ -141,7 +141,10 @@ export default function UserFormDialog({ open, onClose, onSuccess, mode, userId 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit user' : 'Create user'}</DialogTitle>
+      <DialogTitle   sx={{
+    backgroundColor: 'primary.main',
+    color: 'white',
+  }}>{isEdit ? 'Edit user' : 'Create user'}</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
           {error && (

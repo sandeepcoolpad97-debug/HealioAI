@@ -10,7 +10,14 @@ import {
 export default function UserDeleteDialog({ open, userName, onClose, onConfirm }) {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Delete user</DialogTitle>
+      <DialogTitle
+        sx={{
+          backgroundColor: 'error.main',
+          color: 'white',
+        }}
+      >
+        Delete user
+      </DialogTitle>
       <DialogContent>
         <Typography>
           Are you sure you want to delete {userName ? <strong>{userName}</strong> : 'this user'}? This cannot be undone.
