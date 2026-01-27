@@ -4,25 +4,53 @@ import { HTTP_STATUS } from '../../common/constants';
 import { PaginatedResult } from '../../common/pagination/pagination';
 import { UserRepository } from './user.repository';
 import { IUser } from './user.model';
-import { CreateUserInput, UpdateUserInput } from './user.validation';
+import { CreateUserInput, UpdateUserInput, OnboardUserInput } from './user.validation';
 
 export class UserService {
   private readonly userRepository = new UserRepository();
 
-  async create(data: CreateUserInput): Promise<IUser> {
-    const exists = await this.userRepository.existsByEmail(data.email);
+  async onboard(data: OnboardUserInput): Promise<IUser> {
+    const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
     if (exists) {
       throw new AppError(
         ErrorCode.CONFLICT,
         HTTP_STATUS.CONFLICT,
-        'User with this email already exists'
+        'User with this phone number already exists'
       );
     }
-    return this.userRepository.create(data as Partial<IUser>);
+    const payload = {
+      ...data,
+      consents: {
+        ...data.consents,
+        acceptedAt: new Date(),
+      },
+      subscriptionStatus: 'active' as const,
+    };
+    return this.userRepository.create(payload as unknown as Partial<IUser>);
+  }
+
+  async create(data: CreateUserInput): Promise<IUser> {
+    const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
+    if (exists) {
+      throw new AppError(
+        ErrorCode.CONFLICT,
+        HTTP_STATUS.CONFLICT,
+        'User with this phone number already exists'
+      );
+    }
+    const payload = {
+      ...data,
+      consents: {
+        ...data.consents,
+        acceptedAt: new Date(),
+      },
+      subscriptionStatus: 'active' as const,
+    };
+    return this.userRepository.create(payload as unknown as Partial<IUser>);
   }
 
   async getById(id: string): Promise<IUser> {
-    const user = await this.userRepository.findById(id);
+    const user = await this.userRepository.findActiveByIdWithRefs(id);
     if (!user) {
       throw new AppError(
         ErrorCode.NOT_FOUND,
@@ -34,18 +62,18 @@ export class UserService {
   }
 
   async list(page: number, limit: number): Promise<PaginatedResult<IUser>> {
-    return this.userRepository.findPaginated({}, page, limit);
+    return this.userRepository.findPaginatedWithRefs({ isDeleted: false }, page, limit);
   }
 
   async update(id: string, data: UpdateUserInput): Promise<IUser> {
     const user = await this.getById(id);
-    if (data.email && data.email !== user.email) {
-      const exists = await this.userRepository.existsByEmail(data.email);
+    if (data.phone?.number && data.phone.number !== user.phone?.number) {
+      const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
       if (exists) {
         throw new AppError(
           ErrorCode.CONFLICT,
           HTTP_STATUS.CONFLICT,
-          'User with this email already exists'
+          'User with this phone number already exists'
         );
       }
     }

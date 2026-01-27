@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from './user.service';
 import {
+  onboardUserSchema,
   createUserSchema,
   updateUserSchema,
   userIdParamSchema,
@@ -10,6 +11,19 @@ import { validateBody, validateParams, validateQuery } from '../../common/valida
 import { HTTP_STATUS } from '../../common/constants';
 
 const userService = new UserService();
+
+export async function onboardUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const user = await userService.onboard(req.body);
+    res.status(HTTP_STATUS.CREATED).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function createUser(
   req: Request,
@@ -78,6 +92,7 @@ export async function deleteUser(
   }
 }
 
+export const onboardUserValidation = [validateBody(onboardUserSchema)];
 export const createUserValidation = [validateBody(createUserSchema)];
 export const getUserByIdValidation = [validateParams(userIdParamSchema)];
 export const listUsersValidation = [validateQuery(listUsersQuerySchema)];

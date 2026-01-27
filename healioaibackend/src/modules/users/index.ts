@@ -7,4 +7,5 @@ export { UserModel, IUser } from './user.model';
 export type {
   CreateUserInput,
   UpdateUserInput,
+  OnboardUserInput,
 } from './user.validation';

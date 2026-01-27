@@ -6,7 +6,7 @@ import { AuthenticatedRequest } from './auth.middleware';
 
 export type AllowedRole = string;
 
-export function roleMiddleware(...allowedRoles: AllowedRole[]) {
+export function roleMiddleware(..._allowedRoles: AllowedRole[]) {
   return (req: AuthenticatedRequest, _res: Response, next: NextFunction): void => {
     const userId = req.userId;
     if (!userId) {

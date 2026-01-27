@@ -1,5 +1,5 @@
 import { Avatar, Typography, Stack } from '@mui/material';
-import navbarLogo from '../../assets/image.svg';
+import navbarLogo from '../../../assets/image.svg';
 
 const FooterBrand = () => {
   return (

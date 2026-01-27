@@ -12,8 +12,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 // Import slider images
-import medicalRobot from '../../assets/slider-images/medical-robot.png';
-import familyCare from '../../assets/slider-images/family-care.png';
+import medicalRobot from '../../../assets/slider-images/medical-robot.png';
+import familyCare from '../../../assets/slider-images/family-care.png';
 
 const ImageSlider = () => {
   const slides = [

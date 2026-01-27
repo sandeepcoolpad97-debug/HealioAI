@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import {
+  onboardUser,
   createUser,
   getUserById,
   listUsers,
   updateUser,
   deleteUser,
+  onboardUserValidation,
   createUserValidation,
   getUserByIdValidation,
   listUsersValidation,
@@ -16,24 +18,57 @@ const router = Router();
 
 /**
  * @openapi
- * /users:
+ * /users/onboard:
  *   post:
  *     tags: [Users]
- *     summary: Create a user
+ *     summary: Onboard a new user (profile, phone, role, subscription, consents)
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, name]
+ *             required: [name, gender, roleId, subscriptionId, phone, consents]
  *             properties:
- *               email: { type: string, format: email }
  *               name: { type: string }
+ *               age: { type: integer }
+ *               gender: { type: string, enum: [male, female, other] }
+ *               language: { type: string }
+ *               roleId: { type: string }
+ *               subscriptionId: { type: string }
+ *               phone: { type: object, properties: { countryCode: { type: string }, number: { type: string } } }
+ *               consents: { type: object, properties: { termsAndConditions: { type: boolean }, policyTerms: { type: boolean }, medicalDisclaimer: { type: boolean } } }
+ *               medical: { type: object }
+ *     responses:
+ *       201: { description: User onboarded }
+ *       400: { description: Validation error }
+ *       409: { description: Phone number already exists }
+ */
+router.post('/onboard', onboardUserValidation, onboardUser);
+
+/**
+ * @openapi
+ * /users:
+ *   post:
+ *     tags: [Users]
+ *     summary: Create a user (admin)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, gender, roleId, subscriptionId, phone, consents]
+ *             properties:
+ *               name: { type: string }
+ *               phone: { type: object }
+ *               roleId: { type: string }
+ *               subscriptionId: { type: string }
+ *               consents: { type: object }
  *     responses:
  *       201: { description: User created }
  *       400: { description: Validation error }
- *       409: { description: Email already exists }
+ *       409: { description: Phone number already exists }
  */
 router.post('/', createUserValidation, createUser);
 

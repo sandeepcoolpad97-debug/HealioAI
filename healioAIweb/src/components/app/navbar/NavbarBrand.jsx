@@ -1,5 +1,5 @@
 import { Box, Typography, Avatar } from '@mui/material';
-import navbarLogo from '../../assets/image.svg';
+import navbarLogo from '../../../assets/image.svg';
 
 const NavbarBrand = () => {
   return (
