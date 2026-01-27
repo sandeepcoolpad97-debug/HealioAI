@@ -1,0 +1,49 @@
+import { Box, Typography } from '@mui/material';
+
+const FAQHeader = () => {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: { xs: 6, md: 8 },
+        px: { xs: 2, sm: 4 },
+        background: '#FFFFFF',
+        borderRadius: { xs: '24px', md: '32px' },
+        mx: { xs: 2, md: 4 },
+        mb: 6,
+      }}
+    >
+      <Typography
+        variant="h3"
+        component="h1"
+        sx={{
+          fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.5rem' },
+          fontWeight: 700,
+          color: '#0A5FB4',
+          textAlign: 'center',
+          mb: 2,
+          lineHeight: 1.2,
+        }}
+      >
+        Frequently Asked Questions
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          fontSize: { xs: '1rem', sm: '1.125rem' },
+          color: '#6A748A',
+          textAlign: 'center',
+          maxWidth: '700px',
+          lineHeight: 1.6,
+        }}
+      >
+        Clear answers about AI, pricing, and hospital queue priority.
+      </Typography>
+    </Box>
+  );
+};
+
+export default FAQHeader;
