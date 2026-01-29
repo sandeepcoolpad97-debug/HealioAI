@@ -36,3 +36,38 @@ export const labSectionTitleStyles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
+export const labAddTestCategoryStyles = StyleSheet.create({
+  button: {
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: colors.primaryText,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  text: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.primaryText,
+  },
+});
+
+export const labRemoveTestCategoryStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  text: {
+    fontSize: 14,
+    color: '#DC2626',
+    marginLeft: 6,
+    fontWeight: '500',
+  },
+});

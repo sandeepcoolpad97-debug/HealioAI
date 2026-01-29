@@ -198,6 +198,11 @@ export const labOnboardingStrings = {
     reportDeliveryType: 'Report Delivery Type',
     reportPdf: 'PDF Download',
     reportDigital: 'Digital Report (in-app)',
+    testsList: 'Tests List',
+    testNamePlaceholder: 'e.g. Complete Blood Count',
+    categoryPlaceholder: 'Select category',
+    removeTest: 'Remove Test',
+    addTest: '+ Add Test',
     continue: 'Continue',
   },
   termsConsents: {

@@ -2,17 +2,21 @@ import React, { useState, useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  View,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
   CheckboxRow,
   ChipRow,
   FormCard,
+  FormInput,
   SelectableChip,
   ScreenHeader,
 } from '../../components';
@@ -22,10 +26,18 @@ import {
   navigationRoutes,
 } from '../../constants/strings';
 import { sharedLabOnboardingStyles as shared } from './labOnboardingStyles';
-import { labSectionTitleStyles } from './labOnboardingStyles';
+import {
+  labSectionTitleStyles,
+  labAddTestCategoryStyles,
+  labRemoveTestCategoryStyles,
+} from './labOnboardingStyles';
 
 const s = labOnboardingStrings.services;
-const CATEGORIES = s.categoryOptions;
+
+type LabTestCategoryEntry = {
+  id: string;
+  testName: string;
+};
 
 type LabServicesScreenProps = {
   navigation: {
@@ -33,21 +45,40 @@ type LabServicesScreenProps = {
   };
 };
 
+let testCategoryIdCounter = 0;
+const nextTestCategoryId = () => `test-category-${++testCategoryIdCounter}`;
+
 export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
   navigation,
 }) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [homeSampleCollection, setHomeSampleCollection] = useState<'yes' | 'no' | null>(null);
+  const [testCategoryEntries, setTestCategoryEntries] = useState<
+    LabTestCategoryEntry[]
+  >([{ id: nextTestCategoryId(), testName: '' }]);
+  const [homeSampleCollection, setHomeSampleCollection] = useState<
+    'yes' | 'no' | null
+  >(null);
   const [pdfSelected, setPdfSelected] = useState(false);
   const [digitalSelected, setDigitalSelected] = useState(false);
 
-  const toggleCategory = useCallback((label: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(label)
-        ? prev.filter((x) => x !== label)
-        : [...prev, label]
-    );
+  const addTestCategory = useCallback(() => {
+    setTestCategoryEntries((prev) => [
+      ...prev,
+      { id: nextTestCategoryId(), testName: '' },
+    ]);
   }, []);
+
+  const removeTestCategory = useCallback((id: string) => {
+    setTestCategoryEntries((prev) => prev.filter((e) => e.id !== id));
+  }, []);
+
+  const updateTestCategory = useCallback(
+    (id: string, field: keyof LabTestCategoryEntry, value: string) => {
+      setTestCategoryEntries((prev) =>
+        prev.map((e) => (e.id === id ? { ...e, [field]: value } : e))
+      );
+    },
+    []
+  );
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.LabTermsConsents);
@@ -71,18 +102,44 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
           <ScreenHeader title={s.title} subtitle={s.subtitle} />
 
           <FormCard>
-            <Text style={labSectionTitleStyles.text}>{s.testCategories}</Text>
-            <ChipRow gap={10}>
-              {CATEGORIES.map((label) => (
-                <SelectableChip
-                  key={label}
-                  label={label}
-                  selected={selectedCategories.includes(label)}
-                  onPress={() => toggleCategory(label)}
-                  variant="green"
+            <Text style={labSectionTitleStyles.text}>{s.testsList}</Text>
+            {testCategoryEntries.map((entry) => (
+              <View key={entry.id} style={styles.testCategoryCard}>
+                <FormInput
+                  label="Test Name"
+                  value={entry.testName}
+                  onChangeText={(value) =>
+                    updateTestCategory(entry.id, 'testName', value)
+                  }
+                  placeholder={s.testNamePlaceholder}
+                  placeholderTextColor={colors.inputPlaceholder}
                 />
-              ))}
-            </ChipRow>
+                <Pressable
+                  onPress={() => removeTestCategory(entry.id)}
+                  style={labRemoveTestCategoryStyles.row}
+                  accessibilityRole="button"
+                  accessibilityLabel={s.removeTest}
+                >
+                  <Ionicons
+                    name="trash-outline"
+                    size={18}
+                    color="#DC2626"
+                  />
+                  <Text style={labRemoveTestCategoryStyles.text}>
+                    {s.removeTest}
+                  </Text>
+                </Pressable>
+              </View>
+            ))}
+
+            <Pressable
+              onPress={addTestCategory}
+              style={labAddTestCategoryStyles.button}
+              accessibilityRole="button"
+              accessibilityLabel={s.addTest}
+            >
+              <Text style={labAddTestCategoryStyles.text}>{s.addTest}</Text>
+            </Pressable>
 
             <Text style={labSectionTitleStyles.text}>
               {s.homeSampleCollection}
@@ -132,4 +189,10 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
 
 const styles = StyleSheet.create({
   keyboard: { flex: 1 },
+  testCategoryCard: {
+    marginBottom: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.chipBorder,
+  },
 });
