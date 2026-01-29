@@ -18,8 +18,19 @@ export class UserService {
         'User with this phone number already exists'
       );
     }
+    if (data.email?.trim()) {
+      const emailExists = await this.userRepository.existsByEmail(data.email.trim());
+      if (emailExists) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          HTTP_STATUS.CONFLICT,
+          'User with this email address already exists'
+        );
+      }
+    }
     const payload = {
       ...data,
+      email: data.email?.trim() ? data.email.trim().toLowerCase() : undefined,
       consents: {
         ...data.consents,
         acceptedAt: new Date(),
@@ -38,8 +49,19 @@ export class UserService {
         'User with this phone number already exists'
       );
     }
+    if (data.email?.trim()) {
+      const emailExists = await this.userRepository.existsByEmail(data.email.trim());
+      if (emailExists) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          HTTP_STATUS.CONFLICT,
+          'User with this email address already exists'
+        );
+      }
+    }
     const payload = {
       ...data,
+      email: data.email?.trim() ? data.email.trim().toLowerCase() : undefined,
       consents: {
         ...data.consents,
         acceptedAt: new Date(),
@@ -77,7 +99,25 @@ export class UserService {
         );
       }
     }
-    const updated = await this.userRepository.updateById(id, { $set: data });
+    const emailToSet =
+      data.email !== undefined
+        ? (data.email?.trim() ? data.email.trim().toLowerCase() : undefined)
+        : undefined;
+    if (data.email !== undefined && emailToSet !== user.email) {
+      if (emailToSet) {
+        const emailExists = await this.userRepository.existsByEmail(emailToSet);
+        if (emailExists) {
+          throw new AppError(
+            ErrorCode.CONFLICT,
+            HTTP_STATUS.CONFLICT,
+            'User with this email address already exists'
+          );
+        }
+      }
+    }
+    const updatePayload = { ...data };
+    if (data.email !== undefined) updatePayload.email = emailToSet;
+    const updated = await this.userRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(
         ErrorCode.NOT_FOUND,

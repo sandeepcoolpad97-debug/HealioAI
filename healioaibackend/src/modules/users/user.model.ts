@@ -67,6 +67,14 @@ const UserSchema = new mongoose.Schema(
     },
 
     /* ---------------- PHONE / AUTH ---------------- */
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      sparse: true,
+      unique: true
+    },
+
     phone: {
       countryCode: {
         type: String,
@@ -122,6 +130,7 @@ export interface IUser extends Document, IAuditFields {
     medicalDisclaimer: boolean;
     acceptedAt?: Date;
   };
+  email?: string;
   phone: {
     countryCode: string;
     number: string;

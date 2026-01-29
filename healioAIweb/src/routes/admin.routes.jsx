@@ -3,6 +3,8 @@ import AdminDashboardScreen from '../components/admin/screens/AdminDashboardScre
 import AdminUsersScreen from '../components/admin/screens/AdminUsersScreen';
 import AdminSubscriptionsScreen from '../components/admin/screens/AdminSubscriptionsScreen';
 import AdminRolesScreen from '../components/admin/screens/AdminRolesScreen';
+import AdminClinicsScreen from '../components/admin/screens/AdminClinicsScreen';
+import AdminLabsScreen from '../components/admin/screens/AdminLabsScreen';
 import AdminLayout from '../components/admin/layout/AdminLayout';
 
 /**
@@ -17,6 +19,8 @@ export default function AdminRoutes() {
         <Route path="users" element={<AdminUsersScreen />} />
         <Route path="subscriptions" element={<AdminSubscriptionsScreen />} />
         <Route path="roles" element={<AdminRolesScreen />} />
+        <Route path="clinics" element={<AdminClinicsScreen />} />
+        <Route path="labs" element={<AdminLabsScreen />} />
       </Route>
     </Routes>
   );

@@ -77,7 +77,19 @@ export default function AdminSubscriptionsScreen() {
     dispatch(fetchSubscriptions({ page: page + 1, limit: pageSize }));
   };
 
+  const getSlNo = (row) => {
+    const idx = list.findIndex((r) => r._id === row._id);
+    return idx >= 0 ? page * pageSize + idx + 1 : '';
+  };
+
   const columns = [
+    {
+      field: 'slNo',
+      headerName: 'Sl No',
+      width: 70,
+      sortable: false,
+      valueGetter: (_, row) => getSlNo(row),
+    },
     { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
     { field: 'code', headerName: 'Code', width: 100 },
     {

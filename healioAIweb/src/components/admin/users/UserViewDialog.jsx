@@ -5,44 +5,148 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography,
+  TextField,
   Box,
   CircularProgress,
+  Grid,
 } from '@mui/material';
+
+const formatPhone = (user) =>
+  user?.phone
+    ? `${user.phone.countryCode || ''} ${user.phone.number}`.trim()
+    : '—';
+const roleName = (user) => user?.roleId?.name ?? user?.roleId ?? '—';
+const subName = (user) => user?.subscriptionId?.name ?? user?.subscriptionId ?? '—';
 
 export default function UserViewDialog({ open, onClose }) {
   const { selectedUser, loading } = useSelector((state) => state.users);
 
-  const phone = selectedUser?.phone
-    ? `${selectedUser.phone.countryCode || ''} ${selectedUser.phone.number}`.trim()
-    : '—';
-  const roleName = selectedUser?.roleId?.name ?? selectedUser?.roleId ?? '—';
-  const subName = selectedUser?.subscriptionId?.name ?? selectedUser?.subscriptionId ?? '—';
-
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle   sx={{
-    backgroundColor: 'primary.main',
-    color: 'white',
-  }}>User details</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle
+        sx={{
+          backgroundColor: 'primary.main',
+          color: 'white',
+        }}
+      >
+        User details
+      </DialogTitle>
       <DialogContent>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
             <CircularProgress size={24} />
           </Box>
         ) : selectedUser ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pt: 1 }}>
-            <Typography variant="body2"><strong>Name:</strong> {selectedUser.name ?? '—'}</Typography>
-            <Typography variant="body2"><strong>Age:</strong> {selectedUser.age ?? '—'}</Typography>
-            <Typography variant="body2"><strong>Gender:</strong> {selectedUser.gender ?? '—'}</Typography>
-            <Typography variant="body2"><strong>Phone:</strong> {phone}</Typography>
-            <Typography variant="body2"><strong>Role:</strong> {roleName}</Typography>
-            <Typography variant="body2"><strong>Subscription:</strong> {subName}</Typography>
-            <Typography variant="body2"><strong>Status:</strong> {selectedUser.subscriptionStatus ?? '—'}</Typography>
-            <Typography variant="body2"><strong>Language:</strong> {selectedUser.language ?? '—'}</Typography>
+          <Box sx={{ pt: 1 }}>
+            <Grid container spacing={2}>
+              {/* Row 1: Name */}
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  label="Name"
+                  value={selectedUser.name ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              {/* Row 2: Age, Gender, Language */}
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Age"
+                  value={selectedUser.age ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Gender"
+                  value={selectedUser.gender ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Language"
+                  value={selectedUser.language ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              {/* Row 3: Role, Country code, Phone number */}
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Role"
+                  value={roleName(selectedUser)}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Country code"
+                  value={selectedUser?.phone?.countryCode ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Phone number"
+                  value={selectedUser?.phone?.number ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              {/* Row 4: Subscription, Subscription status, Active status */}
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Subscription"
+                  value={subName(selectedUser)}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Subscription status"
+                  value={selectedUser.subscriptionStatus ?? '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <TextField
+                  label="Active status"
+                  value={selectedUser.isActive !== false ? 'Active' : 'Inactive'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+              {/* Email (optional row) */}
+              <Grid size={{ xs: 12 }}>
+                <TextField
+                  label="Email address"
+                  value={selectedUser.email?.trim() ? selectedUser.email : '—'}
+                  fullWidth
+                  disabled
+                  size="small"
+                />
+              </Grid>
+            </Grid>
           </Box>
         ) : (
-          <Typography color="text.secondary">No user selected.</Typography>
+          <Box sx={{ py: 2, color: 'text.secondary' }}>No user selected.</Box>
         )}
       </DialogContent>
       <DialogActions>

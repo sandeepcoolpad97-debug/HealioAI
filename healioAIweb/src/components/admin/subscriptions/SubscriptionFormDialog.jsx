@@ -15,6 +15,7 @@ import {
   Checkbox,
   Box,
   CircularProgress,
+  Grid,
 } from '@mui/material';
 import { fetchSubscriptionById, createSubscription, updateSubscription, clearError } from '../../../store/slices/subscriptionsSlice';
 
@@ -92,49 +93,100 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
   const valid = form.name?.trim() && form.code?.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle   sx={{
-    backgroundColor: 'primary.main',
-    color: 'white',
-  }}>{isEdit ? 'Edit subscription' : 'Create subscription'}</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle
+        sx={{
+          backgroundColor: 'primary.main',
+          color: 'white',
+        }}
+      >
+        {isEdit ? 'Edit subscription' : 'Create subscription'}
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <Box sx={{ pt: 1 }}>
           {error && (
-            <Box sx={{ color: 'error.main', fontSize: '0.875rem' }}>{error}</Box>
+            <Box sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2 }}>{error}</Box>
           )}
-          <TextField label="Name" value={form.name} onChange={(e) => handleChange('name', e.target.value)} required fullWidth />
-          <TextField label="Code" value={form.code} onChange={(e) => handleChange('code', e.target.value)} required fullWidth placeholder="e.g. free, pro" />
-          <TextField label="Price" type="number" value={form.price} onChange={(e) => handleChange('price', Number(e.target.value) || 0)} inputProps={{ min: 0 }} fullWidth />
-          <FormControl fullWidth>
-            <InputLabel>Currency</InputLabel>
-            <Select value={form.currency} label="Currency" onChange={(e) => handleChange('currency', e.target.value)}>
-              {CURRENCIES.map((c) => (
-                <MenuItem key={c} value={c}>{c}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            label="Duration (days)"
-            type="number"
-            value={form.durationInDays ?? ''}
-            onChange={(e) => handleChange('durationInDays', e.target.value === '' ? null : Number(e.target.value))}
-            placeholder="Leave empty for lifetime"
-            inputProps={{ min: 1 }}
-            fullWidth
-          />
-          <TextField
-            label="Features (comma-separated)"
-            value={featuresInput}
-            onChange={(e) => setFeaturesInput(e.target.value)}
-            placeholder="e.g. feature1, feature2"
-            fullWidth
-          />
-          {!isEdit && (
-            <FormControlLabel
-              control={<Checkbox checked={form.isSystemPlan} onChange={(e) => handleChange('isSystemPlan', e.target.checked)} />}
-              label="System plan"
-            />
-          )}
+          <Grid container spacing={2}>
+            {/* Row 1: Name, Code */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Name"
+                value={form.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                required
+                fullWidth
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Code"
+                value={form.code}
+                onChange={(e) => handleChange('code', e.target.value)}
+                required
+                fullWidth
+                placeholder="e.g. free, pro"
+              />
+            </Grid>
+            {/* Row 2: Price, Currency, Duration (days) */}
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                label="Price"
+                type="number"
+                value={form.price}
+                onChange={(e) => handleChange('price', Number(e.target.value) || 0)}
+                inputProps={{ min: 0 }}
+                fullWidth
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth>
+                <InputLabel>Currency</InputLabel>
+                <Select
+                  value={form.currency}
+                  label="Currency"
+                  onChange={(e) => handleChange('currency', e.target.value)}
+                >
+                  {CURRENCIES.map((c) => (
+                    <MenuItem key={c} value={c}>{c}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                label="Duration (days)"
+                type="number"
+                value={form.durationInDays ?? ''}
+                onChange={(e) => handleChange('durationInDays', e.target.value === '' ? null : Number(e.target.value))}
+                placeholder="Leave empty for lifetime"
+                inputProps={{ min: 1 }}
+                fullWidth
+              />
+            </Grid>
+            {/* Row 3: Features */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Features (comma-separated)"
+                value={featuresInput}
+                onChange={(e) => setFeaturesInput(e.target.value)}
+                placeholder="e.g. feature1, feature2"
+                fullWidth
+              />
+            </Grid>
+            {/* Row 4: System plan (create and edit – API field) */}
+            <Grid size={{ xs: 12 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.isSystemPlan}
+                    onChange={(e) => handleChange('isSystemPlan', e.target.checked)}
+                  />
+                }
+                label="System plan"
+              />
+            </Grid>
+          </Grid>
         </Box>
       </DialogContent>
       <DialogActions>

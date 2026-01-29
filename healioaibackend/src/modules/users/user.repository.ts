@@ -22,6 +22,17 @@ export class UserRepository extends BaseRepository<IUser> {
     return count > 0;
   }
 
+  async findByEmail(email: string): Promise<IUser | null> {
+    if (!email || !email.trim()) return null;
+    return this.findOne({ email: email.trim().toLowerCase() } as FilterQuery<IUser>);
+  }
+
+  async existsByEmail(email: string): Promise<boolean> {
+    if (!email || !email.trim()) return false;
+    const count = await this.count({ email: email.trim().toLowerCase() } as FilterQuery<IUser>);
+    return count > 0;
+  }
+
   async findActiveById(id: string): Promise<IUser | null> {
     return this.findOne({
       _id: id,

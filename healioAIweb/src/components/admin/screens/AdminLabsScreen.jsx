@@ -7,6 +7,7 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -14,19 +15,32 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import {
-  fetchRoles,
-  fetchRoleById,
-  deleteRole,
-  clearSelectedRole,
+  fetchLabs,
+  fetchLabById,
+  deleteLab,
+  clearSelectedLab,
   clearError,
-} from '../../../store/slices/rolesSlice';
-import RoleViewDialog from '../roles/RoleViewDialog';
-import RoleFormDialog from '../roles/RoleFormDialog';
-import RoleDeleteDialog from '../roles/RoleDeleteDialog';
+} from '../../../store/slices/labsSlice';
+import LabViewDialog from '../labs/LabViewDialog';
+import LabFormDialog from '../labs/LabFormDialog';
+import LabDeleteDialog from '../labs/LabDeleteDialog';
 
-export default function AdminRolesScreen() {
+const roleName = (row) => (row.roleId && (row.roleId.name ?? row.roleId)) || '—';
+const emailDisplay = (row) => (row.emailId && row.emailId.trim()) ? row.emailId : '—';
+
+const activeStatusChip = (isActive) => {
+  if (isActive === true) {
+    return <Chip label="Active" color="success" variant="filled" size="small" />;
+  }
+  if (isActive === false) {
+    return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
+  }
+  return '—';
+};
+
+export default function AdminLabsScreen() {
   const dispatch = useDispatch();
-  const { list, meta, listLoading, error } = useSelector((state) => state.roles);
+  const { list, meta, listLoading, error } = useSelector((state) => state.labs);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [viewId, setViewId] = useState(null);
   const [editId, setEditId] = useState(null);
@@ -36,45 +50,45 @@ export default function AdminRolesScreen() {
   const { page, pageSize } = paginationModel;
 
   useEffect(() => {
-    dispatch(fetchRoles({ page: page + 1, limit: pageSize }));
+    dispatch(fetchLabs({ page: page + 1, limit: pageSize }));
   }, [dispatch, page, pageSize]);
 
   const handleView = (id) => {
     setViewId(id);
-    dispatch(fetchRoleById(id));
+    dispatch(fetchLabById(id));
   };
   const handleEdit = (id) => {
     setEditId(id);
-    dispatch(fetchRoleById(id));
+    dispatch(fetchLabById(id));
   };
   const handleDelete = (id) => setDeleteId(id);
   const handleCreate = () => setCreateOpen(true);
 
   const handleCloseView = () => {
     setViewId(null);
-    dispatch(clearSelectedRole());
+    dispatch(clearSelectedLab());
   };
   const handleCloseEdit = () => {
     setEditId(null);
-    dispatch(clearSelectedRole());
+    dispatch(clearSelectedLab());
   };
   const handleCloseDelete = () => setDeleteId(null);
 
   const handleConfirmDelete = () => {
     if (deleteId) {
-      dispatch(deleteRole(deleteId));
+      dispatch(deleteLab(deleteId));
       setDeleteId(null);
     }
   };
 
   const handleCreateSuccess = () => {
     setCreateOpen(false);
-    dispatch(fetchRoles({ page: page + 1, limit: pageSize }));
+    dispatch(fetchLabs({ page: page + 1, limit: pageSize }));
   };
   const handleUpdateSuccess = () => {
     setEditId(null);
-    dispatch(clearSelectedRole());
-    dispatch(fetchRoles({ page: page + 1, limit: pageSize }));
+    dispatch(clearSelectedLab());
+    dispatch(fetchLabs({ page: page + 1, limit: pageSize }));
   };
 
   const getSlNo = (row) => {
@@ -83,28 +97,13 @@ export default function AdminRolesScreen() {
   };
 
   const columns = [
-    {
-      field: 'slNo',
-      headerName: 'Sl No',
-      width: 70,
-      sortable: false,
-      valueGetter: (_, row) => getSlNo(row),
-    },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
-    { field: 'description', headerName: 'Description', flex: 1, minWidth: 180 },
-    {
-      field: 'isSystemRole',
-      headerName: 'System',
-      width: 90,
-      valueGetter: (_, row) => (row.isSystemRole ? 'Yes' : 'No'),
-    },
-    {
-      field: 'permissions',
-      headerName: 'Permissions',
-      flex: 1,
-      minWidth: 120,
-      valueGetter: (_, row) => (row.permissions?.length ? row.permissions.join(', ') : '—'),
-    },
+    { field: 'slNo', headerName: 'Sl No', width: 70, sortable: false, valueGetter: (_, row) => getSlNo(row) },
+    { field: 'labName', headerName: 'Lab name', flex: 1, minWidth: 140 },
+    { field: 'registrationNumber', headerName: 'Reg. number', width: 120 },
+    { field: 'emailId', headerName: 'Email', flex: 1, minWidth: 160, valueGetter: (_, row) => emailDisplay(row) },
+    { field: 'contactNumber', headerName: 'Contact', width: 120 },
+    { field: 'roleId', headerName: 'Role', width: 100, valueGetter: (_, row) => roleName(row) },
+    { field: 'isActive', headerName: 'Active status', width: 120, renderCell: (params) => activeStatusChip(params.row.isActive) },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -131,7 +130,7 @@ export default function AdminRolesScreen() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5">Roles</Typography>
+        <Typography variant="h5">Labs</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}>
           Create
         </Button>
@@ -164,7 +163,7 @@ export default function AdminRolesScreen() {
           slots={{
             noRowsOverlay: () => (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'text.secondary' }}>
-                No roles
+                No labs
               </Box>
             ),
             loadingOverlay: () => (
@@ -176,15 +175,10 @@ export default function AdminRolesScreen() {
         />
       </Box>
 
-      <RoleViewDialog open={!!viewId} onClose={handleCloseView} />
-      <RoleFormDialog open={createOpen} onClose={() => setCreateOpen(false)} onSuccess={handleCreateSuccess} mode="create" />
-      <RoleFormDialog open={!!editId} onClose={handleCloseEdit} onSuccess={handleUpdateSuccess} mode="edit" roleId={editId} />
-      <RoleDeleteDialog
-        open={!!deleteId}
-        roleName={list.find((r) => r._id === deleteId)?.name}
-        onClose={handleCloseDelete}
-        onConfirm={handleConfirmDelete}
-      />
+      <LabViewDialog open={!!viewId} onClose={handleCloseView} />
+      <LabFormDialog open={createOpen} onClose={() => setCreateOpen(false)} onSuccess={handleCreateSuccess} mode="create" />
+      <LabFormDialog open={!!editId} onClose={handleCloseEdit} onSuccess={handleUpdateSuccess} mode="edit" labId={editId} />
+      <LabDeleteDialog open={!!deleteId} labName={list.find((l) => l._id === deleteId)?.labName} onClose={handleCloseDelete} onConfirm={handleConfirmDelete} />
     </Box>
   );
 }

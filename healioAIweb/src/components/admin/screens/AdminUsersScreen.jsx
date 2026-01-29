@@ -7,6 +7,7 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -26,11 +27,34 @@ import UserDeleteDialog from '../users/UserDeleteDialog';
 
 const phoneDisplay = (row) =>
   row.phone ? `${row.phone.countryCode || ''} ${row.phone.number}`.trim() : '—';
+const emailDisplay = (row) => (row.email && row.email.trim()) ? row.email : '—';
 const roleName = (row) => (row.roleId && (row.roleId.name ?? row.roleId)) || '—';
 const subName = (row) =>
   row.subscriptionId && (row.subscriptionId.name ?? row.subscriptionId)
     ? row.subscriptionId.name ?? row.subscriptionId
     : '—';
+
+const activeStatusChip = (isActive) => {
+  if (isActive === true) {
+    return <Chip label="Active" color="success" variant="filled" size="small" />;
+  }
+  if (isActive === false) {
+    return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
+  }
+  return '—';
+};
+
+const subscriptionStatusChip = (status) => {
+  if (!status) return '—';
+  const config = {
+    active: { label: 'Active', color: 'success', variant: 'filled' },
+    expired: { label: 'Expired', color: 'warning', variant: 'filled' },
+    cancelled: { label: 'Cancelled', color: 'error', variant: 'filled' },
+    trial: { label: 'Trial', color: 'info', variant: 'filled' },
+  };
+  const { label, color, variant } = config[status] ?? { label: status, color: 'default', variant: 'outlined' };
+  return <Chip label={label} color={color} variant={variant} size="small" />;
+};
 
 export default function AdminUsersScreen() {
   const dispatch = useDispatch();
@@ -85,8 +109,27 @@ export default function AdminUsersScreen() {
     dispatch(fetchUsers({ page: page + 1, limit: pageSize }));
   };
 
+  const getSlNo = (row) => {
+    const idx = list.findIndex((r) => r._id === row._id);
+    return idx >= 0 ? page * pageSize + idx + 1 : '';
+  };
+
   const columns = [
+    {
+      field: 'slNo',
+      headerName: 'Sl No',
+      width: 70,
+      sortable: false,
+      valueGetter: (_, row) => getSlNo(row),
+    },
     { field: 'name', headerName: 'Name', flex: 1, minWidth: 140 },
+    {
+      field: 'email',
+      headerName: 'Email address',
+      flex: 1,
+      minWidth: 180,
+      valueGetter: (_, row) => emailDisplay(row),
+    },
     {
       field: 'phone',
       headerName: 'Phone',
@@ -108,7 +151,18 @@ export default function AdminUsersScreen() {
       minWidth: 120,
       valueGetter: (_, row) => subName(row),
     },
-    { field: 'subscriptionStatus', headerName: 'Status', width: 100 },
+    {
+      field: 'isActive',
+      headerName: 'Active status',
+      width: 120,
+      renderCell: (params) => activeStatusChip(params.row.isActive),
+    },
+    {
+      field: 'subscriptionStatus',
+      headerName: 'Subscription status',
+      width: 140,
+      renderCell: (params) => subscriptionStatusChip(params.row.subscriptionStatus),
+    },
     {
       field: 'actions',
       headerName: 'Actions',

@@ -25,6 +25,7 @@ export const onboardUserSchema = Joi.object({
   language: Joi.string().default('en').trim(),
   roleId: Joi.string().hex().length(24).required(),
   subscriptionId: Joi.string().hex().length(24).required(),
+  email: Joi.string().email().trim().lowercase().allow('').optional(),
   phone: phoneSchema.required(),
   consents: consentsSchema.required(),
   medical: medicalSchema,
@@ -37,6 +38,7 @@ export const createUserSchema = Joi.object({
   language: Joi.string().default('en').trim(),
   roleId: Joi.string().hex().length(24).required(),
   subscriptionId: Joi.string().hex().length(24).required(),
+  email: Joi.string().email().trim().lowercase().allow('').optional(),
   phone: phoneSchema.required(),
   consents: consentsSchema.required(),
   medical: medicalSchema,
@@ -50,8 +52,10 @@ export const updateUserSchema = Joi.object({
   roleId: Joi.string().hex().length(24),
   subscriptionId: Joi.string().hex().length(24),
   subscriptionStatus: Joi.string().valid('active', 'expired', 'cancelled', 'trial'),
+  email: Joi.string().email().trim().lowercase().allow(''),
   phone: phoneSchema,
   medical: medicalSchema,
+  isActive: Joi.boolean(),
 }).min(1);
 
 export const userIdParamSchema = Joi.object({
@@ -67,6 +71,7 @@ export type OnboardUserInput = {
   language?: string;
   roleId: string;
   subscriptionId: string;
+  email?: string;
   phone: { countryCode?: string; number: string; verified?: boolean };
   consents: {
     termsAndConditions: true;
@@ -89,9 +94,11 @@ export type UpdateUserInput = {
   roleId?: string;
   subscriptionId?: string;
   subscriptionStatus?: 'active' | 'expired' | 'cancelled' | 'trial';
+  email?: string;
   phone?: { countryCode?: string; number: string; verified?: boolean };
   medical?: {
     existingConditions?: string[];
     otherConditions?: string;
   };
+  isActive?: boolean;
 };

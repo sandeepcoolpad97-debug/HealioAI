@@ -11,6 +11,7 @@ import {
   Checkbox,
   Box,
   CircularProgress,
+  Grid,
 } from '@mui/material';
 import { fetchRoleById, createRole, updateRole, clearError } from '../../../store/slices/rolesSlice';
 
@@ -73,49 +74,65 @@ export default function RoleFormDialog({ open, onClose, onSuccess, mode, roleId 
   const valid = form.name?.trim();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle   sx={{
-    backgroundColor: 'primary.main',
-    color: 'white',
-  }}>{isEdit ? 'Edit role' : 'Create role'}</DialogTitle>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle
+        sx={{
+          backgroundColor: 'primary.main',
+          color: 'white',
+        }}
+      >
+        {isEdit ? 'Edit role' : 'Create role'}
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+        <Box sx={{ pt: 1 }}>
           {error && (
-            <Box sx={{ color: 'error.main', fontSize: '0.875rem' }}>{error}</Box>
+            <Box sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2 }}>{error}</Box>
           )}
-          <TextField
-            label="Name"
-            value={form.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            required
-            fullWidth
-          />
-          <TextField
-            label="Description"
-            value={form.description}
-            onChange={(e) => handleChange('description', e.target.value)}
-            multiline
-            rows={2}
-            fullWidth
-          />
-          <TextField
-            label="Permissions (comma-separated)"
-            value={permissionsInput}
-            onChange={(e) => setPermissionsInput(e.target.value)}
-            placeholder="e.g. read:users, write:users"
-            fullWidth
-          />
-          {!isEdit && (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={form.isSystemRole}
-                  onChange={(e) => handleChange('isSystemRole', e.target.checked)}
-                />
-              }
-              label="System role"
-            />
-          )}
+          <Grid container spacing={2}>
+            {/* Row 1: Name */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Name"
+                value={form.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                required
+                fullWidth
+              />
+            </Grid>
+            {/* Row 2: Description */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Description"
+                value={form.description}
+                onChange={(e) => handleChange('description', e.target.value)}
+                multiline
+                rows={2}
+                fullWidth
+              />
+            </Grid>
+            {/* Row 3: Permissions */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Permissions (comma-separated)"
+                value={permissionsInput}
+                onChange={(e) => setPermissionsInput(e.target.value)}
+                placeholder="e.g. read:users, write:users"
+                fullWidth
+              />
+            </Grid>
+            {/* Row 4: System role (create and edit – API field) */}
+            <Grid size={{ xs: 12 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={form.isSystemRole}
+                    onChange={(e) => handleChange('isSystemRole', e.target.checked)}
+                  />
+                }
+                label="System role"
+              />
+            </Grid>
+          </Grid>
         </Box>
       </DialogContent>
       <DialogActions>
