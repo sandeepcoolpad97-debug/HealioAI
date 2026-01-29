@@ -85,7 +85,7 @@ const OnboardingSuccessScreen: React.FC<OnboardingSuccessScreenProps> = ({
             >
               <View style={styles.featureIconWrap}>
                 <Ionicons
-                  name={f.icon as keyof typeof Ionicons.glyphMap}
+                  name={f.icon as 'shield-checkmark' | 'person' | 'business'}
                   size={22}
                   color={colors.successIconGreen}
                 />

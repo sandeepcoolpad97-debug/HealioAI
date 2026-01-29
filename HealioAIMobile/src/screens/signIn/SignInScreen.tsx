@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AuthPrimaryButton,
+  DividerWithOr,
+  FooterLink,
+  GoogleSignInButton,
+  PhoneInput,
+} from '../../components';
 import { colors } from '../../constants/colors';
 import { navigationRoutes, signInStrings } from '../../constants/strings';
 
@@ -58,60 +62,33 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
           <Text style={styles.title}>{signInStrings.title}</Text>
           <Text style={styles.subtitle}>{signInStrings.subtitle}</Text>
 
-          {/* Phone input: country code + number */}
-          <View style={styles.inputRow}>
-            <View style={styles.countryCode}>
-              <Text style={styles.countryCodeText}>
-                {signInStrings.countryCode}
-              </Text>
-            </View>
-            <TextInput
-              style={styles.phoneInput}
-              placeholder={signInStrings.phonePlaceholder}
-              placeholderTextColor={colors.inputPlaceholder}
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              maxLength={14}
-              accessibilityLabel={signInStrings.phonePlaceholder}
-            />
-          </View>
+          <PhoneInput
+            value={phone}
+            onChangeText={setPhone}
+            placeholder={signInStrings.phonePlaceholder}
+            placeholderTextColor={colors.inputPlaceholder}
+            accessibilityLabel={signInStrings.phonePlaceholder}
+            style={styles.phoneInputWrap}
+          />
 
-          <TouchableOpacity
-            style={[styles.primaryButton, !canSendOtp && styles.primaryDisabled]}
+          <AuthPrimaryButton
+            label={signInStrings.sendOtp}
             onPress={handleSendOtp}
             disabled={!canSendOtp}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.primaryButtonText}>{signInStrings.sendOtp}</Text>
-          </TouchableOpacity>
+          />
 
-          {/* OR divider */}
-          <View style={styles.orRow}>
-            <View style={styles.orLine} />
-            <Text style={styles.orText}>{signInStrings.or}</Text>
-            <View style={styles.orLine} />
-          </View>
+          <DividerWithOr text={signInStrings.or} />
 
-          <TouchableOpacity
-            style={styles.googleButton}
+          <GoogleSignInButton
+            label={signInStrings.signInWithGoogle}
             onPress={handleSignInWithGoogle}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.googleButtonText}>
-              {signInStrings.signInWithGoogle}
-            </Text>
-          </TouchableOpacity>
+          />
 
-          <Pressable
+          <FooterLink
+            prefix="Don't have an account? "
+            linkText="Sign Up"
             onPress={handleSignUp}
-            style={({ pressed }) => [
-              styles.signUpWrap,
-              pressed && styles.signUpPressed,
-            ]}
-          >
-            <Text style={styles.signUpText}>{signInStrings.noAccount}</Text>
-          </Pressable>
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -148,93 +125,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     lineHeight: 24,
   },
-  inputRow: {
-    flexDirection: 'row',
-    width: '100%',
-    borderRadius: 16,
-    overflow: 'hidden',
+  phoneInputWrap: {
     marginBottom: 24,
-    minHeight: 52,
-    backgroundColor: colors.backgroundOnboardingOne,
-  },
-  countryCode: {
-    paddingHorizontal: 16,
-    justifyContent: 'center',
-    backgroundColor: colors.countryCodeBg,
-    borderRightWidth: 1,
-    borderRightColor: '#D1D5DB',
-  },
-  countryCodeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.countryCodeText,
-  },
-  phoneInput: {
-    flex: 1,
-    backgroundColor: colors.backgroundOnboardingOne,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    color: '#111827',
-  },
-  primaryButton: {
-    width: '100%',
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.otpButtonGreen,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  primaryDisabled: {
-    opacity: 0.6,
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.buttonTextOnPrimary,
-  },
-  orRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 24,
-  },
-  orLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.buttonTextOnPrimary,
-    opacity: 0.6,
-  },
-  orText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.buttonTextOnPrimary,
-    marginHorizontal: 16,
-  },
-  googleButton: {
-    width: '100%',
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.backgroundOnboardingOne,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 32,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.primaryText,
-  },
-  signUpWrap: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  signUpPressed: {
-    opacity: 0.8,
-  },
-  signUpText: {
-    fontSize: 16,
-    color: colors.buttonTextOnPrimary,
-    textAlign: 'center',
   },
 });

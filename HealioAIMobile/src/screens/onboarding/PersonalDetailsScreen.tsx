@@ -2,16 +2,21 @@ import React, { useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AuthPrimaryButton,
+  ChipRow,
+  FormCard,
+  SelectableChip,
+  ScreenHeader,
+} from '../../components';
 import { colors } from '../../constants/colors';
 import {
   navigationRoutes,
@@ -64,7 +69,6 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
         barStyle="light-content"
         backgroundColor={colors.signInBackground}
       />
-
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboard}
@@ -74,13 +78,9 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={shared.header}>
-            <Text style={shared.title}>{s.title}</Text>
-            <Text style={shared.subtitle}>{s.subtitle}</Text>
-          </View>
+          <ScreenHeader title={s.title} subtitle={s.subtitle} />
 
-          <View style={shared.card}>
-            {/* Full Name */}
+          <FormCard>
             <Text style={shared.label}>{s.fullName} *</Text>
             <TextInput
               style={shared.input}
@@ -91,7 +91,6 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               autoCapitalize="words"
             />
 
-            {/* Age */}
             <Text style={[shared.label, styles.fieldSpacer]}>{s.age} *</Text>
             <TextInput
               style={shared.input}
@@ -103,31 +102,18 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               maxLength={3}
             />
 
-            {/* Gender */}
             <Text style={[shared.label, styles.fieldSpacer]}>{s.gender} *</Text>
-            <View style={styles.chipRow}>
+            <ChipRow>
               {GENDERS.map((g) => (
-                <Pressable
+                <SelectableChip
                   key={g.key}
+                  label={g.label}
+                  selected={gender === g.key}
                   onPress={() => setGender(g.key)}
-                  style={[
-                    styles.chip,
-                    gender === g.key && styles.chipSelected,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      gender === g.key && styles.chipTextSelected,
-                    ]}
-                  >
-                    {g.label}
-                  </Text>
-                </Pressable>
+                />
               ))}
-            </View>
+            </ChipRow>
 
-            {/* Email */}
             <Text style={[shared.label, styles.fieldSpacer]}>{s.email} *</Text>
             <TextInput
               style={shared.input}
@@ -140,47 +126,26 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               autoCorrect={false}
             />
 
-            {/* Preferred Language — inline chips (no dropdown/modal) */}
             <Text style={[shared.label, styles.fieldSpacer]}>
               {s.preferredLanguage} *
             </Text>
-            <View style={styles.chipRow}>
-              {LANGUAGE_OPTIONS.map((opt) => {
-                const isSelected = language?.value === opt.value;
-                return (
-                  <Pressable
-                    key={opt.value}
-                    onPress={() => setLanguage(opt)}
-                    style={[styles.chip, isSelected && styles.chipSelected]}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        isSelected && styles.chipTextSelected,
-                      ]}
-                    >
-                      {opt.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
+            <ChipRow>
+              {LANGUAGE_OPTIONS.map((opt) => (
+                <SelectableChip
+                  key={opt.value}
+                  label={opt.label}
+                  selected={language?.value === opt.value}
+                  onPress={() => setLanguage(opt)}
+                />
+              ))}
+            </ChipRow>
+          </FormCard>
 
-          {/* Continue Button */}
-          <TouchableOpacity
-            style={[
-              shared.primaryButton,
-              isValid
-                ? shared.primaryButtonEnabled
-                : shared.primaryButtonDisabled,
-            ]}
+          <AuthPrimaryButton
+            label={s.continue}
             onPress={handleContinue}
             disabled={!isValid}
-            activeOpacity={0.8}
-          >
-            <Text style={shared.primaryButtonText}>{s.continue}</Text>
-          </TouchableOpacity>
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -190,30 +155,4 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
 const styles = StyleSheet.create({
   keyboard: { flex: 1 },
   fieldSpacer: { marginTop: 20 },
-
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-  },
-  chip: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.chipBorder,
-    backgroundColor: colors.backgroundOnboardingOne,
-  },
-  chipSelected: {
-    borderColor: colors.primaryText,
-    backgroundColor: '#E8F4FD',
-  },
-  chipText: {
-    fontSize: 14,
-    color: colors.inputPlaceholderGrey,
-  },
-  chipTextSelected: {
-    color: colors.primaryText,
-    fontWeight: '600',
-  },
 });

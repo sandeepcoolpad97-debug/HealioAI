@@ -8,10 +8,16 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AuthPrimaryButton,
+  ChipRow,
+  FormCard,
+  SelectableChip,
+  ScreenHeader,
+} from '../../components';
 import { colors } from '../../constants/colors';
 import {
   navigationRoutes,
@@ -71,34 +77,20 @@ export const HealthInfoScreen: React.FC<HealthInfoScreenProps> = ({
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={shared.header}>
-            <Text style={shared.title}>{s.title}</Text>
-            <Text style={shared.subtitle}>{s.subtitle}</Text>
-          </View>
+          <ScreenHeader title={s.title} subtitle={s.subtitle} />
 
-          <View style={shared.card}>
+          <FormCard>
             <Text style={styles.question}>{s.question}</Text>
-            <View style={styles.chipWrap}>
+            <ChipRow style={styles.chipWrap}>
               {s.conditions.map((label) => (
-                <Pressable
+                <SelectableChip
                   key={label}
+                  label={label}
+                  selected={selected.has(label)}
                   onPress={() => toggle(label)}
-                  style={[
-                    styles.chip,
-                    selected.has(label) && styles.chipSelected,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      selected.has(label) && styles.chipTextSelected,
-                    ]}
-                  >
-                    {label}
-                  </Text>
-                </Pressable>
+                />
               ))}
-            </View>
+            </ChipRow>
             <Text style={styles.otherLabel}>{s.otherLabel}</Text>
             <TextInput
               style={[shared.input, styles.otherInput]}
@@ -108,15 +100,12 @@ export const HealthInfoScreen: React.FC<HealthInfoScreenProps> = ({
               onChangeText={setOther}
               accessibilityLabel={s.otherPlaceholder}
             />
-          </View>
+          </FormCard>
 
-          <TouchableOpacity
-            style={[shared.primaryButton, shared.primaryButtonEnabled]}
+          <AuthPrimaryButton
+            label={s.continue}
             onPress={handleContinue}
-            activeOpacity={0.8}
-          >
-            <Text style={shared.primaryButtonText}>{s.continue}</Text>
-          </TouchableOpacity>
+          />
 
           <Pressable
             onPress={handleSkip}
@@ -141,41 +130,14 @@ const styles = StyleSheet.create({
     color: colors.primaryText,
     marginBottom: 16,
   },
-  chipWrap: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 20,
-  },
-  chip: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: colors.chipBorder,
-    backgroundColor: colors.backgroundOnboardingOne,
-  },
-  chipSelected: {
-    borderColor: colors.primaryText,
-    backgroundColor: '#E8F4FD',
-  },
-  chipText: {
-    fontSize: 14,
-    color: colors.inputPlaceholderGrey,
-  },
-  chipTextSelected: {
-    color: colors.primaryText,
-    fontWeight: '600',
-  },
+  chipWrap: { marginBottom: 20 },
   otherLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.primaryText,
     marginBottom: 8,
   },
-  otherInput: {
-    marginBottom: 0,
-  },
+  otherInput: { marginBottom: 0 },
   skipWrap: {
     paddingVertical: 16,
     alignItems: 'center',
