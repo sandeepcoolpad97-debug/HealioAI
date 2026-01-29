@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { colors } from '../constants/colors';
 
-type AuthPrimaryButtonVariant = 'green' | 'consent';
+type AuthPrimaryButtonVariant = 'green' | 'consent' | 'blue';
 
 type AuthPrimaryButtonProps = {
   label: string;
@@ -26,17 +26,20 @@ export const AuthPrimaryButton: React.FC<AuthPrimaryButtonProps> = ({
   style,
 }) => {
   const bgStyle =
-    disabled && variant === 'consent'
+    disabled && (variant === 'consent' || variant === 'blue')
       ? styles.disabledBg
       : variant === 'consent'
         ? styles.consentBg
-        : styles.greenBg;
+        : variant === 'blue'
+          ? styles.blueBg
+          : styles.greenBg;
   return (
     <TouchableOpacity
       style={[
         styles.button,
         bgStyle,
         disabled && variant === 'green' && styles.disabledOpacity,
+        disabled && variant === 'blue' && styles.disabledOpacity,
         style,
       ]}
       onPress={onPress}
@@ -59,6 +62,9 @@ const styles = StyleSheet.create({
   },
   greenBg: {
     backgroundColor: colors.otpButtonGreen,
+  },
+  blueBg: {
+    backgroundColor: colors.primaryText,
   },
   consentBg: {
     backgroundColor: colors.consentGreen,

@@ -45,8 +45,14 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
   const handleContinue = () => {
     if (!selected) return;
-    // Persist role for routing/permissions (e.g. AsyncStorage, context)
-    navigation.replace(navigationRoutes.PersonalDetails, { role: selected });
+    // Clinic → clinic onboarding; Lab → lab onboarding; User → personal details
+    if (selected === 'clinic') {
+      navigation.replace(navigationRoutes.ClinicDetails, { role: selected });
+    } else if (selected === 'lab') {
+      navigation.replace(navigationRoutes.LabDetails, { role: selected });
+    } else {
+      navigation.replace(navigationRoutes.PersonalDetails, { role: selected });
+    }
   };
 
   return (

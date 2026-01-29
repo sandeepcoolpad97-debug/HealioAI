@@ -34,6 +34,14 @@ export const navigationRoutes = {
   VerifyNumber: 'VerifyNumber',
   RoleSelection: 'RoleSelection',
   PersonalDetails: 'PersonalDetails',
+  ClinicDetails: 'ClinicDetails',
+  ClinicServices: 'ClinicServices',
+  ClinicTermsConsents: 'ClinicTermsConsents',
+  ClinicProfileSubmitted: 'ClinicProfileSubmitted',
+  LabDetails: 'LabDetails',
+  LabServices: 'LabServices',
+  LabTermsConsents: 'LabTermsConsents',
+  LabProfileSubmitted: 'LabProfileSubmitted',
   HealthInfo: 'HealthInfo',
   Consent: 'Consent',
   OnboardingSuccess: 'OnboardingSuccess',
@@ -76,6 +84,153 @@ export const roleSelectStrings = {
 } as const;
 
 export type RoleKey = keyof typeof roleSelectStrings.roles;
+
+export const clinicOnboardingStrings = {
+  details: {
+    title: 'Clinic details',
+    subtitle: 'Tell us about your clinic',
+    stepIndicator: 'Step 2 of 4',
+    clinicName: 'Clinic / Hospital Name',
+    clinicNamePlaceholder: 'Enter name',
+    registrationNumber: 'Registration Number / License ID',
+    registrationPlaceholder: 'e.g. REG-123456',
+    address: 'Address',
+    addressPlaceholder: 'Full address of the clinic',
+    contactNumber: 'Contact Number',
+    contactPlaceholder: '000 000 0000',
+    email: 'Email ID',
+    emailPlaceholder: 'clinic@example.com',
+    operatingHours: 'Operating Hours',
+    operatingHoursStartPlaceholder: '--:-- --',
+    operatingHoursEndPlaceholder: '--:-- --',
+    establishmentDate: 'Establishment Date',
+    establishmentPlaceholder: 'mm/dd/yyyy',
+    continue: 'Continue →',
+  },
+  services: {
+    title: 'Clinic services',
+    subtitle: 'Help patients understand what you offer',
+    specializations: 'Specializations',
+    specializationOptions: [
+      'General Medicine',
+      'Pediatrics',
+      'Dermatology',
+      'Orthopedics',
+      'Gynecology',
+    ] as const,
+    consultationType: 'Consultation Type',
+    inPersonConsultation: 'In-person consultation',
+    doctorsList: 'Doctors List',
+    doctorNamePlaceholder: 'Dr. John Smith',
+    specializationPlaceholder: 'Select specialization',
+    removeDoctor: 'Remove Doctor',
+    addDoctor: '+ Add Doctor',
+    continue: 'Continue →',
+  },
+  termsConsents: {
+    title: 'Terms & Consents',
+    subtitle:
+      'Please review and accept the following to continue onboarding your clinic',
+    termsLabel: "I agree to Healio's Platform Terms & Conditions",
+    termsDescription:
+      'Covers usage, onboarding rules, verification policies, and service obligations.',
+    viewFullTerms: 'View full terms →',
+    consentLabel: 'I consent to share clinic information with Healio',
+    consentDescription:
+      'Allows Healio to securely store, process, and display clinic details to patients.',
+    liabilityLabel: 'I acknowledge the liability disclaimer',
+    liabilityDescription:
+      'Healio acts as a technology platform and is not responsible for clinical outcomes, diagnostics, or medical decisions.',
+    submitButton: 'Submit for Review →',
+  },
+  profileSubmitted: {
+    title: 'Profile Submitted Successfully 🎉',
+    message:
+      'Your clinic profile has been successfully submitted for review. Our team will verify your details and approve your profile within 24–48 hours.',
+    whatsNextTitle: "What's Next?",
+    whatsNextItems: [
+      'Upload legal documents after approval',
+      'Add bank & payout details',
+      'Manage doctors & services',
+      'Start receiving patient requests',
+    ] as const,
+    verificationTitle: 'Verification in Progress',
+    verificationSubtext: '60% Profile Completed',
+    goToDashboard: 'Go to Dashboard',
+  },
+} as const;
+
+export const labOnboardingStrings = {
+  details: {
+    title: 'Laboratory Details',
+    subtitle: 'Tell us about your laboratory',
+    labName: 'Laboratory / Diagnostic Center Name',
+    labNamePlaceholder: 'Enter lab name',
+    registrationNumber: 'Registration Number / License ID',
+    registrationPlaceholder: 'ID-123456789',
+    address: 'Address',
+    addressPlaceholder: 'Full street address, city, zip',
+    contactNumber: 'Contact Number',
+    contactPlaceholder: '000 000 0000',
+    email: 'Email ID',
+    emailPlaceholder: 'lab@healio.com',
+    operatingHours: 'Operating Hours',
+    opensAtPlaceholder: 'Opens at',
+    closesAtPlaceholder: 'Closes at',
+    establishmentDate: 'Establishment Date',
+    establishmentPlaceholder: 'mm/dd/yyyy',
+    continue: 'Continue',
+  },
+  services: {
+    title: 'Lab Services',
+    subtitle: 'Select the tests and services you provide',
+    testCategories: 'Test Categories',
+    categoryOptions: [
+      'Blood Tests',
+      'Urine Tests',
+      'Radiology',
+      'Pathology',
+      'Full Body Checkup',
+    ] as const,
+    homeSampleCollection: 'Home Sample Collection',
+    homeSampleYes: 'Yes',
+    homeSampleNo: 'No',
+    reportDeliveryType: 'Report Delivery Type',
+    reportPdf: 'PDF Download',
+    reportDigital: 'Digital Report (in-app)',
+    continue: 'Continue',
+  },
+  termsConsents: {
+    title: 'Terms & Consents',
+    subtitle: 'Please review and accept to submit your lab profile',
+    termsLabel: "I agree to Healio's Platform Terms & Conditions",
+    termsDescription:
+      'Covers platform usage and lab registration policies',
+    viewFullTerms: 'View full terms →',
+    consentLabel: 'I consent to share laboratory information with Healio',
+    consentDescription:
+      'Allows Healio to securely store lab details for patient access',
+    liabilityLabel: 'I acknowledge the diagnostic liability disclaimer',
+    liabilityDescription:
+      'Healio is not responsible for test outcomes or clinical decisions',
+    submitButton: 'Submit for Review',
+  },
+  profileSubmitted: {
+    title: 'Profile Submitted Successfully 🎉',
+    message:
+      'Your laboratory profile has been successfully submitted for review. Our team will verify your details within 24–48 hours.',
+    whatsNextTitle: "What's Next?",
+    whatsNextItems: [
+      'Upload required documents after approval',
+      'Add bank & payout details',
+      'Manage tests & services',
+      'Start receiving patient requests',
+    ] as const,
+    verificationTitle: 'Verification in Progress',
+    verificationSubtext: '60% Profile Completed',
+    goToDashboard: 'Go to Dashboard',
+  },
+} as const;
 
 export const onboardingFlowStrings = {
   personalDetails: {

@@ -29,6 +29,7 @@ type PhoneInputProps = {
   displayValue?: string;
   withShadow?: boolean;
   accessibilityLabel?: string;
+  countryCode?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -41,6 +42,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   displayValue,
   withShadow = false,
   accessibilityLabel,
+  countryCode = '+91',
   style,
 }) => {
   const containerStyle = [styles.inputRow, withShadow && inputShadow, style];
@@ -48,7 +50,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   return (
     <View style={containerStyle}>
       <View style={styles.countryCode}>
-        <Text style={styles.countryCodeText}>+91</Text>
+        <Text style={styles.countryCodeText}>{countryCode}</Text>
       </View>
       {editable ? (
         <TextInput

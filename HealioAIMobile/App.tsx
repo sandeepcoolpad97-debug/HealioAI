@@ -26,6 +26,18 @@ import {
   ConsentScreen,
   OnboardingSuccessScreen,
 } from './src/screens/onboarding';
+import {
+  ClinicDetailsScreen,
+  ClinicServicesScreen,
+  ClinicTermsConsentsScreen,
+  ClinicProfileSubmittedScreen,
+} from './src/screens/onboardingClinic';
+import {
+  LaboratoryDetailsScreen,
+  LabServicesScreen,
+  LabTermsConsentsScreen,
+  LabProfileSubmittedScreen,
+} from './src/screens/onboardingLab';
 import {HomeScreen} from './src/screens/HomeScreen';
 
 function App() {
@@ -50,6 +62,14 @@ type RootStackParamList = {
   [navigationRoutes.VerifyNumber]: {phone: string};
   [navigationRoutes.RoleSelection]: undefined;
   [navigationRoutes.PersonalDetails]: {role?: string};
+  [navigationRoutes.ClinicDetails]: {role?: string};
+  [navigationRoutes.ClinicServices]: undefined;
+  [navigationRoutes.ClinicTermsConsents]: undefined;
+  [navigationRoutes.ClinicProfileSubmitted]: undefined;
+  [navigationRoutes.LabDetails]: {role?: string};
+  [navigationRoutes.LabServices]: undefined;
+  [navigationRoutes.LabTermsConsents]: undefined;
+  [navigationRoutes.LabProfileSubmitted]: undefined;
   [navigationRoutes.HealthInfo]: undefined;
   [navigationRoutes.Consent]: undefined;
   [navigationRoutes.OnboardingSuccess]: undefined;
@@ -105,6 +125,38 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.PersonalDetails}
           component={PersonalDetailsScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ClinicDetails}
+          component={ClinicDetailsScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ClinicServices}
+          component={ClinicServicesScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ClinicTermsConsents}
+          component={ClinicTermsConsentsScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ClinicProfileSubmitted}
+          component={ClinicProfileSubmittedScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.LabDetails}
+          component={LaboratoryDetailsScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.LabServices}
+          component={LabServicesScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.LabTermsConsents}
+          component={LabTermsConsentsScreen}
+        />
+        <Stack.Screen
+          name={navigationRoutes.LabProfileSubmitted}
+          component={LabProfileSubmittedScreen}
         />
         <Stack.Screen
           name={navigationRoutes.HealthInfo}

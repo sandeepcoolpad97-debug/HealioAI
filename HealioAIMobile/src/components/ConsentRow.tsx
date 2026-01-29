@@ -10,34 +10,41 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from '../constants/colors';
 
-type CheckboxRowVariant = 'blue' | 'green';
+type ConsentRowVariant = 'blue' | 'green';
 
-type CheckboxRowProps = {
+type ConsentRowProps = {
   checked: boolean;
   onToggle: () => void;
-  label: React.ReactNode;
+  title: string;
+  description?: string;
+  linkText?: string;
+  onLinkPress?: () => void;
+  variant?: ConsentRowVariant;
   accessibilityLabel?: string;
-  variant?: CheckboxRowVariant;
   style?: StyleProp<ViewStyle>;
 };
 
-export const CheckboxRow: React.FC<CheckboxRowProps> = ({
+export const ConsentRow: React.FC<ConsentRowProps> = ({
   checked,
   onToggle,
-  label,
+  title,
+  description,
+  linkText,
+  onLinkPress,
+  variant = 'blue',
   accessibilityLabel,
-  variant = 'green',
   style,
 }) => {
   const checkedStyle =
     variant === 'blue' ? styles.checkboxCheckedBlue : styles.checkboxChecked;
+
   return (
     <Pressable
       onPress={onToggle}
       style={[styles.row, style]}
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={accessibilityLabel ?? title}
     >
       <View style={[styles.checkbox, checked && checkedStyle]}>
         {checked && (
@@ -48,7 +55,25 @@ export const CheckboxRow: React.FC<CheckboxRowProps> = ({
           />
         )}
       </View>
-      <Text style={styles.label}>{label}</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>{title}</Text>
+        {description != null && description !== '' && (
+          <Text style={styles.description}>{description}</Text>
+        )}
+        {linkText != null && linkText !== '' && (
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+              onLinkPress?.();
+            }}
+            style={styles.linkWrap}
+            accessibilityRole="link"
+            accessibilityLabel={linkText}
+          >
+            <Text style={styles.linkText}>{linkText}</Text>
+          </Pressable>
+        )}
+      </View>
     </Pressable>
   );
 };
@@ -56,8 +81,8 @@ export const CheckboxRow: React.FC<CheckboxRowProps> = ({
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
+    alignItems: 'flex-start',
+    marginBottom: 20,
   },
   checkbox: {
     width: 22,
@@ -69,6 +94,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 2,
   },
   checkboxChecked: {
     borderColor: colors.otpButtonGreen,
@@ -78,9 +104,28 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryText,
     backgroundColor: colors.primaryText,
   },
-  label: {
+  content: {
     flex: 1,
+  },
+  title: {
     fontSize: 15,
+    fontWeight: '600',
     color: '#111827',
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 13,
+    color: colors.inputPlaceholderGrey,
+    lineHeight: 19,
+    marginBottom: 4,
+  },
+  linkWrap: {
+    alignSelf: 'flex-start',
+  },
+  linkText: {
+    fontSize: 14,
+    color: colors.primaryText,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
