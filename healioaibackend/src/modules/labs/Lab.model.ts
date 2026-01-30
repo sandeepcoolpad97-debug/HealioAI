@@ -73,16 +73,9 @@ const LabSchema = new mongoose.Schema(
         services: {
             testCategories: {
                 type: [String],
-                enum: [
-                    "blood_tests",
-                    "urine_tests",
-                    "radiology",
-                    "pathology",
-                    "full_body_checkup"
-                ],
                 required: true,
                 default: []
-            },
+              },
 
             homeSampleCollection: {
                 type: Boolean,
@@ -159,13 +152,7 @@ export interface ILab extends Document, IAuditFields {
     }[];
 
     services: {
-        testCategories: (
-            | "blood_tests"
-            | "urine_tests"
-            | "radiology"
-            | "pathology"
-            | "full_body_checkup"
-        )[];
+        testCategories: string[];
         homeSampleCollection: boolean;
         reportDeliveryType: ("pdf" | "in_app")[];
     };

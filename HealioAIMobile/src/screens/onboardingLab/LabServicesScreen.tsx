@@ -51,6 +51,7 @@ const nextTestCategoryId = () => `test-category-${++testCategoryIdCounter}`;
 export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
   navigation,
 }) => {
+  const [address, setAddress] = useState('');
   const [testCategoryEntries, setTestCategoryEntries] = useState<
     LabTestCategoryEntry[]
   >([{ id: nextTestCategoryId(), testName: '' }]);
@@ -102,6 +103,15 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
           <ScreenHeader title={s.title} subtitle={s.subtitle} />
 
           <FormCard>
+            <FormInput
+              label={s.address}
+              value={address}
+              onChangeText={setAddress}
+              placeholder={s.addressPlaceholder}
+              placeholderTextColor={colors.inputPlaceholder}
+              multiline
+            />
+
             <Text style={labSectionTitleStyles.text}>{s.testsList}</Text>
             {testCategoryEntries.map((entry) => (
               <View key={entry.id} style={styles.testCategoryCard}>

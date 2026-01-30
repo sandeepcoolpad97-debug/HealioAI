@@ -46,7 +46,7 @@ const router = Router();
  *               services:
  *                 type: object
  *                 properties:
- *                   testCategories: { type: array, items: { type: string, enum: [blood_tests, urine_tests, radiology, pathology, full_body_checkup] } }
+ *                   testCategories: { type: array, items: { type: string }, description: Array of test category names (any string) }
  *                   homeSampleCollection: { type: boolean }
  *                   reportDeliveryType: { type: array, items: { type: string, enum: [pdf, in_app] } }
  *               consents:

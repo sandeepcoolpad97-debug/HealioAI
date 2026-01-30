@@ -7,124 +7,119 @@ import { IAuditFields } from "../../common/types/audit.types";
 ========================= */
 
 const ClinicSchema = new mongoose.Schema(
-    {
-        /* ---------------- BASIC INFO ---------------- */
-        clinicName: {
-            type: String,
-            required: true,
-            trim: true
-        },
-
-        registrationNumber: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true
-        },
-
-        roleId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Role",
-            required: true
-        },
-
-        address: {
-            type: String,
-            required: true
-        },
-
-        contactNumber: {
-            type: String,
-            required: true
-        },
-
-        emailId: {
-            type: String,
-            trim: true,
-            lowercase: true,
-            unique: true
-        },
-        
-
-        /* ---------------- OPERATING HOURS ---------------- */
-        operatingHours: [
-            {
-                day: {
-                    type: String,
-                    enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                    required: true
-                },
-                openTime: {
-                    type: String,
-                    required: true
-                },
-                closeTime: {
-                    type: String,
-                    required: true
-                },
-                isClosed: {
-                    type: Boolean,
-                    default: false
-                }
-            }
-        ],
-
-        /* ---------------- MEDICAL DETAILS ---------------- */
-        specialisation: {
-            type: [String],
-            required: true,
-            default: []
-        },
-
-        consultationType: {
-            type: String,
-            enum: ["in_person", "online", "both"],
-            default: "in_person"
-        },
-
-        /* ---------------- DOCTORS ---------------- */
-        doctorsList: [
-            {
-                name: {
-                    type: String,
-                    required: true
-                },
-                specialisation: {
-                    type: String,
-                    required: true
-                }
-            }
-        ],
-
-        /* ---------------- CONSENTS ---------------- */
-        consents: {
-            termsAndConditions: {
-                type: Boolean,
-                required: true
-            },
-            policyTerms: {
-                type: Boolean,
-                required: true
-            },
-            medicalDisclaimer: {
-                type: Boolean,
-                required: true
-            },
-            acceptedAt: {
-                type: Date,
-                default: Date.now
-            }
-        },
-
-        /* ---------------- SYSTEM FLAGS ---------------- */
-        isActive: {
-            type: Boolean,
-            default: true
-        }
+  {
+    /* ---------------- BASIC INFO ---------------- */
+    clinicName: {
+      type: String,
+      required: true,
+      trim: true
     },
-    {
-        timestamps: false
+
+    registrationNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+
+    roleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
+      required: true
+    },
+
+    address: {
+      type: String
+    },
+
+    establishmentDate: {
+      type: Date
+    },
+
+    contactNumber: {
+      type: String,
+      required: true
+    },
+
+    emailId: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true
+    },
+
+    /* ---------------- OPERATING HOURS ---------------- */
+    operatingHours: [
+      {
+        day: {
+          type: String,
+          enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          required: true
+        },
+        openTime: {
+          type: String,
+          required: true
+        },
+        closeTime: {
+          type: String,
+          required: true
+        },
+        isClosed: {
+          type: Boolean,
+          default: false
+        }
+      }
+    ],
+
+    /* ---------------- MEDICAL DETAILS ---------------- */
+    specialisation: {
+      type: [String],
+      required: true,
+      default: []
+    },
+
+    consultationType: {
+      type: String,
+      enum: ["in_person", "online", "both"],
+      default: "in_person"
+    },
+
+    /* ---------------- DOCTOR ---------------- */
+    doctorName: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    /* ---------------- CONSENTS ---------------- */
+    consents: {
+      termsAndConditions: {
+        type: Boolean,
+        required: true
+      },
+      policyTerms: {
+        type: Boolean,
+        required: true
+      },
+      medicalDisclaimer: {
+        type: Boolean,
+        required: true
+      },
+      acceptedAt: {
+        type: Date,
+        default: Date.now
+      }
+    },
+
+    /* ---------------- SYSTEM FLAGS ---------------- */
+    isActive: {
+      type: Boolean,
+      default: true
     }
+  },
+  {
+    timestamps: false
+  }
 );
 
 /* =========================
@@ -135,49 +130,43 @@ ClinicSchema.plugin(auditPlugin);
 
 ClinicSchema.index({ clinicName: 1 });
 ClinicSchema.index({ emailId: 1 });
-ClinicSchema.index({ "doctorsList.specialisation": 1 });
+ClinicSchema.index({ doctorName: 1 });
 
 /* =========================
    Interface
 ========================= */
 
 export interface IClinic extends Document, IAuditFields {
-    clinicName: string;
-    registrationNumber: string;
-    roleId: mongoose.Types.ObjectId;
-    address: string;
-    contactNumber: string;
-    emailId?: string;
+  clinicName: string;
+  registrationNumber: string;
+  roleId: mongoose.Types.ObjectId;
+  address?: string;
+  establishmentDate?: Date;
+  contactNumber: string;
+  emailId?: string;
 
-    operatingHours: {
-        day: "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
-        openTime: string;
-        closeTime: string;
-        isClosed?: boolean;
-    }[];
+  operatingHours: {
+    day: "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+    openTime: string;
+    closeTime: string;
+    isClosed?: boolean;
+  }[];
 
-    specialisation: string[];
+  specialisation: string[];
 
-    consultationType: "in_person" | "online" | "both";
+  consultationType: "in_person" | "online" | "both";
 
-    doctorsList: {
-        name: string;
-        specialisation: string;
-    }[];
+  doctorName: string;
 
-    consents: {
-        termsAndConditions: boolean;
-        policyTerms: boolean;
-        medicalDisclaimer: boolean;
-        acceptedAt?: Date;
-    };
+  consents: {
+    termsAndConditions: boolean;
+    policyTerms: boolean;
+    medicalDisclaimer: boolean;
+    acceptedAt?: Date;
+  };
 
-    isActive: boolean;
-}
-
-/* =========================
-   Model
-========================= */
+  isActive: boolean;
+};
 
 export const ClinicModel = mongoose.model<IClinic>("Clinic", ClinicSchema);
 export default ClinicModel;

@@ -14,7 +14,6 @@ const consentsSchema = Joi.object({
   medicalDisclaimer: Joi.boolean().valid(true).required(),
 });
 
-const testCategories = ['blood_tests', 'urine_tests', 'radiology', 'pathology', 'full_body_checkup'];
 const reportDeliveryType = ['pdf', 'in_app'];
 
 export const createLabSchema = Joi.object({
@@ -27,7 +26,7 @@ export const createLabSchema = Joi.object({
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
   services: Joi.object({
     testCategories: Joi.array()
-      .items(Joi.string().valid(...testCategories))
+      .items(Joi.string().trim())
       .default([]),
     homeSampleCollection: Joi.boolean().default(false),
     reportDeliveryType: Joi.array()
@@ -46,7 +45,7 @@ export const updateLabSchema = Joi.object({
   emailId: Joi.string().email().trim().lowercase().allow(''),
   operatingHours: Joi.array().items(operatingHoursItemSchema),
   services: Joi.object({
-    testCategories: Joi.array().items(Joi.string().valid(...testCategories)),
+    testCategories: Joi.array().items(Joi.string().trim()),
     homeSampleCollection: Joi.boolean(),
     reportDeliveryType: Joi.array().items(Joi.string().valid(...reportDeliveryType)),
   }),
@@ -73,7 +72,7 @@ export type CreateLabInput = {
     isClosed?: boolean;
   }[];
   services?: {
-    testCategories?: ('blood_tests' | 'urine_tests' | 'radiology' | 'pathology' | 'full_body_checkup')[];
+    testCategories?: string[];
     homeSampleCollection?: boolean;
     reportDeliveryType?: ('pdf' | 'in_app')[];
   };
@@ -98,7 +97,7 @@ export type UpdateLabInput = {
     isClosed?: boolean;
   }[];
   services?: {
-    testCategories?: ('blood_tests' | 'urine_tests' | 'radiology' | 'pathology' | 'full_body_checkup')[];
+    testCategories?: string[];
     homeSampleCollection?: boolean;
     reportDeliveryType?: ('pdf' | 'in_app')[];
   };

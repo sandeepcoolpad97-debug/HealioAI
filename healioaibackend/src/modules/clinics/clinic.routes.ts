@@ -26,12 +26,13 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [clinicName, registrationNumber, roleId, address, contactNumber, consents]
+ *             required: [clinicName, registrationNumber, roleId, contactNumber, doctorName, consents]
  *             properties:
  *               clinicName: { type: string }
  *               registrationNumber: { type: string }
  *               roleId: { type: string, description: MongoDB ObjectId (24 hex chars) }
- *               address: { type: string }
+ *               address: { type: string, description: Optional address field }
+ *               establishmentDate: { type: string, format: date, description: Optional establishment date }
  *               contactNumber: { type: string }
  *               emailId: { type: string, format: email }
  *               operatingHours:
@@ -45,13 +46,7 @@ const router = Router();
  *                     isClosed: { type: boolean }
  *               specialisation: { type: array, items: { type: string } }
  *               consultationType: { type: string, enum: [in_person, online, both] }
- *               doctorsList:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     name: { type: string }
- *                     specialisation: { type: string }
+ *               doctorName: { type: string, description: Name of the primary doctor }
  *               consents:
  *                 type: object
  *                 required: [termsAndConditions, policyTerms, medicalDisclaimer]
@@ -122,12 +117,13 @@ router.get('/:id', getClinicByIdValidation, getClinicById);
  *               registrationNumber: { type: string }
  *               roleId: { type: string }
  *               address: { type: string }
+ *               establishmentDate: { type: string, format: date }
  *               contactNumber: { type: string }
  *               emailId: { type: string, format: email }
  *               operatingHours: { type: array }
  *               specialisation: { type: array }
  *               consultationType: { type: string, enum: [in_person, online, both] }
- *               doctorsList: { type: array }
+ *               doctorName: { type: string }
  *               consents: { type: object }
  *     responses:
  *       200: { description: Clinic updated }

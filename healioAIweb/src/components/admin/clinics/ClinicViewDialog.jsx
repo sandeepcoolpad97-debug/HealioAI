@@ -38,8 +38,11 @@ export default function ClinicViewDialog({ open, onClose }) {
               <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField label="Role" value={roleName(selectedClinic)} fullWidth disabled size="small" />
               </Grid>
-              <Grid size={{ xs: 12 }}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField label="Address" value={selectedClinic.address ?? '—'} fullWidth disabled size="small" />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField label="Establishment Date" value={selectedClinic.establishmentDate ? new Date(selectedClinic.establishmentDate).toLocaleDateString() : '—'} fullWidth disabled size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField label="Contact number" value={selectedClinic.contactNumber ?? '—'} fullWidth disabled size="small" />
@@ -57,7 +60,7 @@ export default function ClinicViewDialog({ open, onClose }) {
                 <TextField label="Specialisation" value={selectedClinic.specialisation?.length ? selectedClinic.specialisation.join(', ') : '—'} fullWidth disabled size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Doctors" value={selectedClinic.doctorsList?.length ? selectedClinic.doctorsList.map((d) => `${d.name} (${d.specialisation})`).join('; ') : '—'} fullWidth disabled multiline minRows={1} size="small" />
+                <TextField label="Doctor Name" value={selectedClinic.doctorName ?? '—'} fullWidth disabled size="small" />
               </Grid>
             </Grid>
           </Box>

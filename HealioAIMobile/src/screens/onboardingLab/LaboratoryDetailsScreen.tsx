@@ -36,7 +36,6 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
 }) => {
   const [labName, setLabName] = useState('');
   const [registrationNumber, setRegistrationNumber] = useState('');
-  const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [email, setEmail] = useState('');
   const [opensAt, setOpensAt] = useState('');
@@ -79,20 +78,12 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
               placeholder={s.registrationPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
-            <FormInput
-              label={s.address}
-              value={address}
-              onChangeText={setAddress}
-              placeholder={s.addressPlaceholder}
-              placeholderTextColor={colors.inputPlaceholder}
-              multiline
-            />
             <Text style={shared.label}>{s.contactNumber}</Text>
             <PhoneInput
               value={contactNumber}
               onChangeText={setContactNumber}
               placeholder={s.contactPlaceholder}
-              countryCode="+1"
+              countryCode="+91"
               style={styles.phoneSpacer}
             />
             <FormInput

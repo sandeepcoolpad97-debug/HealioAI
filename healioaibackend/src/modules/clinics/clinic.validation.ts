@@ -14,22 +14,18 @@ const consentsSchema = Joi.object({
   medicalDisclaimer: Joi.boolean().valid(true).required(),
 });
 
-const doctorsListItemSchema = Joi.object({
-  name: Joi.string().required().trim(),
-  specialisation: Joi.string().required().trim(),
-});
-
 export const createClinicSchema = Joi.object({
   clinicName: Joi.string().min(1).max(200).required().trim(),
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
-  address: Joi.string().min(1).max(500).required().trim(),
+  address: Joi.string().min(1).max(500).trim().allow('').optional(),
+  establishmentDate: Joi.date().optional(),
   contactNumber: Joi.string().min(1).max(20).required().trim(),
   emailId: Joi.string().email().trim().lowercase().allow('').optional(),
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
   specialisation: Joi.array().items(Joi.string()).default([]),
   consultationType: Joi.string().valid('in_person', 'online', 'both').default('in_person'),
-  doctorsList: Joi.array().items(doctorsListItemSchema).default([]),
+  doctorName: Joi.string().min(1).max(200).required().trim(),
   consents: consentsSchema.required(),
 });
 
@@ -37,13 +33,14 @@ export const updateClinicSchema = Joi.object({
   clinicName: Joi.string().min(1).max(200).trim(),
   registrationNumber: Joi.string().min(1).max(100).trim(),
   roleId: Joi.string().hex().length(24),
-  address: Joi.string().min(1).max(500).trim(),
+  address: Joi.string().min(1).max(500).trim().allow(''),
+  establishmentDate: Joi.date(),
   contactNumber: Joi.string().min(1).max(20).trim(),
   emailId: Joi.string().email().trim().lowercase().allow(''),
   operatingHours: Joi.array().items(operatingHoursItemSchema),
   specialisation: Joi.array().items(Joi.string()),
   consultationType: Joi.string().valid('in_person', 'online', 'both'),
-  doctorsList: Joi.array().items(doctorsListItemSchema),
+  doctorName: Joi.string().min(1).max(200).trim(),
   consents: consentsSchema,
 }).min(1);
 
@@ -57,7 +54,8 @@ export type CreateClinicInput = {
   clinicName: string;
   registrationNumber: string;
   roleId: string;
-  address: string;
+  address?: string;
+  establishmentDate?: Date;
   contactNumber: string;
   emailId?: string;
   operatingHours?: {
@@ -68,7 +66,7 @@ export type CreateClinicInput = {
   }[];
   specialisation?: string[];
   consultationType?: 'in_person' | 'online' | 'both';
-  doctorsList?: { name: string; specialisation: string }[];
+  doctorName: string;
   consents: {
     termsAndConditions: true;
     policyTerms: true;
@@ -81,6 +79,7 @@ export type UpdateClinicInput = {
   registrationNumber?: string;
   roleId?: string;
   address?: string;
+  establishmentDate?: Date;
   contactNumber?: string;
   emailId?: string;
   operatingHours?: {
@@ -91,7 +90,7 @@ export type UpdateClinicInput = {
   }[];
   specialisation?: string[];
   consultationType?: 'in_person' | 'online' | 'both';
-  doctorsList?: { name: string; specialisation: string }[];
+  doctorName?: string;
   consents?: {
     termsAndConditions: true;
     policyTerms: true;

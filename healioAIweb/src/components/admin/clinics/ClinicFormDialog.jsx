@@ -32,11 +32,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
     registrationNumber: '',
     roleId: '',
     address: '',
+    establishmentDate: '',
     contactNumber: '',
     emailId: '',
     consultationType: 'in_person',
     specialisation: '',
-    doctorsListInput: '',
+    doctorName: '',
     consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
   });
 
@@ -53,11 +54,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         registrationNumber: '',
         roleId: '',
         address: '',
+        establishmentDate: '',
         contactNumber: '',
         emailId: '',
         consultationType: 'in_person',
         specialisation: '',
-        doctorsListInput: '',
+        doctorName: '',
         consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
       });
     }
@@ -71,11 +73,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         registrationNumber: selectedClinic.registrationNumber ?? '',
         roleId: typeof selectedClinic.roleId === 'object' ? selectedClinic.roleId?._id : selectedClinic.roleId ?? '',
         address: selectedClinic.address ?? '',
+        establishmentDate: selectedClinic.establishmentDate ? new Date(selectedClinic.establishmentDate).toISOString().split('T')[0] : '',
         contactNumber: selectedClinic.contactNumber ?? '',
         emailId: selectedClinic.emailId ?? '',
         consultationType: selectedClinic.consultationType ?? 'in_person',
         specialisation: (selectedClinic.specialisation ?? []).join(', '),
-        doctorsListInput: (selectedClinic.doctorsList ?? []).map((d) => `${d.name}, ${d.specialisation}`).join('\n'),
+        doctorName: selectedClinic.doctorName ?? '',
       }));
     }
   }, [isEdit, selectedClinic]);
@@ -99,26 +102,16 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
 
   const buildPayload = () => {
     const specialisation = form.specialisation ? form.specialisation.split(',').map((s) => s.trim()).filter(Boolean) : [];
-    const doctorsList = form.doctorsListInput
-      ? form.doctorsListInput
-          .split('\n')
-          .map((line) => {
-            const [name, specialisation] = line.split(',').map((s) => s.trim());
-            return name ? { name: name || '', specialisation: specialisation || '' } : null;
-          })
-          .filter(Boolean)
-      : [];
     return {
       ...form,
       specialisation,
-      doctorsList,
+      establishmentDate: form.establishmentDate ? new Date(form.establishmentDate) : undefined,
       operatingHours: [],
     };
   };
 
   const handleSubmit = () => {
     const payload = buildPayload();
-    if (payload.doctorsListInput !== undefined) delete payload.doctorsListInput;
     const createPayload = {
       ...payload,
       consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
@@ -129,7 +122,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         .then(() => onSuccess?.())
         .catch(() => {});
     } else {
-      if (!createPayload.roleId || !createPayload.clinicName || !createPayload.registrationNumber || !createPayload.address || !createPayload.contactNumber) return;
+      if (!createPayload.roleId || !createPayload.clinicName || !createPayload.registrationNumber || !createPayload.contactNumber || !createPayload.doctorName) return;
       dispatch(createClinic(createPayload))
         .unwrap()
         .then(() => onSuccess?.())
@@ -137,7 +130,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
     }
   };
 
-  const valid = form.clinicName?.trim() && form.registrationNumber?.trim() && form.roleId && form.address?.trim() && form.contactNumber?.trim();
+  const valid = form.clinicName?.trim() && form.registrationNumber?.trim() && form.roleId && form.contactNumber?.trim() && form.doctorName?.trim();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -164,8 +157,18 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12 }}>
-              <TextField label="Address" value={form.address} onChange={(e) => handleChange('address', e.target.value)} required fullWidth />
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField label="Address (optional)" value={form.address} onChange={(e) => handleChange('address', e.target.value)} fullWidth />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField 
+                label="Establishment Date" 
+                type="date" 
+                value={form.establishmentDate} 
+                onChange={(e) => handleChange('establishmentDate', e.target.value)} 
+                fullWidth 
+                InputLabelProps={{ shrink: true }}
+              />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Contact number" value={form.contactNumber} onChange={(e) => handleChange('contactNumber', e.target.value)} required fullWidth />
@@ -187,7 +190,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
               <TextField label="Specialisation (comma-separated)" value={form.specialisation} onChange={(e) => handleChange('specialisation', e.target.value)} fullWidth placeholder="e.g. General, Cardiology" />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              <TextField label="Doctors (one per line: Name, Specialisation)" value={form.doctorsListInput} onChange={(e) => handleChange('doctorsListInput', e.target.value)} fullWidth multiline rows={3} placeholder="Dr. John, Cardiology" />
+              <TextField label="Doctor Name" value={form.doctorName} onChange={(e) => handleChange('doctorName', e.target.value)} required fullWidth placeholder="Dr. John Smith" />
             </Grid>
             {!isEdit && (
               <Grid size={{ xs: 12 }}>
