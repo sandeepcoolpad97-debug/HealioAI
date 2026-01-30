@@ -20,7 +20,7 @@ export default function LabViewDialog({ open, onClose }) {
   const reportDelivery = selectedLab?.services?.reportDeliveryType?.length ? selectedLab.services.reportDeliveryType.join(', ') : '—';
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
         Lab details
       </DialogTitle>
@@ -33,34 +33,54 @@ export default function LabViewDialog({ open, onClose }) {
           <Box sx={{ pt: 1 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Lab name" value={selectedLab.labName ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Lab name" value={selectedLab.labName ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Registration number" value={selectedLab.registrationNumber ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Registration number" value={selectedLab.registrationNumber ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Role" value={roleName(selectedLab)} fullWidth disabled size="small" />
+                <TextField label="Role" value={roleName(selectedLab)} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Address" value={selectedLab.address ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Address" value={selectedLab.address ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Contact number" value={selectedLab.contactNumber ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Contact number" value={selectedLab.contactNumber ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Email" value={selectedLab.emailId?.trim() || '—'} fullWidth disabled size="small" />
+                <TextField label="Email" value={selectedLab.emailId?.trim() || '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Test categories" value={testCategories} fullWidth disabled size="small" />
+                <TextField label="Test categories" value={testCategories} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Home sample collection" value={selectedLab.services?.homeSampleCollection ? 'Yes' : 'No'} fullWidth disabled size="small" />
+                <TextField label="Home sample collection" value={selectedLab.services?.homeSampleCollection ? 'Yes' : 'No'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Report delivery" value={reportDelivery} fullWidth disabled size="small" />
+                <TextField label="Report delivery" value={reportDelivery} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Active status" value={selectedLab.isActive !== false ? 'Active' : 'Inactive'} fullWidth disabled size="small" />
+                <TextField label="Active status" value={selectedLab.isActive !== false ? 'Active' : 'Inactive'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
             </Grid>
           </Box>

@@ -17,7 +17,7 @@ export default function ClinicViewDialog({ open, onClose }) {
   const { selectedClinic, loading } = useSelector((state) => state.clinics);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
         Clinic details
       </DialogTitle>
@@ -30,37 +30,59 @@ export default function ClinicViewDialog({ open, onClose }) {
           <Box sx={{ pt: 1 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Clinic name" value={selectedClinic.clinicName ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Clinic name" value={selectedClinic.clinicName ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Registration number" value={selectedClinic.registrationNumber ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Registration number" value={selectedClinic.registrationNumber ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Role" value={roleName(selectedClinic)} fullWidth disabled size="small" />
+                <TextField label="Role" value={roleName(selectedClinic)} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Address" value={selectedClinic.address ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Address" value={selectedClinic.address ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Establishment Date" value={selectedClinic.establishmentDate ? new Date(selectedClinic.establishmentDate).toLocaleDateString() : '—'} fullWidth disabled size="small" />
+                <TextField label="Establishment Date" value={selectedClinic.establishmentDate ? new Date(selectedClinic.establishmentDate).toLocaleDateString() : '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Contact number" value={selectedClinic.contactNumber ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Contact number" value={selectedClinic.contactNumber ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Email" value={selectedClinic.emailId?.trim() || '—'} fullWidth disabled size="small" />
+                <TextField label="Email" value={selectedClinic.emailId?.trim() || '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Consultation type" value={selectedClinic.consultationType ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Consultation type" value={selectedClinic.consultationType ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField label="Active status" value={selectedClinic.isActive !== false ? 'Active' : 'Inactive'} fullWidth disabled size="small" />
+                <TextField label="Active status" value={selectedClinic.isActive !== false ? 'Active' : 'Inactive'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Specialisation" value={selectedClinic.specialisation?.length ? selectedClinic.specialisation.join(', ') : '—'} fullWidth disabled size="small" />
+                <TextField label="Specialisation" value={selectedClinic.specialisation?.length ? selectedClinic.specialisation.join(', ') : '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <TextField label="Doctor Name" value={selectedClinic.doctorName ?? '—'} fullWidth disabled size="small" />
+                <TextField label="Doctor Name" value={selectedClinic.doctorName ?? '—'} fullWidth   InputProps={{
+    readOnly: true
+  }} size="small" />
               </Grid>
             </Grid>
           </Box>

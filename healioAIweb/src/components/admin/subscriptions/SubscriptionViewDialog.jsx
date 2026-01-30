@@ -24,7 +24,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
       : '—';
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: 'primary.main',
@@ -47,7 +47,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Name"
                   value={selectedSubscription.name ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -56,7 +58,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Code"
                   value={selectedSubscription.code ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -66,7 +70,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Price"
                   value={priceDisplay}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -75,7 +81,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Currency"
                   value={selectedSubscription.currency ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -84,7 +92,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Duration (days)"
                   value={durationDisplay}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -94,7 +104,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="System plan"
                   value={selectedSubscription.isSystemPlan ? 'Yes' : 'No'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -104,7 +116,9 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                   label="Features"
                   value={featuresDisplay}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   multiline
                   minRows={1}
                   size="small"

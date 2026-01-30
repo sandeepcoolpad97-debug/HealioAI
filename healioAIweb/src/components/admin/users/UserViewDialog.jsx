@@ -22,7 +22,7 @@ export default function UserViewDialog({ open, onClose }) {
   const { selectedUser, loading } = useSelector((state) => state.users);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: 'primary.main',
@@ -45,7 +45,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Name"
                   value={selectedUser.name ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -55,7 +57,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Age"
                   value={selectedUser.age ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -64,7 +68,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Gender"
                   value={selectedUser.gender ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -73,7 +79,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Language"
                   value={selectedUser.language ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -83,7 +91,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Role"
                   value={roleName(selectedUser)}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -92,7 +102,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Country code"
                   value={selectedUser?.phone?.countryCode ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -101,7 +113,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Phone number"
                   value={selectedUser?.phone?.number ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -111,7 +125,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Subscription"
                   value={subName(selectedUser)}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -120,7 +136,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Subscription status"
                   value={selectedUser.subscriptionStatus ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -129,7 +147,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Active status"
                   value={selectedUser.isActive !== false ? 'Active' : 'Inactive'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -139,7 +159,9 @@ export default function UserViewDialog({ open, onClose }) {
                   label="Email address"
                   value={selectedUser.email?.trim() ? selectedUser.email : '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>

@@ -15,7 +15,7 @@ export default function RoleViewDialog({ open, onClose }) {
   const { selectedRole, loading } = useSelector((state) => state.roles);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: 'primary.main',
@@ -38,7 +38,9 @@ export default function RoleViewDialog({ open, onClose }) {
                   label="Name"
                   value={selectedRole.name ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -48,7 +50,9 @@ export default function RoleViewDialog({ open, onClose }) {
                   label="Description"
                   value={selectedRole.description ?? '—'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   multiline
                   rows={2}
                   size="small"
@@ -60,7 +64,9 @@ export default function RoleViewDialog({ open, onClose }) {
                   label="System role"
                   value={selectedRole.isSystemRole ? 'Yes' : 'No'}
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   size="small"
                 />
               </Grid>
@@ -74,7 +80,9 @@ export default function RoleViewDialog({ open, onClose }) {
                       : '—'
                   }
                   fullWidth
-                  disabled
+                    InputProps={{
+    readOnly: true
+  }}
                   multiline
                   minRows={1}
                   size="small"
