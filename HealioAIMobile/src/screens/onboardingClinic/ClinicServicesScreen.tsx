@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,8 +14,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
   CheckboxRow,
+  ChipRow,
   FormCard,
   FormInput,
+  SelectableChip,
   ScreenHeader,
 } from '../../components';
 import { colors } from '../../constants/colors';
@@ -30,6 +32,7 @@ import {
 } from './clinicOnboardingStyles';
 
 const s = clinicOnboardingStrings.services;
+const OPERATING_DAYS = s.operatingDaysOptions;
 
 type ClinicServicesScreenProps = {
   navigation: {
@@ -41,10 +44,17 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
   navigation,
 }) => {
   const [address, setAddress] = useState('');
+  const [selectedDays, setSelectedDays] = useState<readonly string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
   const [operatingStart, setOperatingStart] = useState('');
   const [operatingEnd, setOperatingEnd] = useState('');
   const [establishmentDate, setEstablishmentDate] = useState('');
   const [inPersonConsultation, setInPersonConsultation] = useState(true);
+
+  const toggleDay = useCallback((day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  }, []);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.ClinicTermsConsents);
@@ -76,6 +86,19 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
               placeholderTextColor={colors.inputPlaceholder}
               multiline
             />
+
+            <Text style={clinicSectionTitleStyles.text}>{s.operatingDays}</Text>
+            <ChipRow gap={8}>
+              {OPERATING_DAYS.map((day) => (
+                <SelectableChip
+                  key={day}
+                  label={day}
+                  selected={selectedDays.includes(day)}
+                  onPress={() => toggleDay(day)}
+                  variant="green"
+                />
+              ))}
+            </ChipRow>
 
             <Text style={shared.label}>{s.operatingHours}</Text>
             <View style={styles.operatingRow}>

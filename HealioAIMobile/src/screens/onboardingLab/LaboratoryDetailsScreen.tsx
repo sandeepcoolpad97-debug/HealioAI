@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,17 +13,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
+  ChipRow,
   FormCard,
   FormInput,
   PhoneInput,
+  SelectableChip,
   ScreenHeader,
 } from '../../components';
 import { colors } from '../../constants/colors';
 import { labOnboardingStrings, navigationRoutes } from '../../constants/strings';
 import { sharedLabOnboardingStyles as shared } from './labOnboardingStyles';
-import { labInputWithIconStyles } from './labOnboardingStyles';
+import { labInputWithIconStyles, labSectionTitleStyles } from './labOnboardingStyles';
 
 const s = labOnboardingStrings.details;
+const OPERATING_DAYS = s.operatingDaysOptions;
 
 type LaboratoryDetailsScreenProps = {
   navigation: {
@@ -38,9 +41,16 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
   const [registrationNumber, setRegistrationNumber] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [email, setEmail] = useState('');
+  const [selectedDays, setSelectedDays] = useState<readonly string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
   const [opensAt, setOpensAt] = useState('');
   const [closesAt, setClosesAt] = useState('');
   const [establishmentDate, setEstablishmentDate] = useState('');
+
+  const toggleDay = useCallback((day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  }, []);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.LabServices);
@@ -96,6 +106,20 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
               autoCapitalize="none"
               autoCorrect={false}
             />
+
+            <Text style={labSectionTitleStyles.text}>{s.operatingDays}</Text>
+            <ChipRow gap={8}>
+              {OPERATING_DAYS.map((day) => (
+                <SelectableChip
+                  key={day}
+                  label={day}
+                  selected={selectedDays.includes(day)}
+                  onPress={() => toggleDay(day)}
+                  variant="green"
+                />
+              ))}
+            </ChipRow>
+
             <Text style={shared.label}>{s.operatingHours}</Text>
             <View style={styles.operatingRow}>
               <View style={[labInputWithIconStyles.wrapper, styles.operatingInput]}>
