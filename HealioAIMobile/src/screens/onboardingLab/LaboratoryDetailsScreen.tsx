@@ -107,53 +107,6 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
               autoCorrect={false}
             />
 
-            <Text style={labSectionTitleStyles.text}>{s.operatingDays}</Text>
-            <ChipRow gap={8}>
-              {OPERATING_DAYS.map((day) => (
-                <SelectableChip
-                  key={day}
-                  label={day}
-                  selected={selectedDays.includes(day)}
-                  onPress={() => toggleDay(day)}
-                  variant="green"
-                />
-              ))}
-            </ChipRow>
-
-            <Text style={shared.label}>{s.operatingHours}</Text>
-            <View style={styles.operatingRow}>
-              <View style={[labInputWithIconStyles.wrapper, styles.operatingInput]}>
-                <TextInput
-                  style={labInputWithIconStyles.input}
-                  placeholder={s.opensAtPlaceholder}
-                  placeholderTextColor={colors.inputPlaceholder}
-                  value={opensAt}
-                  onChangeText={setOpensAt}
-                />
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={colors.inputPlaceholderGrey}
-                  style={labInputWithIconStyles.icon}
-                />
-              </View>
-              <Text style={styles.operatingTo}>to</Text>
-              <View style={[labInputWithIconStyles.wrapper, styles.operatingInput]}>
-                <TextInput
-                  style={labInputWithIconStyles.input}
-                  placeholder={s.closesAtPlaceholder}
-                  placeholderTextColor={colors.inputPlaceholder}
-                  value={closesAt}
-                  onChangeText={setClosesAt}
-                />
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={colors.inputPlaceholderGrey}
-                  style={labInputWithIconStyles.icon}
-                />
-              </View>
-            </View>
             <Text style={shared.label}>{s.establishmentDate}</Text>
             <View style={labInputWithIconStyles.wrapper}>
               <TextInput

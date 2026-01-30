@@ -14,7 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
   CheckboxRow,
-  ChipRow,
   FormCard,
   FormInput,
   SelectableChip,
@@ -51,7 +50,6 @@ const nextTestCategoryId = () => `test-category-${++testCategoryIdCounter}`;
 export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
   navigation,
 }) => {
-  const [address, setAddress] = useState('');
   const [testCategoryEntries, setTestCategoryEntries] = useState<
     LabTestCategoryEntry[]
   >([{ id: nextTestCategoryId(), testName: '' }]);
@@ -103,14 +101,6 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
           <ScreenHeader title={s.title} subtitle={s.subtitle} />
 
           <FormCard>
-            <FormInput
-              label={s.address}
-              value={address}
-              onChangeText={setAddress}
-              placeholder={s.addressPlaceholder}
-              placeholderTextColor={colors.inputPlaceholder}
-              multiline
-            />
 
             <Text style={labSectionTitleStyles.text}>{s.testsList}</Text>
             {testCategoryEntries.map((entry) => (
@@ -154,7 +144,8 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
             <Text style={labSectionTitleStyles.text}>
               {s.homeSampleCollection}
             </Text>
-            <ChipRow gap={10}>
+
+            <View style={styles.verticalChipGroup}>
               <SelectableChip
                 label={s.homeSampleYes}
                 selected={homeSampleCollection === 'yes'}
@@ -163,6 +154,7 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
                 }
                 variant="green"
               />
+
               <SelectableChip
                 label={s.homeSampleNo}
                 selected={homeSampleCollection === 'no'}
@@ -171,23 +163,29 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
                 }
                 variant="green"
               />
-            </ChipRow>
+            </View>
+
 
             <Text style={labSectionTitleStyles.text}>
               {s.reportDeliveryType}
             </Text>
+
             <CheckboxRow
               checked={pdfSelected}
               onToggle={() => setPdfSelected((v) => !v)}
               label={s.reportPdf}
               variant="blue"
+              style={styles.checkboxContainer}
             />
+
             <CheckboxRow
               checked={digitalSelected}
               onToggle={() => setDigitalSelected((v) => !v)}
               label={s.reportDigital}
               variant="blue"
+              style={styles.checkboxContainer}
             />
+
           </FormCard>
 
           <AuthPrimaryButton label={s.continue} onPress={handleContinue} />
@@ -205,4 +203,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.chipBorder,
   },
+
+  verticalChipGroup: {
+    gap: 12,
+    marginBottom: 8,
+  },
+
+  checkboxContainer: {
+    borderWidth: 1,
+    borderColor: colors.chipBorder,
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+
 });

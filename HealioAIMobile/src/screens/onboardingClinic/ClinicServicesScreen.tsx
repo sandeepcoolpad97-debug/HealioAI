@@ -2,11 +2,11 @@ import React, { useState, useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -14,10 +14,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
   CheckboxRow,
-  ChipRow,
   FormCard,
   FormInput,
-  SelectableChip,
   ScreenHeader,
 } from '../../components';
 import { colors } from '../../constants/colors';
@@ -28,11 +26,20 @@ import {
 import { sharedClinicOnboardingStyles as shared } from './clinicOnboardingStyles';
 import {
   clinicSectionTitleStyles,
-  clinicInputWithIconStyles,
+  clinicAddDoctorStyles,
+  clinicRemoveDoctorStyles,
 } from './clinicOnboardingStyles';
 
 const s = clinicOnboardingStrings.services;
-const OPERATING_DAYS = s.operatingDaysOptions;
+const detailsStrings = clinicOnboardingStrings.details;
+
+type SpecializationEntry = {
+  id: string;
+  name: string;
+};
+
+let specializationIdCounter = 0;
+const nextSpecializationId = () => `specialization-${++specializationIdCounter}`;
 
 type ClinicServicesScreenProps = {
   navigation: {
@@ -43,16 +50,23 @@ type ClinicServicesScreenProps = {
 export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
   navigation,
 }) => {
-  const [address, setAddress] = useState('');
-  const [selectedDays, setSelectedDays] = useState<readonly string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
-  const [operatingStart, setOperatingStart] = useState('');
-  const [operatingEnd, setOperatingEnd] = useState('');
-  const [establishmentDate, setEstablishmentDate] = useState('');
+  const [doctorName, setDoctorName] = useState('');
+  const [specializations, setSpecializations] = useState<SpecializationEntry[]>([
+    { id: nextSpecializationId(), name: '' },
+  ]);
   const [inPersonConsultation, setInPersonConsultation] = useState(true);
 
-  const toggleDay = useCallback((day: string) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+  const addSpecialization = useCallback(() => {
+    setSpecializations((prev) => [...prev, { id: nextSpecializationId(), name: '' }]);
+  }, []);
+
+  const removeSpecialization = useCallback((id: string) => {
+    setSpecializations((prev) => prev.filter((spec) => spec.id !== id));
+  }, []);
+
+  const updateSpecialization = useCallback((id: string, value: string) => {
+    setSpecializations((prev) =>
+      prev.map((spec) => (spec.id === id ? { ...spec, name: value } : spec))
     );
   }, []);
 
@@ -79,78 +93,42 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
 
           <FormCard>
             <FormInput
-              label={s.address}
-              value={address}
-              onChangeText={setAddress}
-              placeholder={s.addressPlaceholder}
+              label={detailsStrings.doctorName}
+              value={doctorName}
+              onChangeText={setDoctorName}
+              placeholder={detailsStrings.doctorNamePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
-              multiline
             />
 
-            <Text style={clinicSectionTitleStyles.text}>{s.operatingDays}</Text>
-            <ChipRow gap={8}>
-              {OPERATING_DAYS.map((day) => (
-                <SelectableChip
-                  key={day}
-                  label={day}
-                  selected={selectedDays.includes(day)}
-                  onPress={() => toggleDay(day)}
-                  variant="green"
-                />
-              ))}
-            </ChipRow>
-
-            <Text style={shared.label}>{s.operatingHours}</Text>
-            <View style={styles.operatingRow}>
-              <View style={[clinicInputWithIconStyles.wrapper, styles.operatingInput]}>
-                <TextInput
-                  style={clinicInputWithIconStyles.input}
-                  placeholder={s.operatingHoursStartPlaceholder}
+            <Text style={clinicSectionTitleStyles.text}>{detailsStrings.specializations}</Text>
+            {specializations.map((specialization) => (
+              <View key={specialization.id} style={styles.entryCard}>
+                <FormInput
+                  label="Specialization"
+                  value={specialization.name}
+                  onChangeText={(value) => updateSpecialization(specialization.id, value)}
+                  placeholder={detailsStrings.specializationPlaceholder}
                   placeholderTextColor={colors.inputPlaceholder}
-                  value={operatingStart}
-                  onChangeText={setOperatingStart}
                 />
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={colors.inputPlaceholderGrey}
-                  style={clinicInputWithIconStyles.icon}
-                />
+                <Pressable
+                  onPress={() => removeSpecialization(specialization.id)}
+                  style={clinicRemoveDoctorStyles.row}
+                  accessibilityRole="button"
+                  accessibilityLabel={detailsStrings.removeSpecialization}
+                >
+                  <Ionicons name="trash-outline" size={18} color="#DC2626" />
+                  <Text style={clinicRemoveDoctorStyles.text}>{detailsStrings.removeSpecialization}</Text>
+                </Pressable>
               </View>
-              <Text style={styles.operatingTo}>to</Text>
-              <View style={[clinicInputWithIconStyles.wrapper, styles.operatingInput]}>
-                <TextInput
-                  style={clinicInputWithIconStyles.input}
-                  placeholder={s.operatingHoursEndPlaceholder}
-                  placeholderTextColor={colors.inputPlaceholder}
-                  value={operatingEnd}
-                  onChangeText={setOperatingEnd}
-                />
-                <Ionicons
-                  name="time-outline"
-                  size={20}
-                  color={colors.inputPlaceholderGrey}
-                  style={clinicInputWithIconStyles.icon}
-                />
-              </View>
-            </View>
-
-            <Text style={shared.label}>{s.establishmentDate}</Text>
-            <View style={clinicInputWithIconStyles.wrapper}>
-              <TextInput
-                style={clinicInputWithIconStyles.input}
-                placeholder={s.establishmentPlaceholder}
-                placeholderTextColor={colors.inputPlaceholder}
-                value={establishmentDate}
-                onChangeText={setEstablishmentDate}
-              />
-              <Ionicons
-                name="calendar-outline"
-                size={20}
-                color={colors.inputPlaceholderGrey}
-                style={clinicInputWithIconStyles.icon}
-              />
-            </View>
+            ))}
+            <Pressable
+              onPress={addSpecialization}
+              style={clinicAddDoctorStyles.button}
+              accessibilityRole="button"
+              accessibilityLabel={detailsStrings.addSpecialization}
+            >
+              <Text style={clinicAddDoctorStyles.text}>{detailsStrings.addSpecialization}</Text>
+            </Pressable>
 
             <Text style={clinicSectionTitleStyles.text}>{s.consultationType}</Text>
             <CheckboxRow
@@ -170,19 +148,10 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
 
 const styles = StyleSheet.create({
   keyboard: { flex: 1 },
-  operatingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
-  },
-  operatingInput: {
-    flex: 1,
-    marginBottom: 0,
-  },
-  operatingTo: {
-    fontSize: 14,
-    color: colors.inputPlaceholderGrey,
-    fontWeight: '500',
+  entryCard: {
+    marginBottom: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.chipBorder,
   },
 });
