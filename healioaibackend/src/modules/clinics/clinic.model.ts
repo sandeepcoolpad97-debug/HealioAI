@@ -145,7 +145,7 @@ export interface IClinic extends Document, IAuditFields {
   contactNumber: string;
   emailId?: string;
 
-  operatingHours: {
+  operatingHours?: {
     day: "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
     openTime: string;
     closeTime: string;

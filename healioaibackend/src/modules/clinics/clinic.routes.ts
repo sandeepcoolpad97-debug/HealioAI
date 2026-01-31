@@ -36,6 +36,7 @@ const router = Router();
  *               contactNumber: { type: string }
  *               emailId: { type: string, format: email }
  *               operatingHours:
+ *                 description: Optional array of operating hours per day
  *                 type: array
  *                 items:
  *                   type: object

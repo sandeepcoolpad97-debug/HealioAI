@@ -20,7 +20,7 @@ export const createLabSchema = Joi.object({
   labName: Joi.string().min(1).max(200).required().trim(),
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
-  address: Joi.string().min(1).max(500).required().trim(),
+  address: Joi.string().min(1).max(500).trim().allow('').optional(),
   contactNumber: Joi.string().min(1).max(20).required().trim(),
   emailId: Joi.string().email().trim().lowercase().allow('').optional(),
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
@@ -40,10 +40,10 @@ export const updateLabSchema = Joi.object({
   labName: Joi.string().min(1).max(200).trim(),
   registrationNumber: Joi.string().min(1).max(100).trim(),
   roleId: Joi.string().hex().length(24),
-  address: Joi.string().min(1).max(500).trim(),
+  address: Joi.string().min(1).max(500).trim().allow('').optional(),
   contactNumber: Joi.string().min(1).max(20).trim(),
   emailId: Joi.string().email().trim().lowercase().allow(''),
-  operatingHours: Joi.array().items(operatingHoursItemSchema),
+  operatingHours: Joi.array().items(operatingHoursItemSchema).optional(),
   services: Joi.object({
     testCategories: Joi.array().items(Joi.string().trim()),
     homeSampleCollection: Joi.boolean(),
@@ -62,7 +62,7 @@ export type CreateLabInput = {
   labName: string;
   registrationNumber: string;
   roleId: string;
-  address: string;
+  address?: string;
   contactNumber: string;
   emailId?: string;
   operatingHours?: {

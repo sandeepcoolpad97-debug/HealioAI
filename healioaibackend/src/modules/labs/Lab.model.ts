@@ -23,8 +23,7 @@ const LabSchema = new mongoose.Schema(
         },
 
         address: {
-            type: String,
-            required: true
+            type: String
         },
 
         contactNumber: {
@@ -138,13 +137,13 @@ LabSchema.index({ "services.testCategories": 1 });
 export interface ILab extends Document, IAuditFields {
     labName: string;
     registrationNumber: string;
-    address: string;
+    address?: string;
     contactNumber: string;
     emailId?: string;
 
     roleId: mongoose.Types.ObjectId;
 
-    operatingHours: {
+    operatingHours?: {
         day: "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
         openTime: string;
         closeTime: string;

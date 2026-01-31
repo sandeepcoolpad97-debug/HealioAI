@@ -26,15 +26,16 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [labName, registrationNumber, roleId, address, contactNumber, consents]
+ *             required: [labName, registrationNumber, roleId, contactNumber, consents]
  *             properties:
  *               labName: { type: string }
  *               registrationNumber: { type: string }
  *               roleId: { type: string, description: MongoDB ObjectId (24 hex chars) }
- *               address: { type: string }
+ *               address: { type: string, description: Optional address }
  *               contactNumber: { type: string }
  *               emailId: { type: string, format: email }
  *               operatingHours:
+ *                 description: Optional array of operating hours per day
  *                 type: array
  *                 items:
  *                   type: object
