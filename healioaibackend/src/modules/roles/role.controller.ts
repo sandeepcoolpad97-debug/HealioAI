@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { RoleService } from './role.service';
 import {
   createRoleSchema,
@@ -17,7 +18,8 @@ export async function createRole(
   next: NextFunction
 ): Promise<void> {
   try {
-    const role = await roleService.create(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const role = await roleService.create(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: role });
   } catch (err) {
     next(err);
@@ -58,7 +60,8 @@ export async function updateRole(
   next: NextFunction
 ): Promise<void> {
   try {
-    const role = await roleService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const role = await roleService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: role });
   } catch (err) {
     next(err);

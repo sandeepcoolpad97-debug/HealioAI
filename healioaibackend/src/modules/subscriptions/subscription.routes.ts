@@ -97,6 +97,7 @@ router.get('/:id', getSubscriptionByIdValidation, getSubscriptionById);
  *               name: { type: string }
  *               code: { type: string }
  *               price: { type: number }
+ *               updatedBy: { type: string, description: Optional UUID of updater }
  *     responses:
  *       200: { description: Subscription updated }
  *       404: { description: Subscription not found }

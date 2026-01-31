@@ -9,6 +9,13 @@ import { IAuditFields } from "../../common/types/audit.types";
 const ClinicSchema = new mongoose.Schema(
   {
     /* ---------------- BASIC INFO ---------------- */
+    firebaseUid: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+
     clinicName: {
       type: String,
       required: true,
@@ -137,6 +144,7 @@ ClinicSchema.index({ doctorName: 1 });
 ========================= */
 
 export interface IClinic extends Document, IAuditFields {
+  firebaseUid: string;
   clinicName: string;
   registrationNumber: string;
   roleId: mongoose.Types.ObjectId;

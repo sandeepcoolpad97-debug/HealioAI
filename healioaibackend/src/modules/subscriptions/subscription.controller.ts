@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { SubscriptionService } from './subscription.service';
 import {
   createSubscriptionSchema,
@@ -17,7 +18,8 @@ export async function createSubscription(
   next: NextFunction
 ): Promise<void> {
   try {
-    const subscription = await subscriptionService.create(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const subscription = await subscriptionService.create(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: subscription });
   } catch (err) {
     next(err);
@@ -58,7 +60,8 @@ export async function updateSubscription(
   next: NextFunction
 ): Promise<void> {
   try {
-    const subscription = await subscriptionService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const subscription = await subscriptionService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: subscription });
   } catch (err) {
     next(err);

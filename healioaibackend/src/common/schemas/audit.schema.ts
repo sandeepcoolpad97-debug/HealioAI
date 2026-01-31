@@ -9,18 +9,15 @@ import mongoose, { Schema } from 'mongoose';
  */
 export const auditSchemaFields: Record<string, mongoose.SchemaDefinitionProperty> = {
   createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     default: null,
   },
   updatedBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     default: null,
   },
   deletedBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     default: null,
   },
   createdAt: {

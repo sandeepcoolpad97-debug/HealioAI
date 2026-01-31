@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { ClinicService } from './clinic.service';
 import {
   createClinicSchema,
@@ -58,7 +59,8 @@ export async function updateClinic(
   next: NextFunction
 ): Promise<void> {
   try {
-    const clinic = await clinicService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const clinic = await clinicService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: clinic });
   } catch (err) {
     next(err);

@@ -5,11 +5,12 @@ import { PaginatedResult } from '../../common/pagination/pagination';
 import { LabRepository } from './lab.repository';
 import { ILab } from './Lab.model';
 import { CreateLabInput, UpdateLabInput } from './lab.validation';
+import { v4 as uuidv4 } from 'uuid';
 
 export class LabService {
   private readonly labRepository = new LabRepository();
 
-  async create(data: CreateLabInput): Promise<ILab> {
+  async create(data: CreateLabInput, actorId?: string): Promise<ILab> {
     const existsReg = await this.labRepository.existsByRegistrationNumber(data.registrationNumber);
     if (existsReg) {
       throw new AppError(
@@ -34,6 +35,8 @@ export class LabService {
       consents: data.consents
         ? { ...data.consents, acceptedAt: new Date() }
         : undefined,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
     };
     return this.labRepository.create(payload as unknown as Partial<ILab>);
   }
@@ -58,7 +61,7 @@ export class LabService {
     );
   }
 
-  async update(id: string, data: UpdateLabInput): Promise<ILab> {
+  async update(id: string, data: UpdateLabInput, actorId?: string): Promise<ILab> {
     const lab = await this.getById(id);
     if (
       data.registrationNumber &&
@@ -93,6 +96,8 @@ export class LabService {
     }
     const updatePayload = { ...data };
     if (data.emailId !== undefined) updatePayload.emailId = emailToSet;
+    if (actorId) updatePayload.updatedBy = actorId;
+    
     const updated = await this.labRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(

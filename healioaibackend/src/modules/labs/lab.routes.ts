@@ -26,8 +26,9 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [labName, registrationNumber, roleId, contactNumber, consents]
+ *             required: [firebaseUid, labName, registrationNumber, roleId, contactNumber, consents]
  *             properties:
+ *               firebaseUid: { type: string, description: Firebase UID }
  *               labName: { type: string }
  *               registrationNumber: { type: string }
  *               roleId: { type: string, description: MongoDB ObjectId (24 hex chars) }

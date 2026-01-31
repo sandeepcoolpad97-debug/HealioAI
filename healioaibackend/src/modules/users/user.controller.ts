@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { UserService } from './user.service';
 import {
   onboardUserSchema,
@@ -18,7 +19,8 @@ export async function onboardUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await userService.onboard(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.onboard(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -31,7 +33,8 @@ export async function createUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await userService.create(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.create(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -72,7 +75,8 @@ export async function updateUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await userService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: user });
   } catch (err) {
     next(err);

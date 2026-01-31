@@ -5,11 +5,12 @@ import { PaginatedResult } from '../../common/pagination/pagination';
 import { RoleRepository } from './role.repository';
 import { IRole } from './role.model';
 import { CreateRoleInput, UpdateRoleInput } from './role.validation';
+import { v4 as uuidv4 } from 'uuid';
 
 export class RoleService {
   private readonly roleRepository = new RoleRepository();
 
-  async create(data: CreateRoleInput): Promise<IRole> {
+  async create(data: CreateRoleInput, actorId?: string): Promise<IRole> {
     const exists = await this.roleRepository.existsByName(data.name);
     if (exists) {
       throw new AppError(
@@ -18,7 +19,12 @@ export class RoleService {
         'Role with this name already exists'
       );
     }
-    return this.roleRepository.create(data as Partial<IRole>);
+    const payload = {
+      ...data,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
+    };
+    return this.roleRepository.create(payload as Partial<IRole>);
   }
 
   async getById(id: string): Promise<IRole> {
@@ -37,7 +43,7 @@ export class RoleService {
     return this.roleRepository.findPaginated({ isDeleted: false }, page, limit);
   }
 
-  async update(id: string, data: UpdateRoleInput): Promise<IRole> {
+  async update(id: string, data: UpdateRoleInput, actorId?: string): Promise<IRole> {
     const role = await this.getById(id);
     if (data.name && data.name !== role.name) {
       const exists = await this.roleRepository.existsByName(data.name);
@@ -56,7 +62,9 @@ export class RoleService {
         'Cannot unset system role flag on a system role'
       );
     }
-    const updated = await this.roleRepository.updateById(id, { $set: data });
+    const updatePayload: Partial<IRole> = { ...data };
+    if (actorId) updatePayload.updatedBy = actorId;
+    const updated = await this.roleRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(
         ErrorCode.NOT_FOUND,

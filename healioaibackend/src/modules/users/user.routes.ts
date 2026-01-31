@@ -28,8 +28,9 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, gender, roleId, subscriptionId, phone, consents]
+ *             required: [firebaseUid, name, gender, roleId, subscriptionId, phone, consents]
  *             properties:
+ *               firebaseUid: { type: string, description: Firebase UID }
  *               name: { type: string, minLength: 1, maxLength: 200 }
  *               age: { type: integer, minimum: 0, maximum: 120 }
  *               gender: { type: string, enum: [male, female, other] }
@@ -75,8 +76,9 @@ router.post('/onboard', onboardUserValidation, onboardUser);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, gender, roleId, subscriptionId, phone, consents]
+ *             required: [firebaseUid, name, gender, roleId, subscriptionId, phone, consents]
  *             properties:
+ *               firebaseUid: { type: string, description: Firebase UID }
  *               name: { type: string, minLength: 1, maxLength: 200 }
  *               age: { type: integer, minimum: 0, maximum: 120 }
  *               gender: { type: string, enum: [male, female, other] }

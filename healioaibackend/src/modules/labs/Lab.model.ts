@@ -9,6 +9,13 @@ import { IAuditFields } from "../../common/types/audit.types";
 const LabSchema = new mongoose.Schema(
     {
         /* ---------------- BASIC DETAILS ---------------- */
+        firebaseUid: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true
+        },
+
         labName: {
             type: String,
             required: true,
@@ -135,7 +142,8 @@ LabSchema.index({ "services.testCategories": 1 });
 ========================= */
 
 export interface ILab extends Document, IAuditFields {
-    labName: string;
+  firebaseUid: string;
+  labName: string;
     registrationNumber: string;
     address?: string;
     contactNumber: string;

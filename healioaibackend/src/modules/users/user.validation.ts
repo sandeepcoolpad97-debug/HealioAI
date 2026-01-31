@@ -19,6 +19,7 @@ const medicalSchema = Joi.object({
 }).optional();
 
 export const onboardUserSchema = Joi.object({
+  firebaseUid: Joi.string().required().trim(),
   name: Joi.string().min(1).max(200).required().trim(),
   age: Joi.number().integer().min(0).max(120).optional(),
   gender: Joi.string().valid('male', 'female', 'other').required(),
@@ -65,6 +66,7 @@ export const userIdParamSchema = Joi.object({
 export const listUsersQuerySchema = paginationQuerySchema;
 
 export type OnboardUserInput = {
+  firebaseUid: string;
   name: string;
   age?: number;
   gender: 'male' | 'female' | 'other';

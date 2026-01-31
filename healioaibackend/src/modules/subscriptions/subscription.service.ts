@@ -5,11 +5,12 @@ import { PaginatedResult } from '../../common/pagination/pagination';
 import { SubscriptionRepository } from './subscription.repository';
 import { ISubscription } from './subscription.model';
 import { CreateSubscriptionInput, UpdateSubscriptionInput } from './subscription.validation';
+import { v4 as uuidv4 } from 'uuid';
 
 export class SubscriptionService {
   private readonly subscriptionRepository = new SubscriptionRepository();
 
-  async create(data: CreateSubscriptionInput): Promise<ISubscription> {
+  async create(data: CreateSubscriptionInput, actorId?: string): Promise<ISubscription> {
     const exists = await this.subscriptionRepository.existsByCode(data.code);
     if (exists) {
       throw new AppError(
@@ -18,7 +19,12 @@ export class SubscriptionService {
         'Subscription with this code already exists'
       );
     }
-    return this.subscriptionRepository.create(data as Partial<ISubscription>);
+    const payload = {
+      ...data,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
+    };
+    return this.subscriptionRepository.create(payload as Partial<ISubscription>);
   }
 
   async getById(id: string): Promise<ISubscription> {
@@ -37,7 +43,7 @@ export class SubscriptionService {
     return this.subscriptionRepository.findPaginated({ isDeleted: false }, page, limit);
   }
 
-  async update(id: string, data: UpdateSubscriptionInput): Promise<ISubscription> {
+  async update(id: string, data: UpdateSubscriptionInput, actorId?: string): Promise<ISubscription> {
     const subscription = await this.getById(id);
     if (data.code && data.code !== subscription.code) {
       const exists = await this.subscriptionRepository.existsByCode(data.code);
@@ -56,7 +62,9 @@ export class SubscriptionService {
         'Cannot unset system plan flag on a system plan'
       );
     }
-    const updated = await this.subscriptionRepository.updateById(id, { $set: data });
+    const updatePayload: Partial<ISubscription> = { ...data };
+    updatePayload.updatedBy = actorId || uuidv4();
+    const updated = await this.subscriptionRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(
         ErrorCode.NOT_FOUND,

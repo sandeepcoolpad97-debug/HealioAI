@@ -17,6 +17,7 @@ const consentsSchema = Joi.object({
 const reportDeliveryType = ['pdf', 'in_app'];
 
 export const createLabSchema = Joi.object({
+  firebaseUid: Joi.string().required().trim(),
   labName: Joi.string().min(1).max(200).required().trim(),
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
@@ -59,6 +60,7 @@ export const labIdParamSchema = Joi.object({
 export const listLabsQuerySchema = paginationQuerySchema;
 
 export type CreateLabInput = {
+  firebaseUid: string;
   labName: string;
   registrationNumber: string;
   roleId: string;
@@ -106,4 +108,5 @@ export type UpdateLabInput = {
     policyTerms: true;
     medicalDisclaimer: true;
   };
+  updatedBy?: string;
 };

@@ -5,11 +5,12 @@ import { PaginatedResult } from '../../common/pagination/pagination';
 import { ClinicRepository } from './clinic.repository';
 import { IClinic } from './clinic.model';
 import { CreateClinicInput, UpdateClinicInput } from './clinic.validation';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ClinicService {
   private readonly clinicRepository = new ClinicRepository();
 
-  async create(data: CreateClinicInput): Promise<IClinic> {
+  async create(data: CreateClinicInput, actorId?: string): Promise<IClinic> {
     const existsReg = await this.clinicRepository.existsByRegistrationNumber(data.registrationNumber);
     if (existsReg) {
       throw new AppError(
@@ -34,6 +35,8 @@ export class ClinicService {
       consents: data.consents
         ? { ...data.consents, acceptedAt: new Date() }
         : undefined,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
     };
     return this.clinicRepository.create(payload as unknown as Partial<IClinic>);
   }
@@ -58,7 +61,7 @@ export class ClinicService {
     );
   }
 
-  async update(id: string, data: UpdateClinicInput): Promise<IClinic> {
+  async update(id: string, data: UpdateClinicInput, actorId?: string): Promise<IClinic> {
     const clinic = await this.getById(id);
     if (
       data.registrationNumber &&
@@ -93,6 +96,7 @@ export class ClinicService {
     }
     const updatePayload = { ...data };
     if (data.emailId !== undefined) updatePayload.emailId = emailToSet;
+    if (actorId) updatePayload.updatedBy = actorId;
     const updated = await this.clinicRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(

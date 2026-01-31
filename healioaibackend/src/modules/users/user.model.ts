@@ -5,6 +5,13 @@ import { IAuditFields } from "../../common/types/audit.types";
 const UserSchema = new mongoose.Schema(
   {
     /* ---------------- BASIC PROFILE ---------------- */
+    firebaseUid: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+
     name: {
       type: String,
       required: true,
@@ -115,6 +122,7 @@ const UserSchema = new mongoose.Schema(
 UserSchema.plugin(auditPlugin);
 
 export interface IUser extends Document, IAuditFields {
+  firebaseUid: string;
   name: string;
   age?: number;
   gender: string;

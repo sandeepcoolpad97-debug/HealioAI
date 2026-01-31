@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { LabService } from './lab.service';
 import {
   createLabSchema,
@@ -17,7 +18,8 @@ export async function createLab(
   next: NextFunction
 ): Promise<void> {
   try {
-    const lab = await labService.create(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const lab = await labService.create(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: lab });
   } catch (err) {
     next(err);
@@ -58,7 +60,8 @@ export async function updateLab(
   next: NextFunction
 ): Promise<void> {
   try {
-    const lab = await labService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const lab = await labService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: lab });
   } catch (err) {
     next(err);

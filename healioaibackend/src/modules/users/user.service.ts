@@ -5,11 +5,12 @@ import { PaginatedResult } from '../../common/pagination/pagination';
 import { UserRepository } from './user.repository';
 import { IUser } from './user.model';
 import { CreateUserInput, UpdateUserInput, OnboardUserInput } from './user.validation';
+import { v4 as uuidv4 } from 'uuid';
 
 export class UserService {
   private readonly userRepository = new UserRepository();
 
-  async onboard(data: OnboardUserInput): Promise<IUser> {
+  async onboard(data: OnboardUserInput, actorId?: string): Promise<IUser> {
     const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
     if (exists) {
       throw new AppError(
@@ -36,11 +37,13 @@ export class UserService {
         acceptedAt: new Date(),
       },
       subscriptionStatus: 'active' as const,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
     };
     return this.userRepository.create(payload as unknown as Partial<IUser>);
   }
 
-  async create(data: CreateUserInput): Promise<IUser> {
+  async create(data: CreateUserInput, actorId?: string): Promise<IUser> {
     const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
     if (exists) {
       throw new AppError(
@@ -67,6 +70,8 @@ export class UserService {
         acceptedAt: new Date(),
       },
       subscriptionStatus: 'active' as const,
+      createdBy: actorId || uuidv4(),
+      updatedBy: actorId || uuidv4(),
     };
     return this.userRepository.create(payload as unknown as Partial<IUser>);
   }
@@ -87,7 +92,7 @@ export class UserService {
     return this.userRepository.findPaginatedWithRefs({ isDeleted: false }, page, limit);
   }
 
-  async update(id: string, data: UpdateUserInput): Promise<IUser> {
+  async update(id: string, data: UpdateUserInput, actorId?: string): Promise<IUser> {
     const user = await this.getById(id);
     if (data.phone?.number && data.phone.number !== user.phone?.number) {
       const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);
@@ -115,8 +120,9 @@ export class UserService {
         }
       }
     }
-    const updatePayload = { ...data };
+    const updatePayload: any = { ...data };
     if (data.email !== undefined) updatePayload.email = emailToSet;
+    updatePayload.updatedBy = actorId || uuidv4();
     const updated = await this.userRepository.updateById(id, { $set: updatePayload });
     if (!updated) {
       throw new AppError(

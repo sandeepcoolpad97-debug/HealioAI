@@ -15,6 +15,7 @@ const consentsSchema = Joi.object({
 });
 
 export const createClinicSchema = Joi.object({
+  firebaseUid: Joi.string().required().trim(),
   clinicName: Joi.string().min(1).max(200).required().trim(),
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
@@ -51,6 +52,7 @@ export const clinicIdParamSchema = Joi.object({
 export const listClinicsQuerySchema = paginationQuerySchema;
 
 export type CreateClinicInput = {
+  firebaseUid: string;
   clinicName: string;
   registrationNumber: string;
   roleId: string;
@@ -96,4 +98,5 @@ export type UpdateClinicInput = {
     policyTerms: true;
     medicalDisclaimer: true;
   };
+  updatedBy?: string;
 };
