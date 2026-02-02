@@ -20,7 +20,14 @@ export const createClinicSchema = Joi.object({
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
   address: Joi.string().min(1).max(500).trim().allow('').optional(),
-  establishmentDate: Joi.date().optional(),
+  establishmentDate: Joi.any()
+    .optional()
+    .custom((value) => {
+      if (value == null || value === '') return undefined;
+      const d = value instanceof Date ? value : new Date(value as string);
+      if (Number.isNaN(d.getTime())) return undefined;
+      return d;
+    }),
   contactNumber: Joi.string().min(1).max(20).required().trim(),
   emailId: Joi.string().email().trim().lowercase().allow('').optional(),
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
@@ -35,7 +42,14 @@ export const updateClinicSchema = Joi.object({
   registrationNumber: Joi.string().min(1).max(100).trim(),
   roleId: Joi.string().hex().length(24),
   address: Joi.string().min(1).max(500).trim().allow('').optional(),
-  establishmentDate: Joi.date(),
+  establishmentDate: Joi.any()
+    .optional()
+    .custom((value) => {
+      if (value == null || value === '') return undefined;
+      const d = value instanceof Date ? value : new Date(value as string);
+      if (Number.isNaN(d.getTime())) return undefined;
+      return d;
+    }),
   contactNumber: Joi.string().min(1).max(20).trim(),
   emailId: Joi.string().email().trim().lowercase().allow(''),
   operatingHours: Joi.array().items(operatingHoursItemSchema).optional(),

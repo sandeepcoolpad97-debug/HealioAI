@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,20 +13,19 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   AuthPrimaryButton,
-  ChipRow,
   FormCard,
   FormInput,
   PhoneInput,
-  SelectableChip,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setLabDetails } from '../../store/labOnboardingSlice';
 import { colors } from '../../constants/colors';
 import { labOnboardingStrings, navigationRoutes } from '../../constants/strings';
 import { sharedLabOnboardingStyles as shared } from './labOnboardingStyles';
-import { labInputWithIconStyles, labSectionTitleStyles } from './labOnboardingStyles';
+import { labInputWithIconStyles } from './labOnboardingStyles';
 
 const s = labOnboardingStrings.details;
-const OPERATING_DAYS = s.operatingDaysOptions;
 
 type LaboratoryDetailsScreenProps = {
   navigation: {
@@ -37,20 +36,8 @@ type LaboratoryDetailsScreenProps = {
 export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = ({
   navigation,
 }) => {
-  const [labName, setLabName] = useState('');
-  const [registrationNumber, setRegistrationNumber] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [selectedDays, setSelectedDays] = useState<readonly string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
-  const [opensAt, setOpensAt] = useState('');
-  const [closesAt, setClosesAt] = useState('');
-  const [establishmentDate, setEstablishmentDate] = useState('');
-
-  const toggleDay = useCallback((day: string) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
-  }, []);
+  const dispatch = useAppDispatch();
+  const details = useAppSelector((s) => s.labOnboarding.details);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.LabServices);
@@ -76,30 +63,30 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
           <FormCard>
             <FormInput
               label={s.labName}
-              value={labName}
-              onChangeText={setLabName}
+              value={details.labName}
+              onChangeText={(v) => dispatch(setLabDetails({ labName: v }))}
               placeholder={s.labNamePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
             <FormInput
               label={s.registrationNumber}
-              value={registrationNumber}
-              onChangeText={setRegistrationNumber}
+              value={details.registrationNumber}
+              onChangeText={(v) => dispatch(setLabDetails({ registrationNumber: v }))}
               placeholder={s.registrationPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
             <Text style={shared.label}>{s.contactNumber}</Text>
             <PhoneInput
-              value={contactNumber}
-              onChangeText={setContactNumber}
+              value={details.contactNumber}
+              onChangeText={(v) => dispatch(setLabDetails({ contactNumber: v }))}
               placeholder={s.contactPlaceholder}
               countryCode="+91"
               style={styles.phoneSpacer}
             />
             <FormInput
               label={s.email}
-              value={email}
-              onChangeText={setEmail}
+              value={details.email}
+              onChangeText={(v) => dispatch(setLabDetails({ email: v }))}
               placeholder={s.emailPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               keyboardType="email-address"
@@ -113,8 +100,8 @@ export const LaboratoryDetailsScreen: React.FC<LaboratoryDetailsScreenProps> = (
                 style={labInputWithIconStyles.input}
                 placeholder={s.establishmentPlaceholder}
                 placeholderTextColor={colors.inputPlaceholder}
-                value={establishmentDate}
-                onChangeText={setEstablishmentDate}
+                value={details.establishmentDate}
+                onChangeText={(v) => dispatch(setLabDetails({ establishmentDate: v }))}
               />
               <Ionicons
                 name="calendar-outline"

@@ -1,9 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import onboardingReducer from './onboardingSlice';
+import clinicOnboardingReducer from './clinicOnboardingSlice';
+import labOnboardingReducer from './labOnboardingSlice';
 
 export const store = configureStore({
   reducer: {
     onboarding: onboardingReducer,
+    clinicOnboarding: clinicOnboardingReducer,
+    labOnboarding: labOnboardingReducer,
   },
 });
 

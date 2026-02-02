@@ -23,7 +23,7 @@ import { navigationRoutes, signInStrings } from '../../constants/strings';
 import {
   formatPhoneE164,
   getCurrentUser,
-  loginUser,
+  loginAsUserOrClinicOrLab,
   sendPhoneOtp,
   signInWithGoogle,
 } from '../../services';
@@ -70,7 +70,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
       }
       const idToken = await user.getIdToken(true);
       try {
-        await loginUser({
+        await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           email: user.email ?? undefined,

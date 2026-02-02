@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +19,8 @@ import {
   SelectableChip,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setLabServices } from '../../store/labOnboardingSlice';
 import { colors } from '../../constants/colors';
 import {
   labOnboardingStrings,
@@ -33,51 +35,35 @@ import {
 
 const s = labOnboardingStrings.services;
 
-type LabTestCategoryEntry = {
-  id: string;
-  testName: string;
-};
-
 type LabServicesScreenProps = {
   navigation: {
     navigate: (route: string) => void;
   };
 };
 
-let testCategoryIdCounter = 0;
-const nextTestCategoryId = () => `test-category-${++testCategoryIdCounter}`;
-
 export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
   navigation,
 }) => {
-  const [testCategoryEntries, setTestCategoryEntries] = useState<
-    LabTestCategoryEntry[]
-  >([{ id: nextTestCategoryId(), testName: '' }]);
-  const [homeSampleCollection, setHomeSampleCollection] = useState<
-    'yes' | 'no' | null
-  >(null);
-  const [pdfSelected, setPdfSelected] = useState(false);
-  const [digitalSelected, setDigitalSelected] = useState(false);
+  const dispatch = useAppDispatch();
+  const services = useAppSelector((s) => s.labOnboarding.services);
 
   const addTestCategory = useCallback(() => {
-    setTestCategoryEntries((prev) => [
-      ...prev,
-      { id: nextTestCategoryId(), testName: '' },
-    ]);
-  }, []);
+    dispatch(setLabServices({
+      testCategories: [...services.testCategories, ''],
+    }));
+  }, [dispatch, services.testCategories]);
 
-  const removeTestCategory = useCallback((id: string) => {
-    setTestCategoryEntries((prev) => prev.filter((e) => e.id !== id));
-  }, []);
+  const removeTestCategory = useCallback((index: number) => {
+    const next = services.testCategories.filter((_, i) => i !== index);
+    dispatch(setLabServices({ testCategories: next }));
+  }, [dispatch, services.testCategories]);
 
-  const updateTestCategory = useCallback(
-    (id: string, field: keyof LabTestCategoryEntry, value: string) => {
-      setTestCategoryEntries((prev) =>
-        prev.map((e) => (e.id === id ? { ...e, [field]: value } : e))
-      );
-    },
-    []
-  );
+  const updateTestCategory = useCallback((index: number, value: string) => {
+    const next = [...services.testCategories];
+    if (index >= next.length) next.push(value);
+    else next[index] = value;
+    dispatch(setLabServices({ testCategories: next }));
+  }, [dispatch, services.testCategories]);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.LabTermsConsents);
@@ -103,19 +89,17 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
           <FormCard>
 
             <Text style={labSectionTitleStyles.text}>{s.testsList}</Text>
-            {testCategoryEntries.map((entry) => (
-              <View key={entry.id} style={styles.testCategoryCard}>
+            {(services.testCategories.length ? services.testCategories : ['']).map((name, index) => (
+              <View key={`test-${index}`} style={styles.testCategoryCard}>
                 <FormInput
                   label="Test Name"
-                  value={entry.testName}
-                  onChangeText={(value) =>
-                    updateTestCategory(entry.id, 'testName', value)
-                  }
+                  value={name}
+                  onChangeText={(value) => updateTestCategory(index, value)}
                   placeholder={s.testNamePlaceholder}
                   placeholderTextColor={colors.inputPlaceholder}
                 />
                 <Pressable
-                  onPress={() => removeTestCategory(entry.id)}
+                  onPress={() => removeTestCategory(index)}
                   style={labRemoveTestCategoryStyles.row}
                   accessibilityRole="button"
                   accessibilityLabel={s.removeTest}
@@ -148,18 +132,22 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
             <View style={styles.verticalChipGroup}>
               <SelectableChip
                 label={s.homeSampleYes}
-                selected={homeSampleCollection === 'yes'}
+                selected={services.homeSampleCollection === true}
                 onPress={() =>
-                  setHomeSampleCollection((v) => (v === 'yes' ? null : 'yes'))
+                  dispatch(setLabServices({
+                    homeSampleCollection: true,
+                  }))
                 }
                 variant="green"
               />
 
               <SelectableChip
                 label={s.homeSampleNo}
-                selected={homeSampleCollection === 'no'}
+                selected={services.homeSampleCollection === false}
                 onPress={() =>
-                  setHomeSampleCollection((v) => (v === 'no' ? null : 'no'))
+                  dispatch(setLabServices({
+                    homeSampleCollection: false,
+                  }))
                 }
                 variant="green"
               />
@@ -171,16 +159,26 @@ export const LabServicesScreen: React.FC<LabServicesScreenProps> = ({
             </Text>
 
             <CheckboxRow
-              checked={pdfSelected}
-              onToggle={() => setPdfSelected((v) => !v)}
+              checked={services.reportDeliveryType.includes('pdf')}
+              onToggle={() => {
+                const next = services.reportDeliveryType.includes('pdf')
+                  ? services.reportDeliveryType.filter((x) => x !== 'pdf')
+                  : [...services.reportDeliveryType, 'pdf'];
+                dispatch(setLabServices({ reportDeliveryType: next }));
+              }}
               label={s.reportPdf}
               variant="blue"
               style={styles.checkboxContainer}
             />
 
             <CheckboxRow
-              checked={digitalSelected}
-              onToggle={() => setDigitalSelected((v) => !v)}
+              checked={services.reportDeliveryType.includes('in_app')}
+              onToggle={() => {
+                const next = services.reportDeliveryType.includes('in_app')
+                  ? services.reportDeliveryType.filter((x) => x !== 'in_app')
+                  : [...services.reportDeliveryType, 'in_app'];
+                dispatch(setLabServices({ reportDeliveryType: next }));
+              }}
               label={s.reportDigital}
               variant="blue"
               style={styles.checkboxContainer}

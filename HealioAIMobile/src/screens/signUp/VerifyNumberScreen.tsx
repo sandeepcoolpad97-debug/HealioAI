@@ -24,7 +24,7 @@ import {
   navigationRoutes,
   signUpStrings,
 } from '../../constants/strings';
-import { confirmPhoneOtp, getCurrentUser, loginUser, signInWithGoogle } from '../../services';
+import { confirmPhoneOtp, getCurrentUser, loginAsUserOrClinicOrLab, signInWithGoogle } from '../../services';
 import { maskPhone } from '../../utils/maskPhone';
 
 /** Parse E.164 phone (e.g. +919876543210) to { countryCode, number }. */
@@ -79,7 +79,7 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
       const idToken = await user.getIdToken(true);
       const { countryCode, number } = parsePhoneE164(user.phoneNumber);
       try {
-        await loginUser({
+        await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           phone: { countryCode, number },
@@ -111,7 +111,7 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
       }
       const idToken = await user.getIdToken(true);
       try {
-        await loginUser({
+        await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           email: user.email ?? undefined,

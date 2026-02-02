@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +18,8 @@ import {
   PhoneInput,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setClinicDetails } from '../../store/clinicOnboardingSlice';
 import { colors } from '../../constants/colors';
 import { clinicOnboardingStrings, navigationRoutes } from '../../constants/strings';
 import { sharedClinicOnboardingStyles as shared } from './clinicOnboardingStyles';
@@ -35,11 +37,8 @@ type ClinicDetailsScreenProps = {
 export const ClinicDetailsScreen: React.FC<ClinicDetailsScreenProps> = ({
   navigation,
 }) => {
-  const [clinicName, setClinicName] = useState('');
-  const [registrationNumber, setRegistrationNumber] = useState('');
-  const [contactNumber, setContactNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [establishmentDate, setEstablishmentDate] = useState('');
+  const dispatch = useAppDispatch();
+  const details = useAppSelector((s) => s.clinicOnboarding.details);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.ClinicServices);
@@ -65,30 +64,30 @@ export const ClinicDetailsScreen: React.FC<ClinicDetailsScreenProps> = ({
           <FormCard>
             <FormInput
               label={detailsStrings.clinicName}
-              value={clinicName}
-              onChangeText={setClinicName}
+              value={details.clinicName}
+              onChangeText={(v) => dispatch(setClinicDetails({ clinicName: v }))}
               placeholder={detailsStrings.clinicNamePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
             <FormInput
               label={detailsStrings.registrationNumber}
-              value={registrationNumber}
-              onChangeText={setRegistrationNumber}
+              value={details.registrationNumber}
+              onChangeText={(v) => dispatch(setClinicDetails({ registrationNumber: v }))}
               placeholder={detailsStrings.registrationPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
             <Text style={shared.label}>{detailsStrings.contactNumber}</Text>
             <PhoneInput
-              value={contactNumber}
-              onChangeText={setContactNumber}
+              value={details.contactNumber}
+              onChangeText={(v) => dispatch(setClinicDetails({ contactNumber: v }))}
               placeholder={detailsStrings.contactPlaceholder}
               countryCode="+91"
               style={styles.phoneSpacer}
             />
             <FormInput
               label={detailsStrings.email}
-              value={email}
-              onChangeText={setEmail}
+              value={details.email}
+              onChangeText={(v) => dispatch(setClinicDetails({ email: v }))}
               placeholder={detailsStrings.emailPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               keyboardType="email-address"
@@ -102,8 +101,8 @@ export const ClinicDetailsScreen: React.FC<ClinicDetailsScreenProps> = ({
                 style={clinicInputWithIconStyles.input}
                 placeholder={servicesStrings.establishmentPlaceholder}
                 placeholderTextColor={colors.inputPlaceholder}
-                value={establishmentDate}
-                onChangeText={setEstablishmentDate}
+                value={details.establishmentDate}
+                onChangeText={(v) => dispatch(setClinicDetails({ establishmentDate: v }))}
               />
               <Ionicons
                 name="calendar-outline"

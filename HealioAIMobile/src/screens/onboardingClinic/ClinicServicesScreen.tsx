@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +18,8 @@ import {
   FormInput,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setClinicServices } from '../../store/clinicOnboardingSlice';
 import { colors } from '../../constants/colors';
 import {
   clinicOnboardingStrings,
@@ -50,25 +52,30 @@ type ClinicServicesScreenProps = {
 export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
   navigation,
 }) => {
-  const [doctorName, setDoctorName] = useState('');
-  const [specializations, setSpecializations] = useState<SpecializationEntry[]>([
-    { id: nextSpecializationId(), name: '' },
-  ]);
-  const [inPersonConsultation, setInPersonConsultation] = useState(true);
+  const dispatch = useAppDispatch();
+  const services = useAppSelector((s) => s.clinicOnboarding.services);
+
+  const specializationsList = services.specialisations.length
+    ? services.specialisations.map((name, i) => ({ id: `spec-${i}`, name }))
+    : [{ id: nextSpecializationId(), name: '' }];
 
   const addSpecialization = useCallback(() => {
-    setSpecializations((prev) => [...prev, { id: nextSpecializationId(), name: '' }]);
-  }, []);
+    dispatch(setClinicServices({
+      specialisations: [...services.specialisations, ''],
+    }));
+  }, [dispatch, services.specialisations]);
 
-  const removeSpecialization = useCallback((id: string) => {
-    setSpecializations((prev) => prev.filter((spec) => spec.id !== id));
-  }, []);
+  const removeSpecialization = useCallback((index: number) => {
+    const next = services.specialisations.filter((_, i) => i !== index);
+    dispatch(setClinicServices({ specialisations: next }));
+  }, [dispatch, services.specialisations]);
 
-  const updateSpecialization = useCallback((id: string, value: string) => {
-    setSpecializations((prev) =>
-      prev.map((spec) => (spec.id === id ? { ...spec, name: value } : spec))
-    );
-  }, []);
+  const updateSpecialization = useCallback((index: number, value: string) => {
+    const next = [...services.specialisations];
+    if (index >= next.length) next.push(value);
+    else next[index] = value;
+    dispatch(setClinicServices({ specialisations: next }));
+  }, [dispatch, services.specialisations]);
 
   const handleContinue = () => {
     navigation.navigate(navigationRoutes.ClinicTermsConsents);
@@ -94,24 +101,24 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
           <FormCard>
             <FormInput
               label={detailsStrings.doctorName}
-              value={doctorName}
-              onChangeText={setDoctorName}
+              value={services.doctorName}
+              onChangeText={(v) => dispatch(setClinicServices({ doctorName: v }))}
               placeholder={detailsStrings.doctorNamePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
             />
 
             <Text style={clinicSectionTitleStyles.text}>{detailsStrings.specializations}</Text>
-            {specializations.map((specialization) => (
+            {specializationsList.map((specialization, index) => (
               <View key={specialization.id} style={styles.entryCard}>
                 <FormInput
                   label="Specialization"
                   value={specialization.name}
-                  onChangeText={(value) => updateSpecialization(specialization.id, value)}
+                  onChangeText={(value) => updateSpecialization(index, value)}
                   placeholder={detailsStrings.specializationPlaceholder}
                   placeholderTextColor={colors.inputPlaceholder}
                 />
                 <Pressable
-                  onPress={() => removeSpecialization(specialization.id)}
+                  onPress={() => removeSpecialization(index)}
                   style={clinicRemoveDoctorStyles.row}
                   accessibilityRole="button"
                   accessibilityLabel={detailsStrings.removeSpecialization}
@@ -132,8 +139,12 @@ export const ClinicServicesScreen: React.FC<ClinicServicesScreenProps> = ({
 
             <Text style={clinicSectionTitleStyles.text}>{s.consultationType}</Text>
             <CheckboxRow
-              checked={inPersonConsultation}
-              onToggle={() => setInPersonConsultation((v) => !v)}
+              checked={services.consultationType === 'in_person'}
+              onToggle={() =>
+                dispatch(setClinicServices({
+                  consultationType: services.consultationType === 'in_person' ? 'both' : 'in_person',
+                }))
+              }
               label={s.inPersonConsultation}
               variant="blue"
             />

@@ -157,3 +157,163 @@ export async function onboardUser(
   });
   return handleResponse<OnboardUserResponse>(res);
 }
+
+// ---------- Clinic ----------
+
+export interface LoginClinicPayload {
+  firebaseUid: string;
+  idToken: string;
+  email?: string;
+  phone?: { countryCode?: string; number: string };
+}
+
+export interface CreateClinicPayload {
+  firebaseUid: string;
+  clinicName: string;
+  registrationNumber: string;
+  roleId: string;
+  address?: string;
+  establishmentDate?: string;
+  contactNumber: string;
+  emailId?: string;
+  operatingHours?: Array<{
+    day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+    openTime: string;
+    closeTime: string;
+    isClosed?: boolean;
+  }>;
+  specialisation?: string[];
+  consultationType?: 'in_person' | 'online' | 'both';
+  doctorName: string;
+  consents: {
+    termsAndConditions: true;
+    policyTerms: true;
+    medicalDisclaimer: true;
+  };
+}
+
+export interface ClinicResponse {
+  success: boolean;
+  data: Record<string, unknown>;
+}
+
+/** POST /clinics/login. Returns 404 if clinic not found. */
+export async function loginClinic(payload: LoginClinicPayload): Promise<ClinicResponse> {
+  const res = await fetch(getApiUrl('/clinics/login'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<ClinicResponse>(res);
+}
+
+/** POST /clinics. Create clinic (onboarding). */
+export async function createClinic(payload: CreateClinicPayload): Promise<ClinicResponse> {
+  const res = await fetch(getApiUrl('/clinics'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<ClinicResponse>(res);
+}
+
+// ---------- Lab ----------
+
+export interface LoginLabPayload {
+  firebaseUid: string;
+  idToken: string;
+  email?: string;
+  phone?: { countryCode?: string; number: string };
+}
+
+export interface CreateLabPayload {
+  firebaseUid: string;
+  labName: string;
+  registrationNumber: string;
+  roleId: string;
+  address?: string;
+  contactNumber: string;
+  emailId?: string;
+  operatingHours?: Array<{
+    day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
+    openTime: string;
+    closeTime: string;
+    isClosed?: boolean;
+  }>;
+  services?: {
+    testCategories?: string[];
+    homeSampleCollection?: boolean;
+    reportDeliveryType?: ('pdf' | 'in_app')[];
+  };
+  consents: {
+    termsAndConditions: true;
+    policyTerms: true;
+    medicalDisclaimer: true;
+  };
+}
+
+export interface LabResponse {
+  success: boolean;
+  data: Record<string, unknown>;
+}
+
+/** POST /labs/login. Returns 404 if lab not found. */
+export async function loginLab(payload: LoginLabPayload): Promise<LabResponse> {
+  const res = await fetch(getApiUrl('/labs/login'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<LabResponse>(res);
+}
+
+/** POST /labs. Create lab (onboarding). */
+export async function createLab(payload: CreateLabPayload): Promise<LabResponse> {
+  const res = await fetch(getApiUrl('/labs'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<LabResponse>(res);
+}
+
+export type LoginEntityType = 'user' | 'clinic' | 'lab';
+
+export interface LoginAsUserOrClinicOrLabResult {
+  success: true;
+  type: LoginEntityType;
+  data: Record<string, unknown>;
+}
+
+/**
+ * Try login in order: user → clinic → lab.
+ * Uses same payload shape: firebaseUid, idToken, and either email (Google) or phone (OTP).
+ * Returns first successful result; throws with status 404 if none found.
+ */
+export async function loginAsUserOrClinicOrLab(
+  payload: LoginUserPayload
+): Promise<LoginAsUserOrClinicOrLabResult> {
+  const base = { firebaseUid: payload.firebaseUid, idToken: payload.idToken };
+  const userPayload: LoginUserPayload = { ...base, email: payload.email, phone: payload.phone };
+  const clinicPayload: LoginClinicPayload = { ...base, email: payload.email, phone: payload.phone };
+  const labPayload: LoginLabPayload = { ...base, email: payload.email, phone: payload.phone };
+
+  try {
+    const res = await loginUser(userPayload);
+    return { success: true, type: 'user', data: (res as LoginUserResponse).data ?? {} };
+  } catch (err: unknown) {
+    if ((err as { status?: number })?.status !== 404) throw err;
+  }
+  try {
+    const res = await loginClinic(clinicPayload);
+    return { success: true, type: 'clinic', data: (res as ClinicResponse).data ?? {} };
+  } catch (err: unknown) {
+    if ((err as { status?: number })?.status !== 404) throw err;
+  }
+  try {
+    const res = await loginLab(labPayload);
+    return { success: true, type: 'lab', data: (res as LabResponse).data ?? {} };
+  } catch (err: unknown) {
+    throw err;
+  }
+}
