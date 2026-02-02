@@ -5,14 +5,41 @@ import {
   listLabs,
   updateLab,
   deleteLab,
+  loginLab,
   createLabValidation,
   getLabByIdValidation,
   listLabsValidation,
   updateLabValidation,
   deleteLabValidation,
+  loginLabValidation,
 } from './lab.controller';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
+
+/**
+ * @openapi
+ * /labs/login:
+ *   post:
+ *     tags: [Labs]
+ *     summary: Login lab using Firebase token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firebaseUid, email, idToken]
+ *             properties:
+ *               firebaseUid: { type: string }
+ *               email: { type: string }
+ *               idToken: { type: string }
+ *     responses:
+ *       200: { description: Login successful }
+ *       401: { description: Unauthorized }
+ *       404: { description: Lab not found }
+ */
+router.post('/login', loginLabValidation, loginLab);
 
 /**
  * @openapi
@@ -98,7 +125,7 @@ router.get('/', listLabsValidation, listLabs);
  *       200: { description: Lab found }
  *       404: { description: Lab not found }
  */
-router.get('/:id', getLabByIdValidation, getLabById);
+router.get('/:id', authMiddleware, getLabByIdValidation, getLabById);
 
 /**
  * @openapi

@@ -49,7 +49,19 @@ export const clinicIdParamSchema = Joi.object({
   id: Joi.string().hex().length(24).required(),
 });
 
+export const loginClinicSchema = Joi.object({
+  firebaseUid: Joi.string().required().trim(),
+  email: Joi.string().email().required().trim().lowercase(),
+  idToken: Joi.string().required().trim(),
+});
+
 export const listClinicsQuerySchema = paginationQuerySchema;
+
+export type LoginClinicInput = {
+  firebaseUid: string;
+  email: string;
+  idToken: string;
+};
 
 export type CreateClinicInput = {
   firebaseUid: string;

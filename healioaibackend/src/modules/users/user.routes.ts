@@ -6,15 +6,42 @@ import {
   listUsers,
   updateUser,
   deleteUser,
+  loginUser,
   onboardUserValidation,
   createUserValidation,
   getUserByIdValidation,
   listUsersValidation,
   updateUserValidation,
   deleteUserValidation,
+  loginUserValidation,
 } from './user.controller';
+import { authMiddleware, verifyFirebaseTokenMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
+
+/**
+ * @openapi
+ * /users/login:
+ *   post:
+ *     tags: [Users]
+ *     summary: Login user using Firebase token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firebaseUid, email, idToken]
+ *             properties:
+ *               firebaseUid: { type: string }
+ *               email: { type: string }
+ *               idToken: { type: string }
+ *     responses:
+ *       200: { description: Login successful }
+ *       401: { description: Unauthorized }
+ *       404: { description: User not found }
+ */
+router.post('/login', loginUserValidation, loginUser);
 
 /**
  * @openapi
@@ -62,7 +89,7 @@ const router = Router();
  *       400: { description: Validation error }
  *       409: { description: Phone number or email address already exists }
  */
-router.post('/onboard', onboardUserValidation, onboardUser);
+router.post('/onboard', verifyFirebaseTokenMiddleware, onboardUserValidation, onboardUser);
 
 /**
  * @openapi
@@ -108,9 +135,9 @@ router.post('/onboard', onboardUserValidation, onboardUser);
  *     responses:
  *       201: { description: User created successfully }
  *       400: { description: Validation error }
- *       409: { description: Phone number or email address already exists }
+ *       409: { description: Registration number or email already exists }
  */
-router.post('/', createUserValidation, createUser);
+router.post('/', authMiddleware, createUserValidation, createUser);
 
 /**
  * @openapi
@@ -245,7 +272,7 @@ router.get('/:id', getUserByIdValidation, getUserById);
  *       404: { description: User not found }
  *       409: { description: Phone number or email address already exists }
  */
-router.patch('/:id', updateUserValidation, updateUser);
+router.patch('/:id', authMiddleware, updateUserValidation, updateUser);
 
 /**
  * @openapi

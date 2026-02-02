@@ -8,6 +8,7 @@ import { logger } from './common/logger/logger';
 import { errorHandler } from './common/errors/error-handler.middleware';
 import { swaggerSpec } from './common/swagger/swagger.config';
 import { registerRoutes } from './routes';
+import { initializeFirebase } from './common/config/firebase';
 
 const app = express();
 
@@ -23,6 +24,7 @@ registerRoutes(app);
 app.use(errorHandler);
 
 async function bootstrap(): Promise<void> {
+  initializeFirebase();
   await connectDb();
   app.listen(env.PORT, () => {
     logger.info(`Server listening on port ${env.PORT}`, {

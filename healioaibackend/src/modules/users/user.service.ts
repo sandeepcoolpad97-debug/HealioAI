@@ -4,11 +4,43 @@ import { HTTP_STATUS } from '../../common/constants';
 import { PaginatedResult } from '../../common/pagination/pagination';
 import { UserRepository } from './user.repository';
 import { IUser } from './user.model';
-import { CreateUserInput, UpdateUserInput, OnboardUserInput } from './user.validation';
+import { CreateUserInput, UpdateUserInput, OnboardUserInput, LoginUserInput } from './user.validation';
 import { v4 as uuidv4 } from 'uuid';
+import * as admin from 'firebase-admin';
 
 export class UserService {
   private readonly userRepository = new UserRepository();
+
+  async login(data: LoginUserInput): Promise<IUser> {
+    // 1. Verify Firebase Token
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(data.idToken);
+      if (decodedToken.uid !== data.firebaseUid) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid token: UID mismatch');
+      }
+    } catch (error) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid authentication token');
+    }
+
+    // 2. Find User by Firebase UID
+    const existingUser = await this.userRepository.findByFirebaseUid(data.firebaseUid);
+    
+    if (!existingUser) {
+       throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'User account not found');
+    }
+
+    if (!existingUser.isActive) {
+      throw new AppError(ErrorCode.FORBIDDEN, HTTP_STATUS.FORBIDDEN, 'User account is inactive');
+    }
+
+    // Populate refs for the return
+    const populatedUser = await this.userRepository.findActiveByIdWithRefs(existingUser._id.toString());
+    if (!populatedUser) {
+        throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'User account not found');
+    }
+
+    return populatedUser;
+  }
 
   async onboard(data: OnboardUserInput, actorId?: string): Promise<IUser> {
     const exists = await this.userRepository.existsByPhoneNumber(data.phone.number);

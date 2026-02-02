@@ -4,11 +4,43 @@ import { HTTP_STATUS } from '../../common/constants';
 import { PaginatedResult } from '../../common/pagination/pagination';
 import { ClinicRepository } from './clinic.repository';
 import { IClinic } from './clinic.model';
-import { CreateClinicInput, UpdateClinicInput } from './clinic.validation';
+import { CreateClinicInput, UpdateClinicInput, LoginClinicInput } from './clinic.validation';
 import { v4 as uuidv4 } from 'uuid';
+import * as admin from 'firebase-admin';
 
 export class ClinicService {
   private readonly clinicRepository = new ClinicRepository();
+
+  async login(data: LoginClinicInput): Promise<IClinic> {
+    // 1. Verify Firebase Token
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(data.idToken);
+      if (decodedToken.uid !== data.firebaseUid) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid token: UID mismatch');
+      }
+    } catch (error) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid authentication token');
+    }
+
+    // 2. Find Clinic by Firebase UID
+    const existingClinic = await this.clinicRepository.findByFirebaseUid(data.firebaseUid);
+    
+    if (!existingClinic) {
+       throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'Clinic account not found');
+    }
+
+    if (!existingClinic.isActive) {
+      throw new AppError(ErrorCode.FORBIDDEN, HTTP_STATUS.FORBIDDEN, 'Clinic account is inactive');
+    }
+
+    // Populate refs for the return
+    const populatedClinic = await this.clinicRepository.findActiveByIdWithRefs(existingClinic._id.toString());
+    if (!populatedClinic) {
+        throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'Clinic account not found');
+    }
+
+    return populatedClinic;
+  }
 
   async create(data: CreateClinicInput, actorId?: string): Promise<IClinic> {
     const existsReg = await this.clinicRepository.existsByRegistrationNumber(data.registrationNumber);

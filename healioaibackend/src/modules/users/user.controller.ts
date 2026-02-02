@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { UserService } from './user.service';
 import {
+  loginUserSchema,
   onboardUserSchema,
   createUserSchema,
   updateUserSchema,
@@ -12,6 +13,19 @@ import { validateBody, validateParams, validateQuery } from '../../common/valida
 import { HTTP_STATUS } from '../../common/constants';
 
 const userService = new UserService();
+
+export async function loginUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const user = await userService.login(req.body);
+    res.status(HTTP_STATUS.OK).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function onboardUser(
   req: Request,
@@ -96,6 +110,7 @@ export async function deleteUser(
   }
 }
 
+export const loginUserValidation = [validateBody(loginUserSchema)];
 export const onboardUserValidation = [validateBody(onboardUserSchema)];
 export const createUserValidation = [validateBody(createUserSchema)];
 export const getUserByIdValidation = [validateParams(userIdParamSchema)];

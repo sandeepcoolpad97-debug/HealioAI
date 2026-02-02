@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { LabService } from './lab.service';
 import {
+  loginLabSchema,
   createLabSchema,
   updateLabSchema,
   labIdParamSchema,
@@ -11,6 +12,19 @@ import { validateBody, validateParams, validateQuery } from '../../common/valida
 import { HTTP_STATUS } from '../../common/constants';
 
 const labService = new LabService();
+
+export async function loginLab(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const lab = await labService.login(req.body);
+    res.status(HTTP_STATUS.OK).json({ success: true, data: lab });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function createLab(
   req: Request,
@@ -81,6 +95,7 @@ export async function deleteLab(
   }
 }
 
+export const loginLabValidation = [validateBody(loginLabSchema)];
 export const createLabValidation = [validateBody(createLabSchema)];
 export const getLabByIdValidation = [validateParams(labIdParamSchema)];
 export const listLabsValidation = [validateQuery(listLabsQuerySchema)];

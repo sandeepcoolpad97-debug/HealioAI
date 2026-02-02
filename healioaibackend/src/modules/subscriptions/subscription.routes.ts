@@ -11,6 +11,7 @@ import {
   updateSubscriptionValidation,
   deleteSubscriptionValidation,
 } from './subscription.controller';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -40,7 +41,7 @@ const router = Router();
  *       400: { description: Validation error }
  *       409: { description: Code already exists }
  */
-router.post('/', createSubscriptionValidation, createSubscription);
+router.post('/', authMiddleware, createSubscriptionValidation, createSubscription);
 
 /**
  * @openapi
@@ -58,7 +59,7 @@ router.post('/', createSubscriptionValidation, createSubscription);
  *     responses:
  *       200: { description: Paginated list of subscriptions }
  */
-router.get('/', listSubscriptionsValidation, listSubscriptions);
+router.get('/', authMiddleware, listSubscriptionsValidation, listSubscriptions);
 
 /**
  * @openapi
@@ -120,6 +121,6 @@ router.patch('/:id', updateSubscriptionValidation, updateSubscription);
  *       400: { description: Cannot delete system plan }
  *       404: { description: Subscription not found }
  */
-router.delete('/:id', deleteSubscriptionValidation, deleteSubscription);
+router.delete('/:id', authMiddleware, deleteSubscriptionValidation, deleteSubscription);
 
 export const subscriptionRoutes = router;

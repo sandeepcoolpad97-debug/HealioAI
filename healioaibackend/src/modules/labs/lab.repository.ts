@@ -12,6 +12,10 @@ export class LabRepository extends BaseRepository<ILab> {
     return this.findOne({ registrationNumber: registrationNumber.trim() } as FilterQuery<ILab>);
   }
 
+  async findByFirebaseUid(firebaseUid: string): Promise<ILab | null> {
+    return this.findOne({ firebaseUid } as FilterQuery<ILab>);
+  }
+
   async existsByRegistrationNumber(registrationNumber: string): Promise<boolean> {
     const count = await this.count({
       registrationNumber: registrationNumber.trim(),

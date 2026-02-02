@@ -1,10 +1,13 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated } from '../store/slices/authSlice';
 import AdminDashboardScreen from '../components/admin/screens/AdminDashboardScreen';
 import AdminUsersScreen from '../components/admin/screens/AdminUsersScreen';
 import AdminSubscriptionsScreen from '../components/admin/screens/AdminSubscriptionsScreen';
 import AdminRolesScreen from '../components/admin/screens/AdminRolesScreen';
 import AdminClinicsScreen from '../components/admin/screens/AdminClinicsScreen';
 import AdminLabsScreen from '../components/admin/screens/AdminLabsScreen';
+import AdminLogin from '../components/admin/screens/AdminLogin';
 import AdminLayout from '../components/admin/layout/AdminLayout';
 
 /**
@@ -12,9 +15,16 @@ import AdminLayout from '../components/admin/layout/AdminLayout';
  * Layout: app bar + left drawer + user profile at corner; nested routes render in main area.
  */
 export default function AdminRoutes() {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
+      <Route 
+        path="login" 
+        element={isAuthenticated ? <Navigate to="/admin" replace /> : <AdminLogin />} 
+      />
+
+      <Route element={isAuthenticated ? <AdminLayout /> : <Navigate to="/admin/login" replace />}>
         <Route index element={<AdminDashboardScreen />} />
         <Route path="users" element={<AdminUsersScreen />} />
         <Route path="subscriptions" element={<AdminSubscriptionsScreen />} />

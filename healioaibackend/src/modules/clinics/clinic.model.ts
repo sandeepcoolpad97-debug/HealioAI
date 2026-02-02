@@ -136,7 +136,6 @@ const ClinicSchema = new mongoose.Schema(
 ClinicSchema.plugin(auditPlugin);
 
 ClinicSchema.index({ clinicName: 1 });
-ClinicSchema.index({ emailId: 1 });
 ClinicSchema.index({ doctorName: 1 });
 
 /* =========================

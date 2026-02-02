@@ -17,6 +17,10 @@ export class UserRepository extends BaseRepository<IUser> {
     return this.findOne({ 'phone.number': number } as FilterQuery<IUser>);
   }
 
+  async findByFirebaseUid(firebaseUid: string): Promise<IUser | null> {
+    return this.findOne({ firebaseUid } as FilterQuery<IUser>);
+  }
+
   async existsByPhoneNumber(number: string): Promise<boolean> {
     const count = await this.count({ 'phone.number': number } as FilterQuery<IUser>);
     return count > 0;

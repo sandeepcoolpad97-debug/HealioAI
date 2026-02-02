@@ -12,6 +12,10 @@ export class ClinicRepository extends BaseRepository<IClinic> {
     return this.findOne({ registrationNumber: registrationNumber.trim() } as FilterQuery<IClinic>);
   }
 
+  async findByFirebaseUid(firebaseUid: string): Promise<IClinic | null> {
+    return this.findOne({ firebaseUid } as FilterQuery<IClinic>);
+  }
+
   async existsByRegistrationNumber(registrationNumber: string): Promise<boolean> {
     const count = await this.count({
       registrationNumber: registrationNumber.trim(),

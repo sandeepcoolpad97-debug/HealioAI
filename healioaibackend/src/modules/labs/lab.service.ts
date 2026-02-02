@@ -4,11 +4,43 @@ import { HTTP_STATUS } from '../../common/constants';
 import { PaginatedResult } from '../../common/pagination/pagination';
 import { LabRepository } from './lab.repository';
 import { ILab } from './Lab.model';
-import { CreateLabInput, UpdateLabInput } from './lab.validation';
+import { CreateLabInput, UpdateLabInput, LoginLabInput } from './lab.validation';
 import { v4 as uuidv4 } from 'uuid';
+import * as admin from 'firebase-admin';
 
 export class LabService {
   private readonly labRepository = new LabRepository();
+
+  async login(data: LoginLabInput): Promise<ILab> {
+    // 1. Verify Firebase Token
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(data.idToken);
+      if (decodedToken.uid !== data.firebaseUid) {
+        throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid token: UID mismatch');
+      }
+    } catch (error) {
+      throw new AppError(ErrorCode.UNAUTHORIZED, HTTP_STATUS.UNAUTHORIZED, 'Invalid authentication token');
+    }
+
+    // 2. Find Lab by Firebase UID
+    const existingLab = await this.labRepository.findByFirebaseUid(data.firebaseUid);
+    
+    if (!existingLab) {
+       throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'Lab account not found');
+    }
+
+    if (!existingLab.isActive) {
+      throw new AppError(ErrorCode.FORBIDDEN, HTTP_STATUS.FORBIDDEN, 'Lab account is inactive');
+    }
+
+    // Populate refs for the return
+    const populatedLab = await this.labRepository.findActiveByIdWithRefs(existingLab._id.toString());
+    if (!populatedLab) {
+        throw new AppError(ErrorCode.NOT_FOUND, HTTP_STATUS.NOT_FOUND, 'Lab account not found');
+    }
+
+    return populatedLab;
+  }
 
   async create(data: CreateLabInput, actorId?: string): Promise<ILab> {
     const existsReg = await this.labRepository.existsByRegistrationNumber(data.registrationNumber);

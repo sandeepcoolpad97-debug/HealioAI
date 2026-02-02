@@ -5,14 +5,41 @@ import {
   listClinics,
   updateClinic,
   deleteClinic,
+  loginClinic,
   createClinicValidation,
   getClinicByIdValidation,
   listClinicsValidation,
   updateClinicValidation,
   deleteClinicValidation,
+  loginClinicValidation,
 } from './clinic.controller';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
+
+/**
+ * @openapi
+ * /clinics/login:
+ *   post:
+ *     tags: [Clinics]
+ *     summary: Login clinic using Firebase token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firebaseUid, email, idToken]
+ *             properties:
+ *               firebaseUid: { type: string }
+ *               email: { type: string }
+ *               idToken: { type: string }
+ *     responses:
+ *       200: { description: Login successful }
+ *       401: { description: Unauthorized }
+ *       404: { description: Clinic not found }
+ */
+router.post('/login', loginClinicValidation, loginClinic);
 
 /**
  * @openapi
@@ -96,7 +123,7 @@ router.get('/', listClinicsValidation, listClinics);
  *       200: { description: Clinic found }
  *       404: { description: Clinic not found }
  */
-router.get('/:id', getClinicByIdValidation, getClinicById);
+router.get('/:id', authMiddleware, getClinicByIdValidation, getClinicById);
 
 /**
  * @openapi

@@ -133,7 +133,6 @@ const LabSchema = new mongoose.Schema(
 LabSchema.plugin(auditPlugin);
 
 LabSchema.index({ labName: 1 });
-LabSchema.index({ emailId: 1 });
 LabSchema.index({ roleId: 1 });
 LabSchema.index({ "services.testCategories": 1 });
 

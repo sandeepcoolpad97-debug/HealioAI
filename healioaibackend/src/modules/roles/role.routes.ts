@@ -11,6 +11,7 @@ import {
   updateRoleValidation,
   deleteRoleValidation,
 } from './role.controller';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -37,7 +38,7 @@ const router = Router();
  *       400: { description: Validation error }
  *       409: { description: Role name already exists }
  */
-router.post('/', createRoleValidation, createRole);
+router.post('/', authMiddleware, createRoleValidation, createRole);
 
 /**
  * @openapi
@@ -98,7 +99,7 @@ router.get('/:id', getRoleByIdValidation, getRoleById);
  *       200: { description: Role updated }
  *       404: { description: Role not found }
  */
-router.patch('/:id', updateRoleValidation, updateRole);
+router.patch('/:id', authMiddleware, updateRoleValidation, updateRole);
 
 /**
  * @openapi
@@ -116,6 +117,6 @@ router.patch('/:id', updateRoleValidation, updateRole);
  *       400: { description: Cannot delete system role }
  *       404: { description: Role not found }
  */
-router.delete('/:id', deleteRoleValidation, deleteRole);
+router.delete('/:id', authMiddleware, deleteRoleValidation, deleteRole);
 
 export const roleRoutes = router;

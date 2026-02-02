@@ -97,12 +97,12 @@ export default function AdminLabsScreen() {
   };
 
   const columns = [
-    { field: 'slNo', headerName: 'Sl No', width: 70, sortable: false, valueGetter: (_, row) => getSlNo(row) },
+    { field: 'slNo', headerName: 'Sl No', width: 70, sortable: false, valueGetter: (value, row) => getSlNo(row) },
     { field: 'labName', headerName: 'Lab name', flex: 1, minWidth: 140 },
     { field: 'registrationNumber', headerName: 'Reg. number', width: 120 },
-    { field: 'emailId', headerName: 'Email', flex: 1, minWidth: 160, valueGetter: (_, row) => emailDisplay(row) },
+    { field: 'emailId', headerName: 'Email', flex: 1, minWidth: 160, valueGetter: (value, row) => emailDisplay(row) },
     { field: 'contactNumber', headerName: 'Contact', width: 120 },
-    { field: 'roleId', headerName: 'Role', width: 100, valueGetter: (_, row) => roleName(row) },
+    { field: 'roleId', headerName: 'Role', width: 100, valueGetter: (value, row) => roleName(row) },
     { field: 'isActive', headerName: 'Active status', width: 120, renderCell: (params) => activeStatusChip(params.row.isActive) },
     {
       field: 'actions',

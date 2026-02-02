@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { ClinicService } from './clinic.service';
 import {
+  loginClinicSchema,
   createClinicSchema,
   updateClinicSchema,
   clinicIdParamSchema,
@@ -11,6 +12,19 @@ import { validateBody, validateParams, validateQuery } from '../../common/valida
 import { HTTP_STATUS } from '../../common/constants';
 
 const clinicService = new ClinicService();
+
+export async function loginClinic(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const clinic = await clinicService.login(req.body);
+    res.status(HTTP_STATUS.OK).json({ success: true, data: clinic });
+  } catch (err) {
+    next(err);
+  }
+}
 
 export async function createClinic(
   req: Request,
@@ -80,6 +94,7 @@ export async function deleteClinic(
   }
 }
 
+export const loginClinicValidation = [validateBody(loginClinicSchema)];
 export const createClinicValidation = [validateBody(createClinicSchema)];
 export const getClinicByIdValidation = [validateParams(clinicIdParamSchema)];
 export const listClinicsValidation = [validateQuery(listClinicsQuerySchema)];

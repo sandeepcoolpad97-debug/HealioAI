@@ -57,7 +57,19 @@ export const labIdParamSchema = Joi.object({
   id: Joi.string().hex().length(24).required(),
 });
 
+export const loginLabSchema = Joi.object({
+  firebaseUid: Joi.string().required().trim(),
+  email: Joi.string().email().required().trim().lowercase(),
+  idToken: Joi.string().required().trim(),
+});
+
 export const listLabsQuerySchema = paginationQuerySchema;
+
+export type LoginLabInput = {
+  firebaseUid: string;
+  email: string;
+  idToken: string;
+};
 
 export type CreateLabInput = {
   firebaseUid: string;
