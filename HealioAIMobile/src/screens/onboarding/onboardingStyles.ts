@@ -87,4 +87,8 @@ export const sharedOnboardingStyles = StyleSheet.create({
     fontWeight: '600',
     color: colors.buttonTextOnPrimary,
   },
+  loadingWrap: {
+    alignItems: 'center',
+    marginTop: 12,
+  },
 });

@@ -3,6 +3,7 @@ import {
   createSubscription,
   getSubscriptionById,
   listSubscriptions,
+  listSubscriptionPlans,
   updateSubscription,
   deleteSubscription,
   createSubscriptionValidation,
@@ -11,7 +12,7 @@ import {
   updateSubscriptionValidation,
   deleteSubscriptionValidation,
 } from './subscription.controller';
-import { authMiddleware } from '../../common/middlewares/auth.middleware';
+import { authMiddleware, verifyFirebaseTokenMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -42,6 +43,25 @@ const router = Router();
  *       409: { description: Code already exists }
  */
 router.post('/', authMiddleware, createSubscriptionValidation, createSubscription);
+
+/**
+ * @openapi
+ * /subscriptions/plans:
+ *   get:
+ *     tags: [Subscriptions]
+ *     summary: List subscription plans for onboarding (Firebase token only)
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, default: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, default: 50 }
+ *     responses:
+ *       200: { description: Paginated list of subscription plans }
+ */
+router.get('/plans', verifyFirebaseTokenMiddleware, listSubscriptionsValidation, listSubscriptionPlans);
 
 /**
  * @openapi

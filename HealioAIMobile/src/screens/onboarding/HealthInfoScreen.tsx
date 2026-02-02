@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -18,6 +18,8 @@ import {
   SelectableChip,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setHealthInfo } from '../../store/onboardingSlice';
 import { colors } from '../../constants/colors';
 import {
   navigationRoutes,
@@ -36,22 +38,28 @@ type HealthInfoScreenProps = {
 export const HealthInfoScreen: React.FC<HealthInfoScreenProps> = ({
   navigation,
 }) => {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [other, setOther] = useState('');
+  const dispatch = useAppDispatch();
+  const health = useAppSelector((state) => state.onboarding.health);
+
+  const selectedSet = useMemo(
+    () => new Set(health.existingConditions),
+    [health.existingConditions]
+  );
+  const other = health.otherConditions;
 
   const toggle = (label: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (label === 'None') {
-        next.clear();
-        next.add('None');
-        return next;
+    let next: string[];
+    if (label === 'None') {
+      next = ['None'];
+    } else {
+      const arr = health.existingConditions.filter((c) => c !== 'None');
+      if (arr.includes(label)) {
+        next = arr.filter((c) => c !== label);
+      } else {
+        next = [...arr, label];
       }
-      next.delete('None');
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
-      return next;
-    });
+    }
+    dispatch(setHealthInfo({ existingConditions: next }));
   };
 
   const handleContinue = () => {
@@ -86,7 +94,7 @@ export const HealthInfoScreen: React.FC<HealthInfoScreenProps> = ({
                 <SelectableChip
                   key={label}
                   label={label}
-                  selected={selected.has(label)}
+                  selected={selectedSet.has(label)}
                   onPress={() => toggle(label)}
                 />
               ))}
@@ -97,7 +105,7 @@ export const HealthInfoScreen: React.FC<HealthInfoScreenProps> = ({
               placeholder={s.otherPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               value={other}
-              onChangeText={setOther}
+              onChangeText={(v) => dispatch(setHealthInfo({ otherConditions: v }))}
               accessibilityLabel={s.otherPlaceholder}
             />
           </FormCard>

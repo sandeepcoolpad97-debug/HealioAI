@@ -24,8 +24,17 @@ import {
   navigationRoutes,
   signUpStrings,
 } from '../../constants/strings';
-import { confirmPhoneOtp, signInWithGoogle } from '../../services';
+import { confirmPhoneOtp, getCurrentUser, loginUser, signInWithGoogle } from '../../services';
 import { maskPhone } from '../../utils/maskPhone';
+
+/** Parse E.164 phone (e.g. +919876543210) to { countryCode, number }. */
+function parsePhoneE164(e164: string): { countryCode: string; number: string } {
+  const digits = e164.replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length >= 12) {
+    return { countryCode: '+91', number: digits.slice(2) };
+  }
+  return { countryCode: '+91', number: digits };
+}
 
 const OTP_LENGTH = 6;
 
@@ -61,7 +70,27 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
     setLoadingOtp(true);
     try {
       await confirmPhoneOtp(code);
-      goToRoleSelection();
+      const user = getCurrentUser();
+      if (!user?.phoneNumber) {
+        goToRoleSelection();
+        setLoadingOtp(false);
+        return;
+      }
+      const idToken = await user.getIdToken(true);
+      const { countryCode, number } = parsePhoneE164(user.phoneNumber);
+      try {
+        await loginUser({
+          firebaseUid: user.uid,
+          idToken,
+          phone: { countryCode, number },
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+      } catch {
+        goToRoleSelection();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Invalid or expired code. Try again.';
       Alert.alert('Error', message);
@@ -74,7 +103,26 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
     setLoadingGoogle(true);
     try {
       await signInWithGoogle();
-      goToRoleSelection();
+      const user = getCurrentUser();
+      if (!user) {
+        goToRoleSelection();
+        setLoadingGoogle(false);
+        return;
+      }
+      const idToken = await user.getIdToken(true);
+      try {
+        await loginUser({
+          firebaseUid: user.uid,
+          idToken,
+          email: user.email ?? undefined,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+      } catch {
+        goToRoleSelection();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
       Alert.alert('Error', message);

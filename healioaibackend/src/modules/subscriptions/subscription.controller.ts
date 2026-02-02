@@ -54,6 +54,25 @@ export async function listSubscriptions(
   }
 }
 
+/**
+ * List subscription plans for onboarding (Firebase token only; no DB user required).
+ * Used by mobile to get free plan before user record exists.
+ */
+export async function listSubscriptionPlans(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 50;
+    const result = await subscriptionService.list(page, limit);
+    res.status(HTTP_STATUS.OK).json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function updateSubscription(
   req: Request,
   res: Response,

@@ -57,18 +57,37 @@ export const labIdParamSchema = Joi.object({
   id: Joi.string().hex().length(24).required(),
 });
 
+const loginLabPhoneSchema = Joi.object({
+  countryCode: Joi.string().default('+91').trim(),
+  number: Joi.string().trim().allow(''),
+});
+
 export const loginLabSchema = Joi.object({
   firebaseUid: Joi.string().required().trim(),
-  email: Joi.string().email().required().trim().lowercase(),
   idToken: Joi.string().required().trim(),
+  email: Joi.string().email().trim().lowercase().allow('').optional(),
+  phone: loginLabPhoneSchema.optional(),
+}).custom((obj, helpers) => {
+  const hasEmail = obj.email != null && String(obj.email).trim() !== '';
+  const hasPhone =
+    obj.phone != null &&
+    obj.phone.number != null &&
+    String(obj.phone.number).trim() !== '';
+  if (!hasEmail && !hasPhone) {
+    return helpers.error('object.custom', {
+      message: 'Either email or phone is required (for Google or mobile login)',
+    });
+  }
+  return obj;
 });
 
 export const listLabsQuerySchema = paginationQuerySchema;
 
 export type LoginLabInput = {
   firebaseUid: string;
-  email: string;
   idToken: string;
+  email?: string;
+  phone?: { countryCode?: string; number: string };
 };
 
 export type CreateLabInput = {

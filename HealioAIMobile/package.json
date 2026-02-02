@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.0",
+    "react-redux": "^9.2.0",
     "@react-native-firebase/app": "^23.8.5",
     "@react-native-firebase/auth": "^23.8.5",
     "@react-native-google-signin/google-signin": "^13.1.0",

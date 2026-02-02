@@ -7,7 +7,9 @@
 
 import React, { useEffect } from 'react';
 import {StatusBar, StyleSheet, useColorScheme} from 'react-native';
+import { Provider } from 'react-redux';
 import { GOOGLE_WEB_CLIENT_ID } from './src/config/auth.config';
+import { store } from './src/store';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -56,10 +58,12 @@ function App() {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppNavigator />
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <AppNavigator />
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 

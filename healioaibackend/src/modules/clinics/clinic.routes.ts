@@ -29,11 +29,12 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [firebaseUid, email, idToken]
+ *             required: [firebaseUid, idToken]
  *             properties:
  *               firebaseUid: { type: string }
- *               email: { type: string }
  *               idToken: { type: string }
+ *               email: { type: string, description: "For Google login; use email OR phone" }
+ *               phone: { type: object, description: "For mobile login; use email OR phone", properties: { countryCode: { type: string }, number: { type: string } } }
  *     responses:
  *       200: { description: Login successful }
  *       401: { description: Unauthorized }

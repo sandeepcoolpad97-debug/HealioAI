@@ -22,6 +22,8 @@ import { colors } from '../../constants/colors';
 import { navigationRoutes, signInStrings } from '../../constants/strings';
 import {
   formatPhoneE164,
+  getCurrentUser,
+  loginUser,
   sendPhoneOtp,
   signInWithGoogle,
 } from '../../services';
@@ -60,10 +62,39 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
     setLoadingGoogle(true);
     try {
       await signInWithGoogle();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: navigationRoutes.Home }],
-      });
+      const user = getCurrentUser();
+      if (!user) {
+        Alert.alert('Error', 'Sign-in did not complete. Try again.');
+        setLoadingGoogle(false);
+        return;
+      }
+      const idToken = await user.getIdToken(true);
+      try {
+        await loginUser({
+          firebaseUid: user.uid,
+          idToken,
+          email: user.email ?? undefined,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+      } catch (loginErr: unknown) {
+        const status = (loginErr as { status?: number })?.status;
+        if (status === 404) {
+          Alert.alert(
+            'No account found',
+            'Sign up to create an account and complete onboarding.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Sign Up', onPress: () => navigation.navigate(navigationRoutes.CreateAccount) },
+            ]
+          );
+        } else {
+          const message = loginErr instanceof Error ? loginErr.message : 'Login failed. Try again.';
+          Alert.alert('Error', message);
+        }
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
       Alert.alert('Error', message);

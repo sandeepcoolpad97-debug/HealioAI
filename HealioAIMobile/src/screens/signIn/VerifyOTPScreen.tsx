@@ -24,8 +24,17 @@ import {
   navigationRoutes,
   signInStrings,
 } from '../../constants/strings';
-import { confirmPhoneOtp, signInWithGoogle } from '../../services';
+import { confirmPhoneOtp, getCurrentUser, loginUser, signInWithGoogle } from '../../services';
 import { maskPhone } from '../../utils/maskPhone';
+
+/** Parse E.164 phone (e.g. +919876543210) to { countryCode, number }. */
+function parsePhoneE164(e164: string): { countryCode: string; number: string } {
+  const digits = e164.replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length >= 12) {
+    return { countryCode: '+91', number: digits.slice(2) };
+  }
+  return { countryCode: '+91', number: digits };
+}
 
 const OTP_LENGTH = 6;
 
@@ -54,10 +63,43 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
     setLoadingOtp(true);
     try {
       await confirmPhoneOtp(code);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: navigationRoutes.Home }],
-      });
+      const user = getCurrentUser();
+      if (!user?.phoneNumber) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+        setLoadingOtp(false);
+        return;
+      }
+      const idToken = await user.getIdToken(true);
+      const { countryCode, number } = parsePhoneE164(user.phoneNumber);
+      try {
+        await loginUser({
+          firebaseUid: user.uid,
+          idToken,
+          phone: { countryCode, number },
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+      } catch (loginErr: unknown) {
+        const status = (loginErr as { status?: number })?.status;
+        if (status === 404) {
+          Alert.alert(
+            'No account found',
+            'Sign up to create an account and complete onboarding.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Sign Up', onPress: () => navigation.navigate(navigationRoutes.CreateAccount) },
+            ]
+          );
+        } else {
+          const message = loginErr instanceof Error ? loginErr.message : 'Login failed. Try again.';
+          Alert.alert('Error', message);
+        }
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Invalid or expired code. Try again.';
       Alert.alert('Error', message);
@@ -70,10 +112,39 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
     setLoadingGoogle(true);
     try {
       await signInWithGoogle();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: navigationRoutes.Home }],
-      });
+      const user = getCurrentUser();
+      if (!user) {
+        Alert.alert('Error', 'Sign-in did not complete. Try again.');
+        setLoadingGoogle(false);
+        return;
+      }
+      const idToken = await user.getIdToken(true);
+      try {
+        await loginUser({
+          firebaseUid: user.uid,
+          idToken,
+          email: user.email ?? undefined,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: navigationRoutes.Home }],
+        });
+      } catch (loginErr: unknown) {
+        const status = (loginErr as { status?: number })?.status;
+        if (status === 404) {
+          Alert.alert(
+            'No account found',
+            'Sign up to create an account and complete onboarding.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Sign Up', onPress: () => navigation.navigate(navigationRoutes.CreateAccount) },
+            ]
+          );
+        } else {
+          const message = loginErr instanceof Error ? loginErr.message : 'Login failed. Try again.';
+          Alert.alert('Error', message);
+        }
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
       Alert.alert('Error', message);

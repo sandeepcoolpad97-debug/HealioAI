@@ -15,7 +15,7 @@ import {
   deleteUserValidation,
   loginUserValidation,
 } from './user.controller';
-import { authMiddleware, verifyFirebaseTokenMiddleware } from '../../common/middlewares/auth.middleware';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -31,11 +31,12 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [firebaseUid, email, idToken]
+ *             required: [firebaseUid, idToken]
  *             properties:
  *               firebaseUid: { type: string }
- *               email: { type: string }
  *               idToken: { type: string }
+ *               email: { type: string, description: "For Google login; use email OR phone" }
+ *               phone: { type: object, description: "For mobile login; use email OR phone", properties: { countryCode: { type: string }, number: { type: string } } }
  *     responses:
  *       200: { description: Login successful }
  *       401: { description: Unauthorized }
@@ -89,7 +90,7 @@ router.post('/login', loginUserValidation, loginUser);
  *       400: { description: Validation error }
  *       409: { description: Phone number or email address already exists }
  */
-router.post('/onboard', verifyFirebaseTokenMiddleware, onboardUserValidation, onboardUser);
+router.post('/onboard', onboardUserValidation, onboardUser);
 
 /**
  * @openapi

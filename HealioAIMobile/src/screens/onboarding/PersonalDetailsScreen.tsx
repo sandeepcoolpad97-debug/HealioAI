@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +17,8 @@ import {
   SelectableChip,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setPersonalDetails } from '../../store/onboardingSlice';
 import { colors } from '../../constants/colors';
 import {
   navigationRoutes,
@@ -42,11 +44,14 @@ type PersonalDetailsScreenProps = {
 export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
   navigation,
 }) => {
-  const [fullName, setFullName] = useState('');
-  const [age, setAge] = useState('');
-  const [gender, setGender] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
-  const [language, setLanguage] = useState<{ label: string; value: string } | null>(null);
+  const dispatch = useAppDispatch();
+  const personal = useAppSelector((state) => state.onboarding.personal);
+
+  const fullName = personal.fullName;
+  const age = personal.age;
+  const gender = personal.gender;
+  const email = personal.email;
+  const language = personal.language;
 
   const ageNum = age.trim() === '' ? 0 : Number(age);
   const isValid =
@@ -62,6 +67,15 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
 
   const handleContinue = () => {
     if (!isValid) return;
+    dispatch(
+      setPersonalDetails({
+        fullName: fullName.trim(),
+        age: age.trim(),
+        gender,
+        email: email.trim(),
+        language,
+      })
+    );
     navigation.navigate(navigationRoutes.HealthInfo);
   };
 
@@ -89,7 +103,7 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               placeholder={s.fullNamePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               value={fullName}
-              onChangeText={setFullName}
+              onChangeText={(v) => dispatch(setPersonalDetails({ fullName: v }))}
               autoCapitalize="words"
             />
 
@@ -99,7 +113,7 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               placeholder={s.agePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               value={age}
-              onChangeText={(text) => setAge(text.replace(/\D/g, ''))}
+              onChangeText={(text) => dispatch(setPersonalDetails({ age: text.replace(/\D/g, '') }))}
               keyboardType="number-pad"
               maxLength={3}
             />
@@ -111,7 +125,7 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
                   key={g.key}
                   label={g.label}
                   selected={gender === g.key}
-                  onPress={() => setGender(g.key)}
+                  onPress={() => dispatch(setPersonalDetails({ gender: g.key }))}
                 />
               ))}
             </ChipRow>
@@ -122,7 +136,7 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               placeholder={s.emailPlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(v) => dispatch(setPersonalDetails({ email: v }))}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -136,8 +150,8 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
                 <SelectableChip
                   key={opt.value}
                   label={opt.label}
-                  selected={language?.value === opt.value}
-                  onPress={() => setLanguage(opt)}
+                  selected={language === opt.value}
+                  onPress={() => dispatch(setPersonalDetails({ language: opt.value }))}
                 />
               ))}
             </ChipRow>
