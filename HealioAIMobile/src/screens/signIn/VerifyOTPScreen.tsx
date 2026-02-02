@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -22,14 +24,16 @@ import {
   navigationRoutes,
   signInStrings,
 } from '../../constants/strings';
+import { confirmPhoneOtp, signInWithGoogle } from '../../services';
 import { maskPhone } from '../../utils/maskPhone';
 
 const OTP_LENGTH = 6;
 
 type VerifyOTPScreenProps = {
   navigation: {
-    navigate: (route: string) => void;
-    replace: (route: string) => void;
+    navigate: (route: string, params?: object) => void;
+    replace: (route: string, params?: object) => void;
+    reset: (state: { index: number; routes: Array<{ name: string; params?: object }> }) => void;
   };
   route: { params?: { phone?: string } };
 };
@@ -41,15 +45,41 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
   const phone = route.params?.phone ?? '+91 ';
   const masked = maskPhone(phone);
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const code = digits.join('');
     if (code.length !== OTP_LENGTH) return;
-    navigation.replace(navigationRoutes.Home);
+    setLoadingOtp(true);
+    try {
+      await confirmPhoneOtp(code);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: navigationRoutes.Home }],
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Invalid or expired code. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingOtp(false);
+    }
   };
 
-  const handleSignInWithGoogle = () => {
-    // Placeholder: wire to Google Sign-In
+  const handleSignInWithGoogle = async () => {
+    setLoadingGoogle(true);
+    try {
+      await signInWithGoogle();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: navigationRoutes.Home }],
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingGoogle(false);
+    }
   };
 
   const handleSignUp = () => {
@@ -94,15 +124,26 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
           <AuthPrimaryButton
             label={signInStrings.continue}
             onPress={handleContinue}
-            disabled={!canContinue}
+            disabled={!canContinue || loadingOtp}
           />
+          {loadingOtp && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.buttonTextOnPrimary} />
+            </View>
+          )}
 
           <DividerWithOr text={signInStrings.or} />
 
           <GoogleSignInButton
             label={signInStrings.signInWithGoogle}
             onPress={handleSignInWithGoogle}
+            disabled={loadingGoogle}
           />
+          {loadingGoogle && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.primaryText} />
+            </View>
+          )}
 
           <FooterLink
             prefix="Don't have an account? "
@@ -136,5 +177,9 @@ const styles = StyleSheet.create({
   otpWrap: {
     width: '100%',
     marginBottom: 24,
+  },
+  loaderWrap: {
+    marginTop: 8,
+    marginBottom: 8,
   },
 });

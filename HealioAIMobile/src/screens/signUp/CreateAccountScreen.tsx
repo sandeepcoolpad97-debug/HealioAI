@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,10 +23,16 @@ import {
   navigationRoutes,
   signUpStrings,
 } from '../../constants/strings';
+import {
+  formatPhoneE164,
+  sendPhoneOtp,
+  signInWithGoogle,
+} from '../../services';
 
 type CreateAccountScreenProps = {
   navigation: {
     navigate: (route: string, params?: { phone: string }) => void;
+    reset: (state: { index: number; routes: Array<{ name: string; params?: object }> }) => void;
   };
 };
 
@@ -33,17 +40,41 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
   navigation,
 }) => {
   const [phone, setPhone] = useState('');
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     const trimmed = phone.replace(/\D/g, '').slice(-10);
     if (trimmed.length < 10) return;
-    navigation.navigate(navigationRoutes.VerifyNumber, {
-      phone: `+91 ${trimmed}`,
-    });
+    const phoneE164 = formatPhoneE164(phone, '+91');
+    setLoadingOtp(true);
+    try {
+      await sendPhoneOtp(phoneE164);
+      navigation.navigate(navigationRoutes.VerifyNumber, {
+        phone: `+91 ${trimmed}`,
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to send OTP. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingOtp(false);
+    }
   };
 
-  const handleSignInWithGoogle = () => {
-    // Placeholder: wire to Google Sign-In
+  const handleSignInWithGoogle = async () => {
+    setLoadingGoogle(true);
+    try {
+      await signInWithGoogle();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: navigationRoutes.RoleSelection }],
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingGoogle(false);
+    }
   };
 
   const handleSignIn = () => {
@@ -86,15 +117,26 @@ export const CreateAccountScreen: React.FC<CreateAccountScreenProps> = ({
           <AuthPrimaryButton
             label={signUpStrings.sendOtp}
             onPress={handleSendOtp}
-            disabled={!canSendOtp}
+            disabled={!canSendOtp || loadingOtp}
           />
+          {loadingOtp && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.buttonTextOnPrimary} />
+            </View>
+          )}
 
           <DividerWithOr text={signUpStrings.or} />
 
           <GoogleSignInButton
             label={signUpStrings.signInWithGoogle}
             onPress={handleSignInWithGoogle}
+            disabled={loadingGoogle}
           />
+          {loadingGoogle && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.primaryText} />
+            </View>
+          )}
 
           <FooterLink
             prefix={signUpStrings.hasAccount}
@@ -124,5 +166,9 @@ const styles = StyleSheet.create({
   },
   phoneInputWrap: {
     marginBottom: 24,
+  },
+  loaderWrap: {
+    marginTop: 8,
+    marginBottom: 8,
   },
 });

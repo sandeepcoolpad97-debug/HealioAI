@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -22,14 +24,16 @@ import {
   navigationRoutes,
   signUpStrings,
 } from '../../constants/strings';
+import { confirmPhoneOtp, signInWithGoogle } from '../../services';
 import { maskPhone } from '../../utils/maskPhone';
 
 const OTP_LENGTH = 6;
 
 type VerifyNumberScreenProps = {
   navigation: {
-    navigate: (route: string) => void;
-    replace: (route: string) => void;
+    navigate: (route: string, params?: object) => void;
+    replace: (route: string, params?: object) => void;
+    reset: (state: { index: number; routes: Array<{ name: string; params?: object }> }) => void;
   };
   route: { params?: { phone?: string } };
 };
@@ -41,15 +45,42 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
   const phone = route.params?.phone ?? '';
   const masked = maskPhone(phone) || '+91 XXXXXX';
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
+  const [loadingOtp, setLoadingOtp] = useState(false);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
 
-  const handleContinue = () => {
-    const code = digits.join('');
-    if (code.length !== OTP_LENGTH) return;
-    navigation.replace(navigationRoutes.RoleSelection);
+  const goToRoleSelection = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: navigationRoutes.RoleSelection }],
+    });
   };
 
-  const handleSignInWithGoogle = () => {
-    // Placeholder: wire to Google Sign-In
+  const handleContinue = async () => {
+    const code = digits.join('');
+    if (code.length !== OTP_LENGTH) return;
+    setLoadingOtp(true);
+    try {
+      await confirmPhoneOtp(code);
+      goToRoleSelection();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Invalid or expired code. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingOtp(false);
+    }
+  };
+
+  const handleSignInWithGoogle = async () => {
+    setLoadingGoogle(true);
+    try {
+      await signInWithGoogle();
+      goToRoleSelection();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Google sign-in failed. Try again.';
+      Alert.alert('Error', message);
+    } finally {
+      setLoadingGoogle(false);
+    }
   };
 
   const handleSignIn = () => {
@@ -97,15 +128,26 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
           <AuthPrimaryButton
             label={signUpStrings.continue}
             onPress={handleContinue}
-            disabled={!canContinue}
+            disabled={!canContinue || loadingOtp}
           />
+          {loadingOtp && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.buttonTextOnPrimary} />
+            </View>
+          )}
 
           <DividerWithOr text={signUpStrings.or} />
 
           <GoogleSignInButton
             label={signUpStrings.signInWithGoogle}
             onPress={handleSignInWithGoogle}
+            disabled={loadingGoogle}
           />
+          {loadingGoogle && (
+            <View style={styles.loaderWrap}>
+              <ActivityIndicator size="small" color={colors.primaryText} />
+            </View>
+          )}
 
           <FooterLink
             prefix={signUpStrings.hasAccount}
@@ -139,5 +181,9 @@ const styles = StyleSheet.create({
   otpWrap: {
     width: '100%',
     marginBottom: 24,
+  },
+  loaderWrap: {
+    marginTop: 8,
+    marginBottom: 8,
   },
 });

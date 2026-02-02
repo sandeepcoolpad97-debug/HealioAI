@@ -12,17 +12,20 @@ type GoogleSignInButtonProps = {
   onPress: () => void;
   label?: string;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 };
 
 export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
   onPress,
   label = 'Sign in with Google',
   style,
+  disabled = false,
 }) => (
   <TouchableOpacity
-    style={[styles.button, style]}
+    style={[styles.button, style, disabled && styles.buttonDisabled]}
     onPress={onPress}
     activeOpacity={0.8}
+    disabled={disabled}
   >
     <Text style={styles.label}>{label}</Text>
   </TouchableOpacity>
@@ -42,5 +45,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.primaryText,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
 });

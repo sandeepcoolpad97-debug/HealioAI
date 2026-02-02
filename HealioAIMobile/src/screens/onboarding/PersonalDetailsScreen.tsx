@@ -48,11 +48,13 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
   const [email, setEmail] = useState('');
   const [language, setLanguage] = useState<{ label: string; value: string } | null>(null);
 
+  const ageNum = age.trim() === '' ? 0 : Number(age);
   const isValid =
     fullName.trim().length > 0 &&
-    /^\d+$/.test(age) &&
-    Number(age) > 0 &&
-    Number(age) < 150 &&
+    age.trim().length > 0 &&
+    /^\d+$/.test(age.trim()) &&
+    ageNum > 0 &&
+    ageNum < 150 &&
     gender !== null &&
     email.trim().length > 0 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) &&
@@ -97,7 +99,7 @@ export const PersonalDetailsScreen: React.FC<PersonalDetailsScreenProps> = ({
               placeholder={s.agePlaceholder}
               placeholderTextColor={colors.inputPlaceholder}
               value={age}
-              onChangeText={setAge}
+              onChangeText={(text) => setAge(text.replace(/\D/g, ''))}
               keyboardType="number-pad"
               maxLength={3}
             />

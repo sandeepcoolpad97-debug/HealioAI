@@ -5,8 +5,9 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StatusBar, StyleSheet, useColorScheme} from 'react-native';
+import { GOOGLE_WEB_CLIENT_ID } from './src/config/auth.config';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -42,6 +43,17 @@ import {HomeScreen} from './src/screens/HomeScreen';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    try {
+      const { GoogleSignin } = require('@react-native-google-signin/google-signin');
+      GoogleSignin.configure({
+        webClientId: GOOGLE_WEB_CLIENT_ID,
+      });
+    } catch {
+      // Google Sign-In not installed; phone OTP still works
+    }
+  }, []);
 
   return (
     <SafeAreaProvider>
