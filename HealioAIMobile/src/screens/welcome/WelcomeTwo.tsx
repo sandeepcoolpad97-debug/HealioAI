@@ -21,7 +21,7 @@ export const WelcomeTwo: React.FC<WelcomeTwoProps> = ({navigation}) => {
   };
 
   const handleSkip = () => {
-    navigation.replace(navigationRoutes.Home);
+    navigation.replace(navigationRoutes.MainTabs);
   };
 
   return (

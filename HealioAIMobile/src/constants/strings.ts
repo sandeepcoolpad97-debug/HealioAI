@@ -46,6 +46,12 @@ export const navigationRoutes = {
   Consent: 'Consent',
   OnboardingSuccess: 'OnboardingSuccess',
   Home: 'Home',
+  MainTabs: 'MainTabs',
+  Appointments: 'Appointments',
+  Contact: 'Contact',
+  Profile: 'Profile',
+  DoctorProfile: 'DoctorProfile',
+  BookAppointment: 'BookAppointment',
 } as const;
 
 export const signInStrings = {

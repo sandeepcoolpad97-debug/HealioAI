@@ -86,7 +86,7 @@ export const VerifyNumberScreen: React.FC<VerifyNumberScreenProps> = ({
         });
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
       } catch {
         goToRoleSelection();

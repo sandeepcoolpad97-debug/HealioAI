@@ -45,7 +45,7 @@ export const LabProfileSubmittedScreen: React.FC<LabProfileSubmittedScreenProps>
   navigation,
 }) => {
   const handleGoToDashboard = () => {
-    navigation.replace(navigationRoutes.Home);
+    navigation.replace(navigationRoutes.MainTabs);
   };
 
   return (

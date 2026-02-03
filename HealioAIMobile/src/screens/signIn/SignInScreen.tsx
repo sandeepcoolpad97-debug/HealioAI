@@ -77,7 +77,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
         });
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
       } catch (loginErr: unknown) {
         const status = (loginErr as { status?: number })?.status;

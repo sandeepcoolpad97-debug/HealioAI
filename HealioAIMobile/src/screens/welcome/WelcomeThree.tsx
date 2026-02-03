@@ -19,7 +19,7 @@ export const WelcomeThree: React.FC<WelcomeThreeProps> = ({navigation}) => {
   };
 
   const handleSkip = () => {
-    navigation.replace(navigationRoutes.Home);
+    navigation.replace(navigationRoutes.MainTabs);
   };
 
   return (

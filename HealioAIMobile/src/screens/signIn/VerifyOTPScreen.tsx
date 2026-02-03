@@ -67,7 +67,7 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
       if (!user?.phoneNumber) {
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
         setLoadingOtp(false);
         return;
@@ -82,7 +82,7 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
         });
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
       } catch (loginErr: unknown) {
         const status = (loginErr as { status?: number })?.status;
