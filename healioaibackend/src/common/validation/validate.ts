@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi, { Schema } from 'joi';
+import { Schema } from 'joi';
 import { AppError } from '../errors/app-error';
 import { ErrorCode } from '../errors/error-codes';
 import { HTTP_STATUS } from '../constants';

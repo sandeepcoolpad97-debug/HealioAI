@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "965439640871",
+    "project_id": "healioai",
+    "storage_bucket": "healioai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965439640871:android:4f4ae1519384c973bf4502",
+        "android_client_info": {
+          "package_name": "com.healioaimobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "965439640871-i95oar751thame6mdt8rri0oge5htcpv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.healioaimobile",
+            "certificate_hash": "5d9fbfd6e0a085dcc641a71e47d1b54107e581cb"
+          }
+        },
+        {
+          "client_id": "965439640871-1u6k8jvq5f9em00b15ctn9vs2nuojebu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDr3tQWYxzH8V7YTmy8rkRTIKe8_e6Djr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "965439640871-1u6k8jvq5f9em00b15ctn9vs2nuojebu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

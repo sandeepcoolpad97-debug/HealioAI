@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from '../../common/middlewares/auth.middleware';
 import { UserService } from './user.service';
 import {
+  loginUserSchema,
+  onboardUserSchema,
   createUserSchema,
   updateUserSchema,
   userIdParamSchema,
@@ -11,13 +14,41 @@ import { HTTP_STATUS } from '../../common/constants';
 
 const userService = new UserService();
 
+export async function loginUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const user = await userService.login(req.body);
+    res.status(HTTP_STATUS.OK).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function onboardUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.onboard(req.body, authReq.userId);
+    res.status(HTTP_STATUS.CREATED).json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function createUser(
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await userService.create(req.body);
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.create(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -58,7 +89,8 @@ export async function updateUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await userService.update(req.params.id, req.body);
+    const authReq = req as AuthenticatedRequest;
+    const user = await userService.update(req.params.id, req.body, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: user });
   } catch (err) {
     next(err);
@@ -78,6 +110,8 @@ export async function deleteUser(
   }
 }
 
+export const loginUserValidation = [validateBody(loginUserSchema)];
+export const onboardUserValidation = [validateBody(onboardUserSchema)];
 export const createUserValidation = [validateBody(createUserSchema)];
 export const getUserByIdValidation = [validateParams(userIdParamSchema)];
 export const listUsersValidation = [validateQuery(listUsersQuerySchema)];
