@@ -55,6 +55,9 @@ export const navigationRoutes = {
   AppointmentDetails: 'AppointmentDetails',
   AppointmentSummary: 'AppointmentSummary',
   RescheduleAppointment: 'RescheduleAppointment',
+  CancelAppointment: 'CancelAppointment',
+  CancellationSuccess: 'CancellationSuccess',
+  AppointmentSuccess: 'AppointmentSuccess',
 } as const;
 
 export const signInStrings = {

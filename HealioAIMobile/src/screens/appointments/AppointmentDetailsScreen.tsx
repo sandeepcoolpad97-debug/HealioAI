@@ -69,8 +69,7 @@ export const AppointmentDetailsScreen: React.FC = () => {
   };
 
   const handleCancel = () => {
-    console.log('Cancel appointment', appointmentId);
-    // Show confirmation dialog
+    navigation.navigate(navigationRoutes.CancelAppointment, { appointmentId });
   };
 
   return (

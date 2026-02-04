@@ -22,7 +22,7 @@ export type RootStackParamList = {
   [navigationRoutes.HealthInfo]: undefined;
   [navigationRoutes.Consent]: undefined;
   [navigationRoutes.OnboardingSuccess]: undefined;
-  [navigationRoutes.MainTabs]: { role?: string };
+  [navigationRoutes.MainTabs]: { role?: string; screen?: string };
   [navigationRoutes.DoctorProfile]: {
     doctorId: number;
     name: string;
@@ -38,5 +38,22 @@ export type RootStackParamList = {
   };
   [navigationRoutes.RescheduleAppointment]: {
     appointmentId: string;
+  };
+  [navigationRoutes.CancelAppointment]: {
+    appointmentId: string;
+  };
+  [navigationRoutes.CancellationSuccess]: {
+    appointmentId: string;
+    doctorName: string;
+    date: string;
+    time: string;
+  };
+  [navigationRoutes.AppointmentSuccess]: {
+    type: 'booking' | 'reschedule';
+    doctorName: string;
+    date: string;
+    time: string;
+    specialty: string;
+    appointmentId?: string;
   };
 };

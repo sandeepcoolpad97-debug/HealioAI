@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { colors } from '../../constants/colors';
+import { navigationRoutes } from '../../constants/strings';
 
 type BookAppointmentNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookAppointment'>;
 
@@ -37,6 +38,13 @@ export const BookAppointmentScreen = () => {
   const discount = appliedCoupon ? 200 : 0;
   const totalPayable = consultationFee - discount;
 
+  const doctorDetails = {
+    name: "Dr. Ananya Rao",
+    specialty: "Cardiologist",
+    hospital: "Apollo Hospitals",
+    location: "Jubilee Hills, Hyderabad"
+  };
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -51,6 +59,15 @@ export const BookAppointmentScreen = () => {
   const handleProceedToPay = () => {
     // Implement payment flow
     console.log('Proceed to pay', totalPayable);
+    
+    navigation.navigate(navigationRoutes.AppointmentSuccess, {
+      type: 'booking',
+      doctorName: doctorDetails.name,
+      date: selectedDate,
+      time: selectedTimeSlot,
+      specialty: doctorDetails.specialty,
+      appointmentId: '#APT-882910' // Mock ID
+    });
   };
 
   return (
@@ -71,10 +88,10 @@ export const BookAppointmentScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Doctor Info */}
         <BookingDoctorCard
-          name="Dr. Ananya Rao"
-          specialty="Cardiologist"
-          hospital="Apollo Hospitals"
-          location="Jubilee Hills, Hyderabad"
+          name={doctorDetails.name}
+          specialty={doctorDetails.specialty}
+          hospital={doctorDetails.hospital}
+          location={doctorDetails.location}
           consultationType="In-Clinic Consultation"
         />
 

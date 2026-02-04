@@ -47,6 +47,9 @@ import { BookAppointmentScreen } from './src/screens/doctor/BookAppointmentScree
 import { AppointmentDetailsScreen } from './src/screens/appointments/AppointmentDetailsScreen';
 import { AppointmentSummaryScreen } from './src/screens/appointments/AppointmentSummaryScreen';
 import { RescheduleAppointmentScreen } from './src/screens/appointments/RescheduleAppointmentScreen';
+import { CancelAppointmentScreen } from './src/screens/appointments/CancelAppointmentScreen';
+import { CancellationSuccessScreen } from './src/screens/appointments/CancellationSuccessScreen';
+import { AppointmentSuccessScreen } from './src/screens/appointments/AppointmentSuccessScreen';
 import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
@@ -194,6 +197,21 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.RescheduleAppointment}
           component={RescheduleAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CancelAppointment}
+          component={CancelAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CancellationSuccess}
+          component={CancellationSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentSuccess}
+          component={AppointmentSuccessScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

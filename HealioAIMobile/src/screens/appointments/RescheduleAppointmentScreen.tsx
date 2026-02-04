@@ -49,16 +49,14 @@ export const RescheduleAppointmentScreen: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    Alert.alert(
-      'Reschedule Confirmed',
-      `Your appointment has been rescheduled to ${selectedDate} at ${selectedTime}.`,
-      [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate(navigationRoutes.MainTabs, {}),
-        },
-      ]
-    );
+    navigation.navigate(navigationRoutes.AppointmentSuccess, {
+      type: 'reschedule',
+      doctorName: currentAppointment.doctorName,
+      date: selectedDate,
+      time: selectedTime,
+      specialty: currentAppointment.specialty,
+      appointmentId: appointmentId,
+    });
   };
 
   return (
