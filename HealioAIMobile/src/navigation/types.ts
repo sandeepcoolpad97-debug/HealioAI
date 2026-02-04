@@ -30,4 +30,13 @@ export type RootStackParamList = {
     rating: number;
   };
   [navigationRoutes.BookAppointment]: undefined;
+  [navigationRoutes.AppointmentDetails]: {
+    appointmentId: string;
+  };
+  [navigationRoutes.AppointmentSummary]: {
+    appointmentId: string;
+  };
+  [navigationRoutes.RescheduleAppointment]: {
+    appointmentId: string;
+  };
 };

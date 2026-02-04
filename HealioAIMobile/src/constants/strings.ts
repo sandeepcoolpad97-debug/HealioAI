@@ -52,6 +52,9 @@ export const navigationRoutes = {
   Profile: 'Profile',
   DoctorProfile: 'DoctorProfile',
   BookAppointment: 'BookAppointment',
+  AppointmentDetails: 'AppointmentDetails',
+  AppointmentSummary: 'AppointmentSummary',
+  RescheduleAppointment: 'RescheduleAppointment',
 } as const;
 
 export const signInStrings = {

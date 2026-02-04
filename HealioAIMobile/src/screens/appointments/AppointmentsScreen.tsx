@@ -10,7 +10,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../../constants/colors';
+import { navigationRoutes } from '../../constants/strings';
+import { RootStackParamList } from '../../navigation/types';
 import { AppointmentCard } from './listings/AppointmentCard';
 import { AppointmentTabs } from './listings/AppointmentTabs';
 
@@ -79,16 +82,19 @@ const PAST_APPOINTMENTS: Appointment[] = [
 ];
 
 export const AppointmentsScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleViewMore = (id: string) => {
-    console.log('View more for appointment:', id);
-    // Navigate to appointment details
+  const handleViewMore = (id: string, status: 'upcoming' | 'past' | 'cancelled') => {
+    if (status === 'past') {
+      navigation.navigate(navigationRoutes.AppointmentSummary, { appointmentId: id });
+    } else {
+      navigation.navigate(navigationRoutes.AppointmentDetails, { appointmentId: id });
+    }
   };
 
   const data = activeTab === 'upcoming' ? UPCOMING_APPOINTMENTS : PAST_APPOINTMENTS;
@@ -122,7 +128,7 @@ export const AppointmentsScreen = () => {
             date={item.date}
             time={item.time}
             status={item.status}
-            onPress={() => handleViewMore(item.id)}
+            onPress={() => handleViewMore(item.id, item.status)}
           />
         )}
         contentContainerStyle={styles.listContent}

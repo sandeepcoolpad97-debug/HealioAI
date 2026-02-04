@@ -44,6 +44,9 @@ import {
 } from './src/screens/onboardingLab';
 import { DoctorProfileScreen } from './src/screens/doctor/DoctorProfileScreen';
 import { BookAppointmentScreen } from './src/screens/doctor/BookAppointmentScreen';
+import { AppointmentDetailsScreen } from './src/screens/appointments/AppointmentDetailsScreen';
+import { AppointmentSummaryScreen } from './src/screens/appointments/AppointmentSummaryScreen';
+import { RescheduleAppointmentScreen } from './src/screens/appointments/RescheduleAppointmentScreen';
 import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
@@ -176,6 +179,21 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.BookAppointment}
           component={BookAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentDetails}
+          component={AppointmentDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentSummary}
+          component={AppointmentSummaryScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.RescheduleAppointment}
+          component={RescheduleAppointmentScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
