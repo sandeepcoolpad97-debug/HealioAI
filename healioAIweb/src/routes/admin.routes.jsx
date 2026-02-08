@@ -7,6 +7,10 @@ import AdminSubscriptionsScreen from '../components/admin/screens/AdminSubscript
 import AdminRolesScreen from '../components/admin/screens/AdminRolesScreen';
 import AdminClinicsScreen from '../components/admin/screens/AdminClinicsScreen';
 import AdminLabsScreen from '../components/admin/screens/AdminLabsScreen';
+import AdminAppointmentsScreen from '../components/admin/screens/AdminAppointmentsScreen';
+import AdminCategoriesScreen from '../components/admin/screens/AdminCategoriesScreen';
+import AdminServicesScreen from '../components/admin/screens/AdminServicesScreen';
+import AdminPaymentsScreen from '../components/admin/screens/AdminPaymentsScreen';
 import AdminLogin from '../components/admin/screens/AdminLogin';
 import AdminLayout from '../components/admin/layout/AdminLayout';
 
@@ -31,6 +35,10 @@ export default function AdminRoutes() {
         <Route path="roles" element={<AdminRolesScreen />} />
         <Route path="clinics" element={<AdminClinicsScreen />} />
         <Route path="labs" element={<AdminLabsScreen />} />
+        <Route path="appointments" element={<AdminAppointmentsScreen />} />
+        <Route path="categories" element={<AdminCategoriesScreen />} />
+        <Route path="services" element={<AdminServicesScreen />} />
+        <Route path="payments" element={<AdminPaymentsScreen />} />
       </Route>
     </Routes>
   );

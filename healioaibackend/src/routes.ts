@@ -6,8 +6,11 @@ import { subscriptionRoutes } from './modules/subscriptions';
 import { clinicRoutes } from './modules/clinics';
 import { labRoutes } from './modules/labs';
 import { adminRoutes } from './modules/admins';
-
-
+import { appointmentRoutes } from './modules/appointment';
+import { categoryRoutes } from './modules/category';
+import { serviceRoutes } from './modules/service';
+import { discountRoutes } from './modules/discount';
+import { paymentRoutes } from './modules/payment';
 
 const router = Router();
 
@@ -30,6 +33,11 @@ router.use('/subscriptions', subscriptionRoutes);
 router.use('/clinics', clinicRoutes);
 router.use('/labs', labRoutes);
 router.use('/admins', adminRoutes);
+router.use('/appointments', appointmentRoutes);
+router.use('/categories', categoryRoutes);
+router.use('/services', serviceRoutes);
+router.use('/discounts', discountRoutes);
+router.use('/payments', paymentRoutes);
 
 export function registerRoutes(app: Application): void {
   app.use(env.API_PREFIX, router);

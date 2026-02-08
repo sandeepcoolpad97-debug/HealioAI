@@ -16,6 +16,10 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import ScienceIcon from '@mui/icons-material/Science';
+import EventIcon from '@mui/icons-material/Event';
+import CategoryIcon from '@mui/icons-material/Category';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import PaymentIcon from '@mui/icons-material/Payment';
 import { DrawerHeader, Drawer } from './adminLayout.styles';
 
 const NAV_ITEMS = [
@@ -25,6 +29,10 @@ const NAV_ITEMS = [
   { label: 'Subscriptions', path: '/admin/subscriptions', icon: CardMembershipIcon },
   { label: 'Clinics', path: '/admin/clinics', icon: LocalHospitalIcon },
   { label: 'Labs', path: '/admin/labs', icon: ScienceIcon },
+  { label: 'Appointments', path: '/admin/appointments', icon: EventIcon },
+  { label: 'Categories', path: '/admin/categories', icon: CategoryIcon },
+  { label: 'Services', path: '/admin/services', icon: MedicalServicesIcon },
+  { label: 'Payments', path: '/admin/payments', icon: PaymentIcon },
 ];
 
 function NavListItem({ label, path, icon: Icon, open }) {

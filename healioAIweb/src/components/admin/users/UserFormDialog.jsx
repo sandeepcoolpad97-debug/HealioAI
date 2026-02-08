@@ -175,8 +175,8 @@ export default function UserFormDialog({ open, onClose, onSuccess, mode, userId 
             <Box sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2 }}>{error}</Box>
           )}
           <Grid container spacing={2}>
-            {/* Row 1: Name */}
-            <Grid size={{ xs: 12 }}>
+            {/* Row 1: Name & Email */}
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Name"
                 value={form.name}
@@ -185,8 +185,7 @@ export default function UserFormDialog({ open, onClose, onSuccess, mode, userId 
                 fullWidth
               />
             </Grid>
-            {/* Row 2: Email */}
-            <Grid size={{ xs: 12 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 label="Email address"
                 type="email"
@@ -332,7 +331,7 @@ export default function UserFormDialog({ open, onClose, onSuccess, mode, userId 
             {/* Consents (create only) */}
             {!isEdit && (
               <Grid size={{ xs: 12 }}>
-                <FormGroup>
+                <FormGroup row>
                   <FormControlLabel
                     control={
                       <Checkbox
