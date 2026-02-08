@@ -20,6 +20,7 @@ export const createPaymentSchema = Joi.object({
     totalPayable: Joi.number().min(0).required(),
   }).required(),
   paymentStatus: Joi.string().valid('pending', 'paid', 'failed').default('pending'),
+  paidAt: Joi.date().iso().optional(),
 });
 
 export const updatePaymentStatusSchema = Joi.object({
@@ -68,6 +69,7 @@ export type CreatePaymentInput = {
     totalPayable: number;
   };
   paymentStatus?: 'pending' | 'paid' | 'failed';
+  paidAt?: Date | string;
 };
 
 export type UpdatePaymentStatusInput = {

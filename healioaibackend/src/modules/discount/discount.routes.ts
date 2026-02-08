@@ -102,7 +102,6 @@ const discountController = new DiscountController();
  */
 router.post(
   '/',
-  authMiddleware,
   validateBody(createDiscountSchema),
   discountController.create
 );

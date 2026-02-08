@@ -39,11 +39,15 @@ const router = Router();
  *               consultationType: { type: string, enum: [online, in_person], default: in_person }
  *               consultationDuration: { type: number, default: 30 }
  *               offersApplied: { type: array, items: { type: string } }
- *               symptoms: { type: array, items: { type: string }, description: List of symptoms }
  *               appointmentInfo:
- *                 type: object
- *                 properties:
- *                   notes: { type: string }
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     startAt: { type: string, format: date-time }
+ *                     action: { type: string, enum: [booked, rescheduled, cancelled], default: booked }
+ *                     notes: { type: string }
+ *                     symptoms: { type: array, items: { type: string } }
  *     responses:
  *       201: { description: Appointment created successfully }
  *       400: { description: Validation error }

@@ -32,15 +32,6 @@ export class AppointmentService {
     const payload = {
       ...data,
       appointmentId,
-      appointmentInfo: [
-        {
-          startAt: data.currentStartAt,
-          action: 'booked',
-          notes: data.appointmentInfo?.notes,
-          symptoms: data.symptoms || [],
-          createdAt: new Date(),
-        },
-      ],
       bookingStatus: 'confirmed',
       createdBy: actorId || 'system',
       updatedBy: actorId || 'system',

@@ -25,7 +25,7 @@ export class PaymentRepository extends BaseRepository<IPayment> {
     return this.model
       .findById(id)
       .populate(PAYMENT_REF_POPULATE[0])
-      // .populate(PAYMENT_REF_POPULATE[1])
+      .populate(PAYMENT_REF_POPULATE[1])
       .exec();
   }
 
@@ -39,7 +39,7 @@ export class PaymentRepository extends BaseRepository<IPayment> {
       this.model
         .find(filter)
         .populate(PAYMENT_REF_POPULATE[0])
-        // .populate(PAYMENT_REF_POPULATE[1]) // Service model might not exist or might need check
+        .populate(PAYMENT_REF_POPULATE[1]) 
         .sort({ createdAt: -1 })
         .skip(params.skip)
         .limit(params.limit)

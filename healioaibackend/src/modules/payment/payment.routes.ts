@@ -49,6 +49,8 @@ const router = Router();
  *                   sgst: { type: number }
  *                   cgst: { type: number }
  *                   totalPayable: { type: number }
+ *               paymentStatus: { type: string, enum: [pending, paid, failed], default: pending }
+ *               paidAt: { type: string, format: date-time }
  *     responses:
  *       201: { description: Payment created successfully }
  *       400: { description: Validation error }

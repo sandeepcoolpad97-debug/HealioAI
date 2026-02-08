@@ -7,7 +7,7 @@ import {
   Button,
 } from '@mui/material';
 
-export default function AppointmentDeleteDialog({ open, onClose, onConfirm, appointmentId }) {
+export default function AppointmentDeleteDialog({ open, onClose, onConfirm }) {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Delete Appointment?</DialogTitle>

@@ -9,10 +9,14 @@ export const createAppointmentSchema = Joi.object({
   consultationType: Joi.string().valid('online', 'in_person').default('in_person'),
   consultationDuration: Joi.number().min(5).default(30),
   offersApplied: Joi.array().items(Joi.string().hex().length(24)).default([]),
-  symptoms: Joi.array().items(Joi.string().trim()).default([]),
-  appointmentInfo: Joi.object({
-    notes: Joi.string().trim().max(1000).optional(),
-  }).optional(),
+  appointmentInfo: Joi.array().items(
+    Joi.object({
+      startAt: Joi.date().iso().required(),
+      action: Joi.string().valid('booked', 'rescheduled', 'cancelled').default('booked'),
+      notes: Joi.string().trim().max(1000).optional(),
+      symptoms: Joi.array().items(Joi.string().trim()).default([]),
+    })
+  ).required(),
 });
 
 export const rescheduleAppointmentSchema = Joi.object({
@@ -66,10 +70,12 @@ export type CreateAppointmentInput = {
   consultationType: 'online' | 'in_person';
   consultationDuration?: number;
   offersApplied?: string[];
-  symptoms?: string[];
-  appointmentInfo?: {
+  appointmentInfo: {
+    startAt: Date;
+    action: 'booked' | 'rescheduled' | 'cancelled';
     notes?: string;
-  };
+    symptoms?: string[];
+  }[];
 };
 
 export type RescheduleAppointmentInput = {

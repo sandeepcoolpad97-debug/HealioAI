@@ -7,7 +7,7 @@ import {
   Alert,
   Chip,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   fetchPayments,
@@ -76,9 +76,15 @@ export default function AdminPaymentsScreen() {
       renderCell: (params) => statusChip(params.row.paymentStatus) 
     },
     { 
-      field: 'amount', 
-      headerName: 'Amount', 
-      width: 100, 
+      field: 'serviceName', 
+      headerName: 'Service Name', 
+      width: 150, 
+      valueGetter: (_, row) => row.paymentFor?.serviceId?.name || '—'
+    },
+    { 
+      field: 'totalPayable', 
+      headerName: 'Total Payable', 
+      width: 150, 
       valueGetter: (_, row) => row.paymentSummary?.totalPayable
     },
     { 
@@ -87,6 +93,12 @@ export default function AdminPaymentsScreen() {
       flex: 1,
       minWidth: 150, 
       valueGetter: (_, row) => row.userId?.name || row.userId || '—'
+    },
+    { 
+      field: 'paidVia', 
+      headerName: 'Paid Via', 
+      width: 100,
+      valueGetter: (_, row) => row.paidVia || '—'
     },
     { 
       field: 'provider', 
@@ -134,6 +146,39 @@ export default function AdminPaymentsScreen() {
         paginationMode="server"
         onPaginationModelChange={setPaginationModel}
         disableRowSelectionOnClick
+        sx={{
+          // Full header row background
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+          },
+
+          // Each header cell background + text color
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+            color: '#fff',
+          },
+
+          // Header title
+          '& .MuiDataGrid-columnHeaderTitle': {
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+
+          // Sort + menu icons
+          '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+            color: '#fff',
+          },
+
+          '& .MuiDataGrid-cell:focus': { outline: 'none' },
+          '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
+        }}
+        slots={{
+          toolbar: () => (
+            <Box sx={{ p: 1 }}>
+              <GridToolbar />
+            </Box>
+          ),
+        }}
       />
 
       <PaymentViewDialog

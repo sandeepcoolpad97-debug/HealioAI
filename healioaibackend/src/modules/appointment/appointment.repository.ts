@@ -7,9 +7,8 @@ const APPOINTMENT_REF_POPULATE = [
   // Updated to use Clinic model fields since Doctor model does not exist
   { path: 'doctorId', select: 'clinicName doctorName emailId contactNumber specialisation' },
   { path: 'userId', select: 'name email phone' },
-  // Temporarily disabled until Payment and Discount models are created/registered
-  // { path: 'paymentId', select: 'amount status currency' },
-  // { path: 'offersApplied', select: 'code description discountType discountValue' }
+  { path: 'paymentId', select: 'amount paymentStatus currency paymentSummary transactionId' },
+  { path: 'offersApplied', select: 'code description discountType discountValue' }
 ];
 
 export class AppointmentRepository extends BaseRepository<IAppointment> {
@@ -29,8 +28,8 @@ export class AppointmentRepository extends BaseRepository<IAppointment> {
       .findById(id)
       .populate(APPOINTMENT_REF_POPULATE[0])
       .populate(APPOINTMENT_REF_POPULATE[1])
-      // .populate(APPOINTMENT_REF_POPULATE[2])
-      // .populate(APPOINTMENT_REF_POPULATE[3])
+      .populate(APPOINTMENT_REF_POPULATE[2])
+      .populate(APPOINTMENT_REF_POPULATE[3])
       .exec() as Promise<IAppointment | null>;
   }
 
@@ -45,8 +44,8 @@ export class AppointmentRepository extends BaseRepository<IAppointment> {
         .find(filter)
         .populate(APPOINTMENT_REF_POPULATE[0])
         .populate(APPOINTMENT_REF_POPULATE[1])
-        // .populate(APPOINTMENT_REF_POPULATE[2])
-        // .populate(APPOINTMENT_REF_POPULATE[3])
+        .populate(APPOINTMENT_REF_POPULATE[2])
+        .populate(APPOINTMENT_REF_POPULATE[3])
         .sort({ currentStartAt: -1 }) // Default sort by date descending
         .skip(params.skip)
         .limit(params.limit)
