@@ -7,8 +7,9 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,6 +24,16 @@ import {
 import RoleViewDialog from '../roles/RoleViewDialog';
 import RoleFormDialog from '../roles/RoleFormDialog';
 import RoleDeleteDialog from '../roles/RoleDeleteDialog';
+
+const activeStatusChip = (isActive) => {
+  if (isActive === true) {
+    return <Chip label="Active" color="success" variant="outlined" size="small" />;
+  }
+  if (isActive === false) {
+    return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
+  }
+  return '—';
+};
 
 export default function AdminRolesScreen() {
   const dispatch = useDispatch();
@@ -90,19 +101,25 @@ export default function AdminRolesScreen() {
       sortable: false,
       valueGetter: (_, row) => getSlNo(row),
     },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
-    { field: 'description', headerName: 'Description', flex: 1, minWidth: 180 },
+    { field: 'name', headerName: 'Name', width: 100 },  
+    { field: 'description', headerName: 'Description', width: 180, flex: 1 },
     {
       field: 'isSystemRole',
       headerName: 'System',
-      width: 90,
+      width: 120,
       valueGetter: (_, row) => (row.isSystemRole ? 'Yes' : 'No'),
+    },
+    {
+      field: 'isActive',
+      headerName: 'Active status',
+      width: 120,
+      renderCell: (params) => activeStatusChip(params.row.isActive),
     },
     {
       field: 'permissions',
       headerName: 'Permissions',
       flex: 1,
-      minWidth: 120,
+      width: 180,
       valueGetter: (_, row) => (row.permissions?.length ? row.permissions.join(', ') : '—'),
     },
     {
@@ -156,12 +173,44 @@ export default function AdminRolesScreen() {
           pageSizeOptions={[5, 10, 25]}
           disableRowSelectionOnClick
           autoHeight
+          disableColumnSelector
+          isCellEditable={() => false}
+          disableColumnMenu
+          showToolbar
           sx={{
             minHeight: 400,
+
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
+
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
+
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
+
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
+
             '& .MuiDataGrid-cell:focus': { outline: 'none' },
             '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
           }}
           slots={{
+            toolbar: () => (
+              <Box sx={{ p: 1 }}>
+                <GridToolbar />
+              </Box>
+            ),
             noRowsOverlay: () => (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'text.secondary' }}>
                 No roles

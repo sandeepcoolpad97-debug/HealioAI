@@ -58,15 +58,26 @@ export default function RoleViewDialog({ open, onClose }) {
                   size="small"
                 />
               </Grid>
-              {/* Row 3: System role */}
-              <Grid size={{ xs: 12 }}>
+              {/* Row 3: System role & Active */}
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   label="System role"
                   value={selectedRole.isSystemRole ? 'Yes' : 'No'}
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  size="small"
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Active status"
+                  value={selectedRole.isActive ? 'Active' : 'Inactive'}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true
+                  }}
                   size="small"
                 />
               </Grid>
