@@ -61,7 +61,7 @@ export default function AdminAppointmentsScreen() {
     }
   };
 
-    const getSlNo = (row) => {
+  const getSlNo = (row) => {
     const idx = list.findIndex((r) => r._id === row._id);
     return idx >= 0 ? page * pageSize + idx + 1 : '';
   };
@@ -79,36 +79,36 @@ export default function AdminAppointmentsScreen() {
       headerName: 'Appointment ID',
       width: 180,
     },
-    { 
-      field: 'currentStartAt', 
-      headerName: 'Date & Time', 
+    {
+      field: 'currentStartAt',
+      headerName: 'Date & Time',
       width: 180,
       valueGetter: (_, row) => row.currentStartAt ? new Date(row.currentStartAt).toLocaleString() : '—'
     },
-    { 
-      field: 'bookingStatus', 
-      headerName: 'Status', 
-      width: 120, 
-      renderCell: (params) => statusChip(params.value || params.row.status) 
+    {
+      field: 'bookingStatus',
+      headerName: 'Status',
+      width: 120,
+      renderCell: (params) => statusChip(params.value || params.row.status)
     },
-    { 
-      field: 'doctorId', 
-      headerName: 'Doctor', 
+    {
+      field: 'doctorId',
+      headerName: 'Doctor',
       flex: 1,
-      minWidth: 150, 
+      minWidth: 150,
       valueGetter: (_, row) => row.doctorId?.doctorName || row.doctorId?.name || '—'
     },
-    { 
-      field: 'userId', 
-      headerName: 'Patient', 
+    {
+      field: 'userId',
+      headerName: 'Patient',
       flex: 1,
-      minWidth: 150, 
+      minWidth: 150,
       valueGetter: (_, row) => row.userId?.name || '—'
     },
-    { 
-      field: 'consultationType', 
-      headerName: 'Type', 
-      width: 100 
+    {
+      field: 'consultationType',
+      headerName: 'Type',
+      width: 100
     },
     {
       field: 'rescheduleCount',
@@ -151,47 +151,51 @@ export default function AdminAppointmentsScreen() {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <DataGrid
-        rows={list}
-        columns={columns}
-        getRowId={(row) => row._id}
-        rowCount={meta.total}
-        loading={listLoading}
-        pageSizeOptions={[10, 20, 50]}
-        paginationModel={paginationModel}
-        paginationMode="server"
-        onPaginationModelChange={setPaginationModel}
-        disableRowSelectionOnClick
-        disableColumnSelector
-        showToolbar
-        slots={{ toolbar: GridToolbar }}
-        sx={{
-          // Full header row background
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: (theme) => theme.palette.primary.main,
-          },
+      <Box sx={{ width: '100%', minHeight: 400 }}>
 
-          // Each header cell background + text color
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: (theme) => theme.palette.primary.main,
-            color: '#fff',
-          },
+        <DataGrid
+          rows={list}
+          columns={columns}
+          getRowId={(row) => row._id}
+          rowCount={meta.total}
+          loading={listLoading}
+          pageSizeOptions={[10, 20, 50]}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={setPaginationModel}
+          disableRowSelectionOnClick
+          disableColumnSelector
+          showToolbar
+          slots={{ toolbar: GridToolbar }}
+          sx={{
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
 
-          // Header title
-          '& .MuiDataGrid-columnHeaderTitle': {
-            color: '#fff',
-            fontWeight: 'bold',
-          },
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
 
-          // Sort + menu icons
-          '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
-            color: '#fff',
-          },
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
 
-          '& .MuiDataGrid-cell:focus': { outline: 'none' },
-          '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
-        }}
-      />
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
+
+            '& .MuiDataGrid-cell:focus': { outline: 'none' },
+            '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
+          }}
+        />
+
+      </Box>
 
       <AppointmentViewDialog
         open={!!viewId}

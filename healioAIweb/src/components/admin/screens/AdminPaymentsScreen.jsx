@@ -63,52 +63,52 @@ export default function AdminPaymentsScreen() {
       sortable: false,
       valueGetter: (_, row) => getSlNo(row),
     },
-    { 
-      field: 'createdAt', 
-      headerName: 'Date', 
+    {
+      field: 'createdAt',
+      headerName: 'Date',
       width: 180,
       valueGetter: (_, row) => row.createdAt ? new Date(row.createdAt).toLocaleString() : '—'
     },
-    { 
-      field: 'paymentStatus', 
-      headerName: 'Status', 
-      width: 120, 
-      renderCell: (params) => statusChip(params.row.paymentStatus) 
+    {
+      field: 'paymentStatus',
+      headerName: 'Status',
+      width: 120,
+      renderCell: (params) => statusChip(params.row.paymentStatus)
     },
-    { 
-      field: 'serviceName', 
-      headerName: 'Service Name', 
-      width: 150, 
+    {
+      field: 'serviceName',
+      headerName: 'Service Name',
+      width: 150,
       valueGetter: (_, row) => row.paymentFor?.serviceId?.name || '—'
     },
-    { 
-      field: 'totalPayable', 
-      headerName: 'Total Payable', 
-      width: 150, 
+    {
+      field: 'totalPayable',
+      headerName: 'Total Payable',
+      width: 150,
       valueGetter: (_, row) => row.paymentSummary?.totalPayable
     },
-    { 
-      field: 'userId', 
-      headerName: 'User', 
+    {
+      field: 'userId',
+      headerName: 'User',
       flex: 1,
-      minWidth: 150, 
+      minWidth: 150,
       valueGetter: (_, row) => row.userId?.name || row.userId || '—'
     },
-    { 
-      field: 'paidVia', 
-      headerName: 'Paid Via', 
+    {
+      field: 'paidVia',
+      headerName: 'Paid Via',
       width: 100,
       valueGetter: (_, row) => row.paidVia || '—'
     },
-    { 
-      field: 'provider', 
-      headerName: 'Provider', 
-      width: 100 
+    {
+      field: 'provider',
+      headerName: 'Provider',
+      width: 100
     },
-    { 
-      field: 'transactionId', 
-      headerName: 'Txn ID', 
-      width: 150 
+    {
+      field: 'transactionId',
+      headerName: 'Txn ID',
+      width: 150
     },
     {
       field: 'actions',
@@ -135,51 +135,54 @@ export default function AdminPaymentsScreen() {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <DataGrid
-        rows={payments}
-        columns={columns}
-        getRowId={(row) => row._id}
-        rowCount={meta.total}
-        loading={loading}
-        pageSizeOptions={[10, 20, 50]}
-        paginationModel={paginationModel}
-        paginationMode="server"
-        onPaginationModelChange={setPaginationModel}
-        disableRowSelectionOnClick
-        sx={{
-          // Full header row background
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: (theme) => theme.palette.primary.main,
-          },
+      <Box sx={{ width: '100%', minHeight: 400 }}>
+        <DataGrid
+          rows={payments}
+          columns={columns}
+          getRowId={(row) => row._id}
+          rowCount={meta.total}
+          loading={loading}
+          pageSizeOptions={[10, 20, 50]}
+          paginationModel={paginationModel}
+          paginationMode="server"
+          onPaginationModelChange={setPaginationModel}
+          disableRowSelectionOnClick
+          sx={{
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
 
-          // Each header cell background + text color
-          '& .MuiDataGrid-columnHeader': {
-            backgroundColor: (theme) => theme.palette.primary.main,
-            color: '#fff',
-          },
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
 
-          // Header title
-          '& .MuiDataGrid-columnHeaderTitle': {
-            color: '#fff',
-            fontWeight: 'bold',
-          },
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
 
-          // Sort + menu icons
-          '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
-            color: '#fff',
-          },
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
 
-          '& .MuiDataGrid-cell:focus': { outline: 'none' },
-          '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
-        }}
-        slots={{
-          toolbar: () => (
-            <Box sx={{ p: 1 }}>
-              <GridToolbar />
-            </Box>
-          ),
-        }}
-      />
+            '& .MuiDataGrid-cell:focus': { outline: 'none' },
+            '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
+          }}
+          slots={{
+            toolbar: () => (
+              <Box sx={{ p: 1 }}>
+                <GridToolbar />
+              </Box>
+            ),
+          }}
+        />
+
+      </Box>
 
       <PaymentViewDialog
         open={!!viewId}
