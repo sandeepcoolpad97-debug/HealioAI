@@ -6,8 +6,15 @@ import {
   IconButton,
   Alert,
   Chip,
+  Grid,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Paper,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -35,8 +42,21 @@ export default function AdminAppointmentsScreen() {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
   const [viewId, setViewId] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [filters, setFilters] = useState({
+    clinicName: '',
+    doctorName: '',
+    patientName: '',
+    consultationType: '',
+    date: '',
+    time: '',
+    status: '',
+  });
 
   const { page, pageSize } = paginationModel;
+
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
 
   useEffect(() => {
     dispatch(fetchAppointments({ page: page + 1, limit: pageSize }));
@@ -131,6 +151,103 @@ export default function AdminAppointmentsScreen() {
         <Typography variant="h5">Appointments</Typography>
       </Box>
 
+      {/* Filter Section */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Grid container spacing={2}>
+          {/* Row 1: Clinic Name and Doctor Name */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Clinic Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={filters.clinicName}
+              onChange={(e) => handleFilterChange('clinicName', e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Doctor Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={filters.doctorName}
+              onChange={(e) => handleFilterChange('doctorName', e.target.value)}
+            />
+          </Grid>
+
+          {/* Row 2: Patient Name and Consultation Type */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Patient Name"
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={filters.patientName}
+              onChange={(e) => handleFilterChange('patientName', e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Consultation Type</InputLabel>
+              <Select
+                value={filters.consultationType}
+                label="Consultation Type"
+                onChange={(e) => handleFilterChange('consultationType', e.target.value)}
+              >
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="video">Video</MenuItem>
+                <MenuItem value="audio">Audio</MenuItem>
+                <MenuItem value="chat">Chat</MenuItem>
+                <MenuItem value="physical">Physical</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* Row 3: Appointment Date, Time, and Status */}
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Date"
+              type="date"
+              variant="outlined"
+              size="small"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={filters.date}
+              onChange={(e) => handleFilterChange('date', e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Time"
+              type="time"
+              variant="outlined"
+              size="small"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={filters.time}
+              onChange={(e) => handleFilterChange('time', e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={filters.status}
+                label="Status"
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+              >
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="confirmed">Confirmed</MenuItem>
+                <MenuItem value="rescheduled">Rescheduled</MenuItem>
+                <MenuItem value="cancelled">Cancelled</MenuItem>
+                <MenuItem value="completed">Completed</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Paper>
+
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       <DataGrid
@@ -144,6 +261,35 @@ export default function AdminAppointmentsScreen() {
         paginationMode="server"
         onPaginationModelChange={setPaginationModel}
         disableRowSelectionOnClick
+        disableColumnSelector
+        showToolbar
+        slots={{ toolbar: GridToolbar }}
+        sx={{
+          // Full header row background
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+          },
+
+          // Each header cell background + text color
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+            color: '#fff',
+          },
+
+          // Header title
+          '& .MuiDataGrid-columnHeaderTitle': {
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+
+          // Sort + menu icons
+          '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+            color: '#fff',
+          },
+
+          '& .MuiDataGrid-cell:focus': { outline: 'none' },
+          '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
+        }}
       />
 
       <AppointmentViewDialog

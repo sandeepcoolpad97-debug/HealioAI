@@ -9,7 +9,7 @@ import {
   Alert,
   Chip,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,7 +30,7 @@ const emailDisplay = (row) => (row.emailId && row.emailId.trim()) ? row.emailId 
 
 const activeStatusChip = (isActive) => {
   if (isActive === true) {
-    return <Chip label="Active" color="success" variant="filled" size="small" />;
+    return <Chip label="Active" color="success" variant="outlined" size="small" />;
   }
   if (isActive === false) {
     return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
@@ -101,7 +101,12 @@ export default function AdminLabsScreen() {
     { field: 'labName', headerName: 'Lab name', flex: 1, minWidth: 140 },
     { field: 'registrationNumber', headerName: 'Reg. number', width: 120 },
     { field: 'emailId', headerName: 'Email', flex: 1, minWidth: 160, valueGetter: (value, row) => emailDisplay(row) },
-    { field: 'contactNumber', headerName: 'Contact', width: 120 },
+    {
+      field: 'phone',
+      headerName: 'Phone',
+      width: 140,
+      valueGetter: (value, row) => row.phone ? `${row.phone.countryCode} ${row.phone.number}` : '—'
+    },
     { field: 'roleId', headerName: 'Role', width: 100, valueGetter: (value, row) => roleName(row) },
     { field: 'isActive', headerName: 'Active status', width: 120, renderCell: (params) => activeStatusChip(params.row.isActive) },
     {
@@ -155,12 +160,44 @@ export default function AdminLabsScreen() {
           pageSizeOptions={[5, 10, 25]}
           disableRowSelectionOnClick
           autoHeight
+          disableColumnSelector
+          isCellEditable={() => false}
+          disableColumnMenu
+          showToolbar
           sx={{
             minHeight: 400,
+
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
+
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
+
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
+
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
+
             '& .MuiDataGrid-cell:focus': { outline: 'none' },
             '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
           }}
           slots={{
+            toolbar: () => (
+              <Box sx={{ p: 1 }}>
+                <GridToolbar />
+              </Box>
+            ),
             noRowsOverlay: () => (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'text.secondary' }}>
                 No labs

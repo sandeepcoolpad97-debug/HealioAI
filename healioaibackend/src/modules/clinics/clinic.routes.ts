@@ -54,7 +54,7 @@ router.post('/login', loginClinicValidation, loginClinic);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [firebaseUid, clinicName, registrationNumber, roleId, contactNumber, doctorName, consents]
+ *             required: [firebaseUid, clinicName, registrationNumber, roleId, phone, doctorName, consents]
  *             properties:
  *               firebaseUid: { type: string, description: Firebase UID }
  *               clinicName: { type: string }
@@ -62,7 +62,12 @@ router.post('/login', loginClinicValidation, loginClinic);
  *               roleId: { type: string, description: MongoDB ObjectId (24 hex chars) }
  *               address: { type: string, description: Optional address field }
  *               establishmentDate: { type: string, format: date, description: Optional establishment date }
- *               contactNumber: { type: string }
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode: { type: string, default: "+91" }
+ *                   number: { type: string }
+ *                   verified: { type: boolean, default: false }
  *               emailId: { type: string, format: email }
  *               operatingHours:
  *                 description: Optional array of operating hours per day
@@ -148,7 +153,12 @@ router.get('/:id', authMiddleware, getClinicByIdValidation, getClinicById);
  *               roleId: { type: string }
  *               address: { type: string }
  *               establishmentDate: { type: string, format: date }
- *               contactNumber: { type: string }
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode: { type: string }
+ *                   number: { type: string }
+ *                   verified: { type: boolean }
  *               emailId: { type: string, format: email }
  *               operatingHours: { type: array }
  *               specialisation: { type: array }

@@ -43,9 +43,20 @@ const ClinicSchema = new mongoose.Schema(
       type: Date
     },
 
-    contactNumber: {
-      type: String,
-      required: true
+    phone: {
+      countryCode: {
+        type: String,
+        default: "+91"
+      },
+      number: {
+        type: String,
+        required: true,
+        unique: true
+      },
+      verified: {
+        type: Boolean,
+        default: false
+      }
     },
 
     emailId: {
@@ -116,12 +127,6 @@ const ClinicSchema = new mongoose.Schema(
         type: Date,
         default: Date.now
       }
-    },
-
-    /* ---------------- SYSTEM FLAGS ---------------- */
-    isActive: {
-      type: Boolean,
-      default: true
     }
   },
   {
@@ -149,7 +154,11 @@ export interface IClinic extends Document, IAuditFields {
   roleId: mongoose.Types.ObjectId;
   address?: string;
   establishmentDate?: Date;
-  contactNumber: string;
+  phone: {
+    countryCode: string;
+    number: string;
+    verified: boolean;
+  };
   emailId?: string;
 
   operatingHours?: {
@@ -171,8 +180,6 @@ export interface IClinic extends Document, IAuditFields {
     medicalDisclaimer: boolean;
     acceptedAt?: Date;
   };
-
-  isActive: boolean;
 };
 
 export const ClinicModel = mongoose.model<IClinic>("Clinic", ClinicSchema);

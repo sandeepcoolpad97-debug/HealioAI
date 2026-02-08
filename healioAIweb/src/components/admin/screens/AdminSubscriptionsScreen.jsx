@@ -7,8 +7,9 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Chip,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -23,6 +24,16 @@ import {
 import SubscriptionViewDialog from '../subscriptions/SubscriptionViewDialog';
 import SubscriptionFormDialog from '../subscriptions/SubscriptionFormDialog';
 import SubscriptionDeleteDialog from '../subscriptions/SubscriptionDeleteDialog';
+
+const activeStatusChip = (isActive) => {
+  if (isActive === true) {
+    return <Chip label="Active" color="success" variant="outlined" size="small" />;
+  }
+  if (isActive === false) {
+    return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
+  }
+  return '—';
+};
 
 export default function AdminSubscriptionsScreen() {
   const dispatch = useDispatch();
@@ -90,7 +101,7 @@ export default function AdminSubscriptionsScreen() {
       sortable: false,
       valueGetter: (_, row) => getSlNo(row),
     },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
+    { field: 'name', headerName: 'Name', width: 120 },
     { field: 'code', headerName: 'Code', width: 100 },
     {
       field: 'price',
@@ -109,6 +120,19 @@ export default function AdminSubscriptionsScreen() {
       headerName: 'System',
       width: 90,
       valueGetter: (_, row) => (row.isSystemPlan ? 'Yes' : 'No'),
+    },
+    {
+      field: 'isActive',
+      headerName: 'Active status',
+      width: 120,
+      renderCell: (params) => activeStatusChip(params.row.isActive),
+    },
+    {
+      field: 'features',
+      headerName: 'Features',
+      flex: 1,
+      minWidth: 150,
+      valueGetter: (_, row) => (row.features?.length ? row.features.join(', ') : '—'),
     },
     {
       field: 'actions',
@@ -161,12 +185,44 @@ export default function AdminSubscriptionsScreen() {
           pageSizeOptions={[5, 10, 25]}
           disableRowSelectionOnClick
           autoHeight
+          disableColumnSelector
+          isCellEditable={() => false}
+          disableColumnMenu
+          showToolbar
           sx={{
             minHeight: 400,
+
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
+
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
+
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
+
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
+
             '& .MuiDataGrid-cell:focus': { outline: 'none' },
             '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
           }}
           slots={{
+            toolbar: () => (
+              <Box sx={{ p: 1 }}>
+                <GridToolbar />
+              </Box>
+            ),
             noRowsOverlay: () => (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'text.secondary' }}>
                 No subscriptions

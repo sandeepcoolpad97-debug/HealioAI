@@ -12,6 +12,10 @@ export class ClinicRepository extends BaseRepository<IClinic> {
     return this.findOne({ registrationNumber: registrationNumber.trim() } as FilterQuery<IClinic>);
   }
 
+  async findByPhoneNumber(number: string): Promise<IClinic | null> {
+    return this.findOne({ 'phone.number': number.trim() } as FilterQuery<IClinic>);
+  }
+
   async findByFirebaseUid(firebaseUid: string): Promise<IClinic | null> {
     return this.findOne({ firebaseUid } as FilterQuery<IClinic>);
   }
@@ -19,6 +23,13 @@ export class ClinicRepository extends BaseRepository<IClinic> {
   async existsByRegistrationNumber(registrationNumber: string): Promise<boolean> {
     const count = await this.count({
       registrationNumber: registrationNumber.trim(),
+    } as FilterQuery<IClinic>);
+    return count > 0;
+  }
+
+  async existsByPhoneNumber(number: string): Promise<boolean> {
+    const count = await this.count({
+      'phone.number': number.trim(),
     } as FilterQuery<IClinic>);
     return count > 0;
   }

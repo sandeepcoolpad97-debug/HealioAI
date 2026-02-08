@@ -32,6 +32,7 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
     durationInDays: null,
     features: [],
     isSystemPlan: false,
+    isActive: true,
   });
   const [featuresInput, setFeaturesInput] = useState('');
 
@@ -43,7 +44,7 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
     if (isEdit && subscriptionId) {
       dispatch(fetchSubscriptionById(subscriptionId));
     } else {
-      setForm({ name: '', code: '', price: 0, currency: 'INR', durationInDays: null, features: [], isSystemPlan: false });
+      setForm({ name: '', code: '', price: 0, currency: 'INR', durationInDays: null, features: [], isSystemPlan: false, isActive: true });
       setFeaturesInput('');
     }
   }, [open, isEdit, subscriptionId, dispatch]);
@@ -58,6 +59,7 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
         durationInDays: selectedSubscription.durationInDays ?? null,
         features: selectedSubscription.features ?? [],
         isSystemPlan: selectedSubscription.isSystemPlan ?? false,
+        isActive: selectedSubscription.isActive ?? true,
       });
       setFeaturesInput((selectedSubscription.features ?? []).join(', '));
     }
@@ -174,17 +176,32 @@ export default function SubscriptionFormDialog({ open, onClose, onSuccess, mode,
                 fullWidth
               />
             </Grid>
-            {/* Row 4: System plan (create and edit – API field) */}
-            <Grid size={{ xs: 12 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={form.isSystemPlan}
-                    onChange={(e) => handleChange('isSystemPlan', e.target.checked)}
-                  />
-                }
-                label="System plan"
-              />
+            {/* Row 4: System plan & Active status */}
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>System plan</InputLabel>
+                <Select
+                  value={form.isSystemPlan ? 'true' : 'false'}
+                  label="System plan"
+                  onChange={(e) => handleChange('isSystemPlan', e.target.value === 'true')}
+                >
+                  <MenuItem value="true">Yes</MenuItem>
+                  <MenuItem value="false">No</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>Active status</InputLabel>
+                <Select
+                  value={form.isActive ? 'true' : 'false'}
+                  label="Active status"
+                  onChange={(e) => handleChange('isActive', e.target.value === 'true')}
+                >
+                  <MenuItem value="true">Active</MenuItem>
+                  <MenuItem value="false">Inactive</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </Box>

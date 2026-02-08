@@ -22,7 +22,11 @@ export const createLabSchema = Joi.object({
   registrationNumber: Joi.string().min(1).max(100).required().trim(),
   roleId: Joi.string().hex().length(24).required(),
   address: Joi.string().min(1).max(500).trim().allow('').optional(),
-  contactNumber: Joi.string().min(1).max(20).required().trim(),
+  phone: Joi.object({
+    countryCode: Joi.string().default('+91').trim(),
+    number: Joi.string().min(1).max(20).required().trim(),
+    verified: Joi.boolean().default(false),
+  }).required(),
   emailId: Joi.string().email().trim().lowercase().allow('').optional(),
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
   services: Joi.object({
@@ -42,7 +46,11 @@ export const updateLabSchema = Joi.object({
   registrationNumber: Joi.string().min(1).max(100).trim(),
   roleId: Joi.string().hex().length(24),
   address: Joi.string().min(1).max(500).trim().allow('').optional(),
-  contactNumber: Joi.string().min(1).max(20).trim(),
+  phone: Joi.object({
+    countryCode: Joi.string().trim(),
+    number: Joi.string().min(1).max(20).trim(),
+    verified: Joi.boolean(),
+  }),
   emailId: Joi.string().email().trim().lowercase().allow(''),
   operatingHours: Joi.array().items(operatingHoursItemSchema).optional(),
   services: Joi.object({
@@ -96,7 +104,11 @@ export type CreateLabInput = {
   registrationNumber: string;
   roleId: string;
   address?: string;
-  contactNumber: string;
+  phone: {
+    countryCode: string;
+    number: string;
+    verified: boolean;
+  };
   emailId?: string;
   operatingHours?: {
     day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
@@ -121,7 +133,11 @@ export type UpdateLabInput = {
   registrationNumber?: string;
   roleId?: string;
   address?: string;
-  contactNumber?: string;
+  phone?: {
+    countryCode?: string;
+    number?: string;
+    verified?: boolean;
+  };
   emailId?: string;
   operatingHours?: {
     day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';

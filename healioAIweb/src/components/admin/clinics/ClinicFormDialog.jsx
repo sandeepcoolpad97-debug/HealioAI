@@ -33,11 +33,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
     roleId: '',
     address: '',
     establishmentDate: '',
-    contactNumber: '',
+    phone: { countryCode: '+91', number: '', verified: false },
     emailId: '',
     consultationType: 'in_person',
     specialisation: '',
     doctorName: '',
+    isActive: true,
     consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
   });
 
@@ -55,11 +56,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         roleId: '',
         address: '',
         establishmentDate: '',
-        contactNumber: '',
+        phone: { countryCode: '+91', number: '', verified: false },
         emailId: '',
         consultationType: 'in_person',
         specialisation: '',
         doctorName: '',
+        isActive: true,
         consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
       });
     }
@@ -74,11 +76,16 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         roleId: typeof selectedClinic.roleId === 'object' ? selectedClinic.roleId?._id : selectedClinic.roleId ?? '',
         address: selectedClinic.address ?? '',
         establishmentDate: selectedClinic.establishmentDate ? new Date(selectedClinic.establishmentDate).toISOString().split('T')[0] : '',
-        contactNumber: selectedClinic.contactNumber ?? '',
+        phone: {
+          countryCode: selectedClinic.phone?.countryCode ?? '+91',
+          number: selectedClinic.phone?.number ?? '',
+          verified: selectedClinic.phone?.verified ?? false,
+        },
         emailId: selectedClinic.emailId ?? '',
         consultationType: selectedClinic.consultationType ?? 'in_person',
         specialisation: (selectedClinic.specialisation ?? []).join(', '),
         doctorName: selectedClinic.doctorName ?? '',
+        isActive: selectedClinic.isActive ?? true,
       }));
     }
   }, [isEdit, selectedClinic]);
@@ -122,7 +129,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         .then(() => onSuccess?.())
         .catch(() => {});
     } else {
-      if (!createPayload.roleId || !createPayload.clinicName || !createPayload.registrationNumber || !createPayload.contactNumber || !createPayload.doctorName) return;
+      if (!createPayload.roleId || !createPayload.clinicName || !createPayload.registrationNumber || !createPayload.phone?.number || !createPayload.doctorName) return;
       dispatch(createClinic(createPayload))
         .unwrap()
         .then(() => onSuccess?.())
@@ -130,7 +137,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
     }
   };
 
-  const valid = form.clinicName?.trim() && form.registrationNumber?.trim() && form.roleId && form.contactNumber?.trim() && form.doctorName?.trim();
+  const valid = form.clinicName?.trim() && form.registrationNumber?.trim() && form.roleId && form.phone?.number?.trim() && form.doctorName?.trim();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -141,9 +148,13 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         <Box sx={{ pt: 1 }}>
           {error && <Box sx={{ color: 'error.main', fontSize: '0.875rem', mb: 2 }}>{error}</Box>}
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12 }}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Clinic name" value={form.clinicName} onChange={(e) => handleChange('clinicName', e.target.value)} required fullWidth />
             </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField label="Doctor Name" value={form.doctorName} onChange={(e) => handleChange('doctorName', e.target.value)} required fullWidth placeholder="Dr. John Smith" />
+            </Grid>
+            
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Registration number" value={form.registrationNumber} onChange={(e) => handleChange('registrationNumber', e.target.value)} required fullWidth />
             </Grid>
@@ -157,26 +168,8 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Address (optional)" value={form.address} onChange={(e) => handleChange('address', e.target.value)} fullWidth />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField 
-                label="Establishment Date" 
-                type="date" 
-                value={form.establishmentDate} 
-                onChange={(e) => handleChange('establishmentDate', e.target.value)} 
-                fullWidth 
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Contact number" value={form.contactNumber} onChange={(e) => handleChange('contactNumber', e.target.value)} required fullWidth />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Email" type="email" value={form.emailId} onChange={(e) => handleChange('emailId', e.target.value)} fullWidth />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Consultation type</InputLabel>
                 <Select value={form.consultationType} label="Consultation type" onChange={(e) => handleChange('consultationType', e.target.value)}>
@@ -186,15 +179,60 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
                 </Select>
               </FormControl>
             </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth>
+                <InputLabel>Active Status</InputLabel>
+                <Select
+                  value={form.isActive ? 'active' : 'inactive'}
+                  label="Active Status"
+                  onChange={(e) => handleChange('isActive', e.target.value === 'active')}
+                >
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField 
+                label="Establishment Date" 
+                type="date" 
+                value={form.establishmentDate} 
+                onChange={(e) => handleChange('establishmentDate', e.target.value)} 
+                fullWidth 
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <TextField
+                  label="Code"
+                  value={form.phone.countryCode}
+                  onChange={(e) => setForm((prev) => ({ ...prev, phone: { ...prev.phone, countryCode: e.target.value } }))}
+                  sx={{ width: 80 }}
+                />
+                <TextField
+                  label="Phone Number"
+                  value={form.phone.number}
+                  onChange={(e) => setForm((prev) => ({ ...prev, phone: { ...prev.phone, number: e.target.value } }))}
+                  required
+                  fullWidth
+                />
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField label="Email" type="email" value={form.emailId} onChange={(e) => handleChange('emailId', e.target.value)} fullWidth />
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <TextField label="Address (optional)" value={form.address} onChange={(e) => handleChange('address', e.target.value)} fullWidth />
+            </Grid>
             <Grid size={{ xs: 12 }}>
               <TextField label="Specialisation (comma-separated)" value={form.specialisation} onChange={(e) => handleChange('specialisation', e.target.value)} fullWidth placeholder="e.g. General, Cardiology" />
             </Grid>
-            <Grid size={{ xs: 12 }}>
-              <TextField label="Doctor Name" value={form.doctorName} onChange={(e) => handleChange('doctorName', e.target.value)} required fullWidth placeholder="Dr. John Smith" />
-            </Grid>
             {!isEdit && (
               <Grid size={{ xs: 12 }}>
-                <FormGroup>
+                <FormGroup row>
                   <FormControlLabel control={<Checkbox checked={!!form.consents?.termsAndConditions} onChange={(e) => handleConsentChange('termsAndConditions', e.target.checked)} />} label="Terms and conditions" />
                   <FormControlLabel control={<Checkbox checked={!!form.consents?.policyTerms} onChange={(e) => handleConsentChange('policyTerms', e.target.checked)} />} label="Policy terms" />
                   <FormControlLabel control={<Checkbox checked={!!form.consents?.medicalDisclaimer} onChange={(e) => handleConsentChange('medicalDisclaimer', e.target.checked)} />} label="Medical disclaimer" />
