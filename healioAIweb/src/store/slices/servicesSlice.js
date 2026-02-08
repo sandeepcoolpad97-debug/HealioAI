@@ -8,8 +8,8 @@ export const fetchServices = createAsyncThunk(
       let query = `/services?page=${page}&limit=${limit}`;
       if (search) query += `&search=${search}`;
       if (isActive !== undefined) query += `&isActive=${isActive}`;
-      const data = await api.get(query);
-      return { data: data.data || [], meta: data.meta || {} };
+      const response = await api.get(query);
+      return { data: response.data || [], meta: response.meta || {} };
     } catch (err) {
       return rejectWithValue(err.message || 'Failed to fetch services');
     }

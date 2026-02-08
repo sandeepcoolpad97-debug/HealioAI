@@ -4,47 +4,56 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography,
-  Grid,
-  Chip,
-  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-
-const InfoItem = ({ label, value }) => (
-  <Box sx={{ mb: 2 }}>
-    <Typography variant="subtitle2" color="text.secondary">
-      {label}
-    </Typography>
-    <Typography variant="body1">
-      {value || '—'}
-    </Typography>
-  </Box>
-);
 
 export default function CategoryViewDialog({ open, onClose, category }) {
   if (!category) return null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Category Details</DialogTitle>
+      <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+        Category Details
+      </DialogTitle>
       <DialogContent dividers>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <InfoItem label="Name" value={category.name} />
-            <InfoItem label="Code" value={category.code} />
-            <InfoItem label="Description" value={category.description} />
-            <InfoItem 
-              label="Status" 
-              value={
-                <Chip 
-                  label={category.isActive ? "Active" : "Inactive"} 
-                  color={category.isActive ? "success" : "default"} 
-                  size="small" 
-                />
-              } 
-            />
-          </Grid>
-        </Grid>
+        <TextField
+          margin="dense"
+          label="Category Name"
+          fullWidth
+          value={category.name || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <TextField
+          margin="dense"
+          label="Category Code"
+          fullWidth
+          value={category.code || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <TextField
+          margin="dense"
+          label="Description"
+          fullWidth
+          multiline
+          rows={3}
+          value={category.description || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={category.isActive ? 'Active' : 'Inactive'}
+            label="Status"
+            readOnly
+          >
+            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Inactive">Inactive</MenuItem>
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>

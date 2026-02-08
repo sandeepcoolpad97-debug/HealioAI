@@ -4,47 +4,56 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography,
-  Grid,
-  Chip,
-  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-
-const InfoItem = ({ label, value }) => (
-  <Box sx={{ mb: 2 }}>
-    <Typography variant="subtitle2" color="text.secondary">
-      {label}
-    </Typography>
-    <Typography variant="body1">
-      {value || '—'}
-    </Typography>
-  </Box>
-);
 
 export default function ServiceViewDialog({ open, onClose, service }) {
   if (!service) return null;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Service Details</DialogTitle>
+      <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+        Service Details
+      </DialogTitle>
       <DialogContent dividers>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <InfoItem label="Name" value={service.name} />
-            <InfoItem label="Code" value={service.code} />
-            <InfoItem label="Description" value={service.description} />
-            <InfoItem 
-              label="Status" 
-              value={
-                <Chip 
-                  label={service.isActive !== false ? "Active" : "Inactive"} 
-                  color={service.isActive !== false ? "success" : "default"} 
-                  size="small" 
-                />
-              } 
-            />
-          </Grid>
-        </Grid>
+        <TextField
+          margin="dense"
+          label="Service Name"
+          fullWidth
+          value={service.name || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <TextField
+          margin="dense"
+          label="Service Code"
+          fullWidth
+          value={service.code || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <TextField
+          margin="dense"
+          label="Description"
+          fullWidth
+          multiline
+          rows={3}
+          value={service.description || ''}
+          InputProps={{ readOnly: true }}
+        />
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={service.isActive !== false ? 'Active' : 'Inactive'}
+            label="Status"
+            readOnly
+          >
+            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Inactive">Inactive</MenuItem>
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>

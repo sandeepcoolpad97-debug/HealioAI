@@ -37,7 +37,7 @@ export class ServiceController {
       const result = await this.serviceService.list(page, limit, { isActive, search });
       res.status(HTTP_STATUS.OK).json({
         success: true,
-        data: result,
+        ...result,
         message: 'Services retrieved successfully'
       });
     } catch (error) {

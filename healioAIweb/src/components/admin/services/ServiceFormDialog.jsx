@@ -6,8 +6,10 @@ import {
   DialogActions,
   Button,
   TextField,
-  FormControlLabel,
-  Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Alert,
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
@@ -43,10 +45,10 @@ export default function ServiceFormDialog({ open, onClose, service }) {
   }, [service, open]);
 
   const handleChange = (e) => {
-    const { name, value, checked, type } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
@@ -70,7 +72,9 @@ export default function ServiceFormDialog({ open, onClose, service }) {
 
   return (
     <Dialog open={open} onClose={() => onClose(false)} maxWidth="sm" fullWidth>
-      <DialogTitle>{service ? 'Edit Service' : 'New Service'}</DialogTitle>
+      <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+        {service ? 'Edit Service' : 'New Service'}
+      </DialogTitle>
       <DialogContent dividers>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <TextField
@@ -103,18 +107,18 @@ export default function ServiceFormDialog({ open, onClose, service }) {
           value={formData.description}
           onChange={handleChange}
         />
-        <FormControlLabel
-          control={
-            <Switch
-              name="isActive"
-              checked={formData.isActive}
-              onChange={handleChange}
-              color="primary"
-            />
-          }
-          label="Active"
-          sx={{ mt: 1 }}
-        />
+        <FormControl fullWidth margin="dense">
+          <InputLabel>Active status</InputLabel>
+          <Select
+            name="isActive"
+            value={formData.isActive}
+            label="Active status"
+            onChange={(e) => setFormData((prev) => ({ ...prev, isActive: e.target.value }))}
+          >
+            <MenuItem value={true}>Active</MenuItem>
+            <MenuItem value={false}>Inactive</MenuItem>
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => onClose(false)}>Cancel</Button>

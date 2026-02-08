@@ -10,7 +10,7 @@ import {
   TextField,
   InputAdornment,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -164,14 +164,54 @@ export default function AdminServicesScreen() {
       <DataGrid
         rows={list}
         columns={columns}
-        getRowId={(row) => row._id}
-        rowCount={meta.total}
+        getRowId={(row) => row._id || row.id}
+        rowCount={meta?.total || 0}
         loading={listLoading}
         pageSizeOptions={[10, 20, 50]}
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={setPaginationModel}
         disableRowSelectionOnClick
+        autoHeight
+        disableColumnSelector
+        isCellEditable={() => false}
+        disableColumnMenu
+        showToolbar
+        sx={{
+          minHeight: 400,
+
+          // Full header row background
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+          },
+
+          // Each header cell background + text color
+          '& .MuiDataGrid-columnHeader': {
+            backgroundColor: (theme) => theme.palette.primary.main,
+            color: '#fff',
+          },
+
+          // Header title
+          '& .MuiDataGrid-columnHeaderTitle': {
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+
+          // Sort + menu icons
+          '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+            color: '#fff',
+          },
+
+          '& .MuiDataGrid-cell:focus': { outline: 'none' },
+          '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
+        }}
+        slots={{
+          toolbar: () => (
+            <Box sx={{ p: 1 }}>
+              <GridToolbar />
+            </Box>
+          ),
+        }}
       />
 
       {/* Dialogs */}
