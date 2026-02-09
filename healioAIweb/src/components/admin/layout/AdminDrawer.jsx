@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -17,10 +18,12 @@ import EventIcon from '@mui/icons-material/Event';
 import CategoryIcon from '@mui/icons-material/Category';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import PaymentIcon from '@mui/icons-material/Payment';
+import DiscountIcon from '@mui/icons-material/Discount';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/admin', icon: DashboardIcon },
   { label: 'Users', path: '/admin/users', icon: PeopleIcon },
+  { label: 'Admins', path: '/admin/admins', icon: SupervisorAccountIcon },
   { label: 'Roles', path: '/admin/roles', icon: AdminPanelSettingsIcon },
   { label: 'Subscriptions', path: '/admin/subscriptions', icon: CardMembershipIcon },
   { label: 'Clinics', path: '/admin/clinics', icon: LocalHospitalIcon },
@@ -29,6 +32,7 @@ const NAV_ITEMS = [
   { label: 'Categories', path: '/admin/categories', icon: CategoryIcon },
   { label: 'Services', path: '/admin/services', icon: MedicalServicesIcon },
   { label: 'Payments', path: '/admin/payments', icon: PaymentIcon },
+  { label: 'Discounts', path: '/admin/discounts', icon: DiscountIcon },
 ];
 
 function NavListItem({ label, path, icon: Icon }) {
@@ -53,9 +57,9 @@ function NavListItem({ label, path, icon: Icon }) {
         <ListItemIcon sx={{ minWidth: 40, color: isActive ? 'primary.main' : 'inherit' }}>
           <Icon />
         </ListItemIcon>
-        <ListItemText 
-          primary={label} 
-          primaryTypographyProps={{ 
+        <ListItemText
+          primary={label}
+          primaryTypographyProps={{
             fontWeight: isActive ? 'bold' : 'medium',
             color: isActive ? 'primary.main' : 'inherit'
           }}
