@@ -1,5 +1,7 @@
 import { Router, Application } from 'express';
 import { env } from './common/config/env';
+
+// Modules
 import { userRoutes } from './modules/users';
 import { roleRoutes } from './modules/roles';
 import { subscriptionRoutes } from './modules/subscriptions';
@@ -11,7 +13,9 @@ import { categoryRoutes } from './modules/category';
 import { serviceRoutes } from './modules/service';
 import { discountRoutes } from './modules/discount';
 import { paymentRoutes } from './modules/payment';
+import { reviewRoutes } from './modules/reviews';
 
+// Routes
 const router = Router();
 
 /**
@@ -27,6 +31,7 @@ router.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Modules
 router.use('/users', userRoutes);
 router.use('/roles', roleRoutes);
 router.use('/subscriptions', subscriptionRoutes);
@@ -38,7 +43,10 @@ router.use('/categories', categoryRoutes);
 router.use('/services', serviceRoutes);
 router.use('/discounts', discountRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/reviews', reviewRoutes);
+
 
 export function registerRoutes(app: Application): void {
   app.use(env.API_PREFIX, router);
 }
+

@@ -13,6 +13,7 @@ import AdminCategoriesScreen from '../components/admin/screens/AdminCategoriesSc
 import AdminServicesScreen from '../components/admin/screens/AdminServicesScreen';
 import AdminPaymentsScreen from '../components/admin/screens/AdminPaymentsScreen';
 import AdminDiscountsScreen from '../components/admin/screens/AdminDiscountsScreen';
+import AdminReviewsScreen from '../components/admin/screens/AdminReviewsScreen';
 import AdminLogin from '../components/admin/screens/AdminLogin';
 import AdminLayout from '../components/admin/layout/AdminLayout';
 
@@ -43,9 +44,11 @@ export default function AdminRoutes() {
         <Route path="services" element={<AdminServicesScreen />} />
         <Route path="payments" element={<AdminPaymentsScreen />} />
         <Route path="discounts" element={<AdminDiscountsScreen />} />
+        <Route path="reviews" element={<AdminReviewsScreen />} />
       </Route>
     </Routes>
   );
 }
+
 
 

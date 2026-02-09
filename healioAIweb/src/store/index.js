@@ -11,6 +11,7 @@ import paymentsReducer from './slices/paymentsSlice';
 import authReducer from './slices/authSlice';
 import adminsReducer from './slices/adminsSlice';
 import discountsReducer from './slices/discountsSlice';
+import reviewsReducer from './slices/reviewsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
     users: usersReducer,
     admins: adminsReducer,
     discounts: discountsReducer,
+    reviews: reviewsReducer,
     roles: rolesReducer,
     subscriptions: subscriptionsReducer,
     clinics: clinicsReducer,
@@ -28,4 +30,5 @@ export const store = configureStore({
     payments: paymentsReducer,
   },
 });
+
 
