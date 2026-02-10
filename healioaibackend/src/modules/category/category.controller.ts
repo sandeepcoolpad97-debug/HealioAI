@@ -49,8 +49,9 @@ export async function listCategories(
     const limit = Number(req.query.limit) || 20;
     const isActive = req.query.isActive !== undefined ? req.query.isActive === 'true' : undefined;
     const search = req.query.search as string;
+    const type = req.query.type as string;
 
-    const result = await categoryService.list(page, limit, { isActive, search });
+    const result = await categoryService.list(page, limit, { isActive, search, type });
     res.status(HTTP_STATUS.OK).json({ success: true, ...result });
   } catch (err) {
     next(err);

@@ -109,5 +109,55 @@ export const appointmentService = {
       console.error(`Error fetching appointment ${id}:`, error);
       throw error;
     }
+  },
+
+  rescheduleAppointment: async (
+    appointmentId: string, 
+    newStartAt: string, 
+    reason: string,
+    categoryId?: string
+  ): Promise<any> => {
+    const response = await fetch(`${getApiUrl(`/appointments/${appointmentId}/reschedule`)}`, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify({
+        newStartAt,
+        reason,
+        rescheduleCategory: categoryId, 
+        notifyPatient: true,
+        notifyDoctor: true
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to reschedule appointment');
+    }
+    
+    return response.json();
+  },
+
+  cancelAppointment: async (
+    appointmentId: string, 
+    reason: string,
+    categoryId?: string
+  ): Promise<any> => {
+    const response = await fetch(`${getApiUrl(`/appointments/${appointmentId}/cancel`)}`, {
+      method: 'POST',
+      headers: await getAuthHeaders(),
+      body: JSON.stringify({
+        reason,
+        cancellationCategory: categoryId,
+        notifyPatient: true,
+        notifyDoctor: true
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to cancel appointment');
+    }
+    
+    return response.json();
   }
 };

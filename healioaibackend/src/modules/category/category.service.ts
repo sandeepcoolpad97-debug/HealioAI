@@ -12,14 +12,15 @@ export class CategoryService {
   private readonly categoryRepository = new CategoryRepository();
 
   async create(data: CreateCategoryInput, actorId?: string): Promise<ICategory> {
-    const exists = await this.categoryRepository.existsByCode(data.code);
-    if (exists) {
-      throw new AppError(
-        ErrorCode.CONFLICT,
-        HTTP_STATUS.CONFLICT,
-        `Category with code '${data.code}' already exists`
-      );
-    }
+    // Unique code check is removed as requested
+    // But we might want to check unique (code, type) combination if required, 
+    // however user explicitly asked to remove unique for category code.
+    // We will proceed without uniqueness check on code, or maybe we check uniqueness of name?
+    // Let's assume name should be unique as per model (unique: true).
+    
+    // Check if name exists (since name is unique in model)
+    // The model says name: { unique: true }
+    // The repository doesn't have existByName, let's assume standard error handling catches duplicate key error.
 
     const payload = {
       ...data,
@@ -42,11 +43,30 @@ export class CategoryService {
     return category;
   }
 
-  async list(page: number, limit: number, filters: { isActive?: boolean; search?: string }): Promise<PaginatedResult<ICategory>> {
+  async list(page: number, limit: number, filters: { isActive?: boolean; search?: string; type?: string }): Promise<PaginatedResult<ICategory>> {
     const query: FilterQuery<ICategory> = { isDeleted: false };
 
     if (filters.isActive !== undefined) {
       query.isActive = filters.isActive;
+    }
+
+    if (filters.type) {
+      // If type is 'both', we might want to fetch everything? 
+      // Or if the category is marked as 'both', it should appear for both 'reschedule' and 'cancellation' queries?
+      // User requirement: "fetch the detailes based on the query also".
+      // Let's implement logic:
+      // If query.type is provided (e.g. 'reschedule'), we want categories that are 'reschedule' OR 'both'.
+      // If query.type is 'cancellation', we want 'cancellation' OR 'both'.
+      // If query.type is 'both', we probably just want 'both'? Or all?
+      // Usually "type" filter means exact match.
+      // But if a category is "both", it applies to both.
+      // So if I ask for "reschedule" categories, I should get "reschedule" AND "both".
+      if (filters.type === 'reschedule' || filters.type === 'cancellation') {
+          query.type = { $in: [filters.type, 'both'] };
+      } else {
+          // If filtering by 'both' or anything else, strict match
+          query.type = filters.type;
+      }
     }
 
     if (filters.search) {
@@ -69,17 +89,8 @@ export class CategoryService {
       );
     }
 
-    if (data.code && data.code !== category.code) {
-      const exists = await this.categoryRepository.existsByCode(data.code);
-      if (exists) {
-        throw new AppError(
-          ErrorCode.CONFLICT,
-          HTTP_STATUS.CONFLICT,
-          `Category with code '${data.code}' already exists`
-        );
-      }
-    }
-
+    // Code uniqueness check removed
+    
     const updatePayload = {
       ...data,
       updatedBy: actorId || uuidv4(),

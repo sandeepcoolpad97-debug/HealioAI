@@ -3,18 +3,21 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 
 interface RescheduleActionFooterProps {
   onConfirm: () => void;
+  disabled?: boolean;
 }
 
 export const RescheduleActionFooter: React.FC<RescheduleActionFooterProps> = ({
   onConfirm,
+  disabled = false,
 }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity 
-        style={styles.button} 
+        style={[styles.button, disabled && styles.buttonDisabled]} 
         onPress={onConfirm}
+        disabled={disabled}
       >
-        <Text style={styles.text}>Confirm Reschedule</Text>
+        <Text style={[styles.text, disabled && styles.textDisabled]}>Confirm Reschedule</Text>
       </TouchableOpacity>
     </View>
   );
@@ -35,9 +38,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonDisabled: {
+    backgroundColor: '#E5E7EB', // Gray
+  },
   text: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  textDisabled: {
+    color: '#9CA3AF',
   },
 });

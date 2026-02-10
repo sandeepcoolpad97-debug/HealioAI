@@ -15,8 +15,14 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
+      unique: false, // Updated: removed unique constraint
       lowercase: true,
+    },
+    type: {
+      type: String,
+      enum: ['reschedule', 'cancellation', 'both'],
+      required: true,
+      default: 'both'
     },
     description: {
       type: String,
@@ -36,6 +42,7 @@ CategorySchema.plugin(auditPlugin);
 export interface ICategory extends Document, IAuditFields {
   name: string;
   code: string;
+  type: 'reschedule' | 'cancellation' | 'both';
   description?: string;
 }
 

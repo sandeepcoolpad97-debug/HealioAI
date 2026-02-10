@@ -36,7 +36,8 @@ const router = Router();
  *             required: [name, code]
  *             properties:
  *               name: { type: string, maxLength: 100 }
- *               code: { type: string, maxLength: 50, description: 'Unique identifier, lowercase alphanumeric' }
+ *               code: { type: string, maxLength: 50, description: 'Identifier, lowercase alphanumeric (not unique)' }
+ *               type: { type: string, enum: [reschedule, cancellation, both], default: both }
  *               description: { type: string, maxLength: 500 }
  *               isActive: { type: boolean, default: true }
  *     responses:
@@ -74,6 +75,9 @@ router.post('/',    createCategoryValidation, createCategory);
  *       - in: query
  *         name: search
  *         schema: { type: string }
+ *       - in: query
+ *         name: type
+ *         schema: { type: string, enum: [reschedule, cancellation, both] }
  *     responses:
  *       200: { description: Paginated list of categories }
  */

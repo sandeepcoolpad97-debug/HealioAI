@@ -23,13 +23,7 @@ export const rescheduleAppointmentSchema = Joi.object({
   newStartAt: Joi.date().iso().greater('now').required(),
   reason: Joi.string().trim().min(10).max(500).required(),
   symptoms: Joi.array().items(Joi.string().trim()).optional(),
-  rescheduleCategory: Joi.string().valid(
-    'patient_request',
-    'doctor_unavailable',
-    'emergency',
-    'technical_issue',
-    'other'
-  ).default('patient_request'),
+  rescheduleCategory: Joi.string().hex().length(24).required(),
   rescheduledByRole: Joi.string().valid('user', 'doctor', 'lab', 'admin').optional(),
   rescheduledById: Joi.string().hex().length(24).optional(),
   notifyPatient: Joi.boolean().default(true),
@@ -38,14 +32,7 @@ export const rescheduleAppointmentSchema = Joi.object({
 
 export const cancelAppointmentSchema = Joi.object({
   reason: Joi.string().trim().min(10).max(500).required(),
-  cancellationCategory: Joi.string().valid(
-    'patient_cancelled',
-    'doctor_cancelled',
-    'medical_emergency',
-    'duplicate_booking',
-    'payment_failed',
-    'other'
-  ).default('patient_cancelled'),
+  cancellationCategory: Joi.string().hex().length(24).required(),
   requestRefund: Joi.boolean().default(false),
   notifyPatient: Joi.boolean().default(true),
   notifyDoctor: Joi.boolean().default(true),
@@ -83,7 +70,7 @@ export type RescheduleAppointmentInput = {
   newStartAt: Date;
   reason: string;
   symptoms?: string[];
-  rescheduleCategory?: 'patient_request' | 'doctor_unavailable' | 'emergency' | 'technical_issue' | 'other';
+  rescheduleCategory: string; // ObjectId
   rescheduledByRole?: 'user' | 'doctor' | 'lab' | 'admin';
   rescheduledById?: string;
   notifyPatient?: boolean;
@@ -92,7 +79,7 @@ export type RescheduleAppointmentInput = {
 
 export type CancelAppointmentInput = {
   reason: string;
-  cancellationCategory?: 'patient_cancelled' | 'doctor_cancelled' | 'medical_emergency' | 'duplicate_booking' | 'payment_failed' | 'other';
+  cancellationCategory: string; // ObjectId
   requestRefund?: boolean;
   notifyPatient?: boolean;
   notifyDoctor?: boolean;

@@ -12,7 +12,7 @@ export const RescheduleNoteInput: React.FC<RescheduleNoteInputProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add Note (Optional)</Text>
+      <Text style={styles.title}>Add Note</Text>
       
       <TextInput
         style={styles.input}

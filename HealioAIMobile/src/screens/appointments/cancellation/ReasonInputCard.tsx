@@ -12,7 +12,7 @@ export const ReasonInputCard: React.FC<ReasonInputCardProps> = ({
 }) => {
   return (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>Reason for cancellation (optional)</Text>
+      <Text style={styles.cardTitle}>Additional Notes *</Text>
       <TextInput
         style={styles.input}
         placeholder="Briefly tell us why you are cancelling"
