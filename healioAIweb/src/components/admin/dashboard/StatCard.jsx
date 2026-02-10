@@ -23,7 +23,7 @@ const StatCard = ({ title, value, data, color }) => {
         <Typography variant="h4" component="div" fontWeight="bold">
           {value}
         </Typography>
-        <Box sx={{ flexGrow: 1, height: 50 }}>
+        <Box sx={{ flexGrow: 1, height: 100 }}>
           <SparkLineChart
             data={data}
             height={50}

@@ -26,7 +26,7 @@ const DownloadsChart = () => {
         @mui/material downloads on Jun 29, 25
       </Typography>
       
-      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+      <Box>
         <PieChart
           series={[
             {
@@ -37,12 +37,12 @@ const DownloadsChart = () => {
               cornerRadius: 5,
               startAngle: -90,
               endAngle: 90,
-              cx: 150,
-              cy: 150,
+              cx: 140,
+              cy: 130,
             },
           ]}
-          height={200}
-          width={300}
+          height={100}
+          width={280}
           slotProps={{
             legend: {
               direction: 'row',
@@ -50,7 +50,7 @@ const DownloadsChart = () => {
               padding: 0,
             },
           }}
-          margin={{ top: 0, bottom: 40, left: 0, right: 0 }}
+          margin={{ top: -50, bottom: 40, left: 0, right: 0 }}
         />
       </Box>
     </Paper>

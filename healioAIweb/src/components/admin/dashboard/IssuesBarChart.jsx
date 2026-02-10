@@ -30,13 +30,13 @@ const IssuesBarChart = () => {
         Issues opened daily
       </Typography>
       
-      <Box sx={{ flexGrow: 1, width: '100%', minHeight: 150 }}>
+      <Box>
         <BarChart
           dataset={dataset}
           xAxis={[{ scaleType: 'band', dataKey: 'day', categoryGapRatio: 0.3 }]}
           series={[{ dataKey: 'value', color: '#4e79ff' }]}
           height={180}
-          margin={{ top: 10, bottom: 30, left: 40, right: 10 }}
+          margin={{ top: 10, bottom: 0, left: -15, right: 10 }}
           slotProps={{
             legend: { hidden: true },
           }}
