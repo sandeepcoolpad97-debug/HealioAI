@@ -14,6 +14,7 @@ import { serviceRoutes } from './modules/service';
 import { discountRoutes } from './modules/discount';
 import { paymentRoutes } from './modules/payment';
 import { reviewRoutes } from './modules/reviews';
+import { slotTrackerRoutes } from './modules/slotTracker';
 
 // Routes
 const router = Router();
@@ -44,6 +45,7 @@ router.use('/services', serviceRoutes);
 router.use('/discounts', discountRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/slots', slotTrackerRoutes);
 
 
 export function registerRoutes(app: Application): void {
