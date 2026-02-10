@@ -24,12 +24,19 @@ export type RootStackParamList = {
   [navigationRoutes.OnboardingSuccess]: undefined;
   [navigationRoutes.MainTabs]: { role?: string; screen?: string };
   [navigationRoutes.DoctorProfile]: {
-    doctorId: number;
+    doctorId: string;
     name: string;
     specialty: string;
     rating: number;
   };
-  [navigationRoutes.BookAppointment]: undefined;
+  [navigationRoutes.BookAppointment]: {
+    doctorId: string;
+    doctorName: string;
+    specialty: string;
+    rating: number;
+    hospital?: string;
+    location?: string;
+  };
   [navigationRoutes.AppointmentDetails]: {
     appointmentId: string;
   };

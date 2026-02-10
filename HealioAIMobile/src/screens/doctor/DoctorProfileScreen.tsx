@@ -13,7 +13,9 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../constants/colors';
+import { navigationRoutes } from '../../constants/strings';
 import { RootStackParamList } from '../../navigation/types';
+import { clinicService, ClinicDto } from '../../services/clinic.service';
 
 // Components
 import { DoctorProfileHeader } from './profile/DoctorProfileHeader';
@@ -28,10 +30,26 @@ type DoctorProfileNavigationProp = NativeStackNavigationProp<RootStackParamList>
 export const DoctorProfileScreen: React.FC = () => {
   const navigation = useNavigation<DoctorProfileNavigationProp>();
   const route = useRoute<DoctorProfileRouteProp>();
-  const { name, specialty, rating } = route.params || {
+  const { doctorId, name, specialty, rating } = route.params || {
+    doctorId: 'mock-id',
     name: 'Dr. Ananya Rao',
     specialty: 'Cardiologist',
     rating: 4.8,
+  };
+
+  const [doctorDetails, setDoctorDetails] = React.useState<ClinicDto | null>(null);
+
+  React.useEffect(() => {
+    if (doctorId && doctorId !== 'mock-id') {
+      fetchDoctorDetails();
+    }
+  }, [doctorId]);
+
+  const fetchDoctorDetails = async () => {
+    const details = await clinicService.getClinicById(doctorId);
+    if (details) {
+      setDoctorDetails(details);
+    }
   };
 
   const handleBack = () => {
@@ -43,7 +61,14 @@ export const DoctorProfileScreen: React.FC = () => {
   };
 
   const handleBookAppointment = () => {
-    navigation.navigate('BookAppointment');
+    navigation.navigate(navigationRoutes.BookAppointment, {
+      doctorId,
+      doctorName: name,
+      specialty,
+      rating,
+      hospital: doctorDetails?.clinicName,
+      location: doctorDetails?.address
+    });
   };
 
   return (
@@ -89,9 +114,9 @@ export const DoctorProfileScreen: React.FC = () => {
 
           {/* Contact/Location Section */}
           <DoctorContactInfo 
-            phone="+91 98765 43210"
-            clinicName="Apollo Clinic, Jayanagar"
-            location="Bengaluru, Karnataka"
+            phone={doctorDetails?.phone ? `+${doctorDetails.phone.countryCode} ${doctorDetails.phone.number}` : "+91 98765 43210"}
+            clinicName={doctorDetails?.clinicName || "Apollo Clinic, Jayanagar"}
+            location={doctorDetails?.address || "Bengaluru, Karnataka"}
           />
 
           {/* Next Available Slot */}

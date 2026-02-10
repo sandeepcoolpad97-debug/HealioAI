@@ -11,6 +11,7 @@ import {
   slotIdParamSchema
 } from './slotTracker.validation';
 import { validateBody, validateQuery, validateParams } from '../../common/validation/validate';
+import { authMiddleware } from '../../common/middlewares/auth.middleware';
 
 const router = Router();
 
@@ -58,6 +59,7 @@ const router = Router();
  */
 router.post(
     '/generate',
+    authMiddleware,
     validateBody(generateSlotsSchema),
     generateSlots
 );
@@ -142,6 +144,7 @@ router.get(
  */
 router.post(
     '/:id/lock',
+    authMiddleware,
     validateParams(slotIdParamSchema),
     lockSlot
 );
@@ -173,6 +176,7 @@ router.post(
  */
 router.post(
     '/:id/unlock',
+    authMiddleware,
     validateParams(slotIdParamSchema),
     unlockSlot
 );

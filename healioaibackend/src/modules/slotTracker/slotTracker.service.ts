@@ -97,7 +97,7 @@ export class SlotTrackerService {
 
       return this.slotTrackerRepository.updateById(slotId, {
           status: 'locked',
-          lockedByUserId: new mongoose.Types.ObjectId(userId),
+          lockedByUserId: userId,
           lockExpiresAt
       }) as Promise<ISlotTracker>;
   }

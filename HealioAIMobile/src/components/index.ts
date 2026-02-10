@@ -13,3 +13,4 @@ export { FormInput } from './FormInput';
 export { ScreenHeader } from './ScreenHeader';
 export { CheckboxRow } from './CheckboxRow';
 export { ConsentRow } from './ConsentRow';
+export { Loader } from './Loader';

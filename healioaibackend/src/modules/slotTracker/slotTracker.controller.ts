@@ -16,6 +16,7 @@ export async function generateSlots(
     const slots = await slotTrackerService.generateSlots(req.body, authReq.userId);
     res.status(HTTP_STATUS.CREATED).json({ success: true, count: slots.length, data: slots });
   } catch (err) {
+    console.error('Error in lockSlot:', err);
     next(err);
   }
 }
@@ -47,6 +48,7 @@ export async function lockSlot(
     const slot = await slotTrackerService.lockSlot(req.params.id, authReq.userId);
     res.status(HTTP_STATUS.OK).json({ success: true, data: slot });
   } catch (err) {
+    console.error('Error in lockSlot:', err);
     next(err);
   }
 }
