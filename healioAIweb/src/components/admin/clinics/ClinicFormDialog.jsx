@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { fetchClinicById, createClinic, updateClinic, clearError } from '../../../store/slices/clinicsSlice';
 import { api } from '../../../api/client';
+import OperatingHoursEditor from '../common/OperatingHoursEditor';
 
 const CONSULTATION_TYPES = ['in_person', 'online', 'both'];
 
@@ -40,6 +41,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
     doctorName: '',
     isActive: true,
     consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+    operatingHours: [],
   });
 
   const isEdit = mode === 'edit';
@@ -63,6 +65,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         doctorName: '',
         isActive: true,
         consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+        operatingHours: [],
       });
     }
   }, [open, isEdit, clinicId, dispatch]);
@@ -86,6 +89,7 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
         specialisation: (selectedClinic.specialisation ?? []).join(', '),
         doctorName: selectedClinic.doctorName ?? '',
         isActive: selectedClinic.isActive ?? true,
+        operatingHours: selectedClinic.operatingHours ?? [],
       }));
     }
   }, [isEdit, selectedClinic]);
@@ -113,7 +117,6 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
       ...form,
       specialisation,
       establishmentDate: form.establishmentDate ? new Date(form.establishmentDate) : undefined,
-      operatingHours: [],
     };
   };
 
@@ -229,6 +232,12 @@ export default function ClinicFormDialog({ open, onClose, onSuccess, mode, clini
             </Grid>
             <Grid size={{ xs: 12 }}>
               <TextField label="Specialisation (comma-separated)" value={form.specialisation} onChange={(e) => handleChange('specialisation', e.target.value)} fullWidth placeholder="e.g. General, Cardiology" />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <OperatingHoursEditor
+                value={form.operatingHours}
+                onChange={(newHours) => handleChange('operatingHours', newHours)}
+              />
             </Grid>
             {!isEdit && (
               <Grid size={{ xs: 12 }}>

@@ -1,4 +1,5 @@
-import { Typography, Box } from '@mui/material';
+import { Box } from '@mui/material';
+import AdminDashboard from '../dashboard/AdminDashboard';
 
 /**
  * Admin dashboard – default /admin content.
@@ -6,12 +7,7 @@ import { Typography, Box } from '@mui/material';
 export default function AdminDashboardScreen() {
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
-        Dashboard
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Admin dashboard home. Add widgets and overview content here.
-      </Typography>
+      <AdminDashboard />
     </Box>
   );
 }

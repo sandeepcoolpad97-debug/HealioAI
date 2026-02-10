@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { fetchLabById, createLab, updateLab, clearError } from '../../../store/slices/labsSlice';
 import { api } from '../../../api/client';
+import OperatingHoursEditor from '../common/OperatingHoursEditor';
 
 const TEST_CATEGORIES = ['blood_tests', 'urine_tests', 'radiology', 'pathology', 'full_body_checkup'];
 const REPORT_DELIVERY = ['pdf', 'in_app'];
@@ -40,6 +41,7 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
     reportDeliveryType: [],
     isActive: true,
     consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+    operatingHours: [],
   });
 
   const isEdit = mode === 'edit';
@@ -62,6 +64,7 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
         reportDeliveryType: [],
         isActive: true,
         consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+        operatingHours: [],
       });
     }
   }, [open, isEdit, labId, dispatch]);
@@ -89,6 +92,7 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
           policyTerms: selectedLab.consents?.policyTerms ?? true,
           medicalDisclaimer: selectedLab.consents?.medicalDisclaimer ?? true,
         },
+        operatingHours: selectedLab.operatingHours ?? [],
       }));
     }
   }, [isEdit, selectedLab]);
@@ -120,7 +124,6 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
       homeSampleCollection: form.homeSampleCollection,
       reportDeliveryType: form.reportDeliveryType,
     },
-    operatingHours: [],
   });
 
   const handleSubmit = () => {
@@ -234,6 +237,12 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
                   <MenuItem value="Inactive">Inactive</MenuItem>
                 </Select>
               </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <OperatingHoursEditor
+                value={form.operatingHours}
+                onChange={(newHours) => handleChange('operatingHours', newHours)}
+              />
             </Grid>
             <Grid size={{ xs: 12 }}>
               <FormGroup row>

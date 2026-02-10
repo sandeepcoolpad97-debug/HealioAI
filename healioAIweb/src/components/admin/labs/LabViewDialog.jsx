@@ -17,6 +17,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
+import OperatingHoursEditor from '../common/OperatingHoursEditor';
 
 const TEST_CATEGORIES = ['blood_tests', 'urine_tests', 'radiology', 'pathology', 'full_body_checkup'];
 const REPORT_DELIVERY = ['pdf', 'in_app'];
@@ -164,6 +165,12 @@ export default function LabViewDialog({ open, onClose }) {
                     <MenuItem value="Inactive">Inactive</MenuItem>
                   </Select>
                 </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <OperatingHoursEditor
+                  value={selectedLab.operatingHours}
+                  readOnly={true}
+                />
               </Grid>
               <Grid size={{ xs: 12 }}>
                 <FormGroup row>

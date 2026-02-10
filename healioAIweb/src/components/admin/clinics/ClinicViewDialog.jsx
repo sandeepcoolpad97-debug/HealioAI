@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
+import OperatingHoursEditor from '../common/OperatingHoursEditor';
 
 const roleName = (c) => c?.roleId?.name ?? c?.roleId ?? '—';
 
@@ -132,7 +133,15 @@ export default function ClinicViewDialog({ open, onClose }) {
                                      />
               </Grid>
 
-              {/* Row 7: Consents */}
+              {/* Row 7: Operating Hours */}
+              <Grid size={{ xs: 12 }}>
+                <OperatingHoursEditor
+                  value={selectedClinic.operatingHours}
+                  readOnly={true}
+                />
+              </Grid>
+
+              {/* Row 8: Consents */}
               <Grid size={{ xs: 12 }}>
                 <FormGroup row>
                   <FormControlLabel 
