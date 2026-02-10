@@ -85,6 +85,10 @@ router.post('/',    createAppointmentValidation, createAppointment);
  *         name: date
  *         schema: { type: string, format: date-time }
  *         description: Filter by date (YYYY-MM-DD or ISO)
+ *       - in: query
+ *         name: timeframe
+ *         schema: { type: string, enum: [upcoming, past] }
+ *         description: Filter by relative time (upcoming = future appointments, past = past appointments)
  *     responses:
  *       200:
  *         description: Paginated list of appointments

@@ -53,6 +53,7 @@ export async function listAppointments(
         userId: req.query.userId,
         status: req.query.status,
         date: req.query.date,
+        timeframe: req.query.timeframe,
     };
     const result = await appointmentService.list(page, limit, filters);
     res.status(HTTP_STATUS.OK).json({ success: true, ...result });

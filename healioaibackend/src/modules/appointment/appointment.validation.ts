@@ -60,6 +60,7 @@ export const listAppointmentsQuerySchema = paginationQuerySchema.keys({
   userId: Joi.string().hex().length(24).optional(),
   status: Joi.string().valid('confirmed', 'rescheduled', 'cancelled').optional(),
   date: Joi.date().iso().optional(),
+  timeframe: Joi.string().valid('upcoming', 'past').optional(),
 });
 
 export type CreateAppointmentInput = {

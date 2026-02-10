@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,19 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors } from '../../constants/colors';
 import { navigationRoutes } from '../../constants/strings';
 import { RootStackParamList } from '../../navigation/types';
 import { AppointmentCard } from './listings/AppointmentCard';
 import { AppointmentTabs } from './listings/AppointmentTabs';
+import { appointmentService } from '../../services/appointment.service';
+import { useAppSelector } from '../../store/hooks';
 
 interface Appointment {
   id: string;
@@ -26,64 +29,77 @@ interface Appointment {
   status: 'upcoming' | 'past' | 'cancelled';
 }
 
-// Mock Data matching the design
-const UPCOMING_APPOINTMENTS: Appointment[] = [
-  {
-    id: '1',
-    doctorName: 'Dr. Ananya Rao',
-    specialty: 'Cardiologist',
-    date: '24 Jan 2026',
-    time: '10:30 AM',
-    status: 'upcoming',
-  },
-  {
-    id: '2',
-    doctorName: 'Dr. Rajesh Kumar',
-    specialty: 'Orthopedic Surgeon',
-    date: '26 Jan 2026',
-    time: '2:15 PM',
-    status: 'upcoming',
-  },
-  {
-    id: '3',
-    doctorName: 'Dr. Priya Sharma',
-    specialty: 'Dermatologist',
-    date: '28 Jan 2026',
-    time: '11:45 AM',
-    status: 'upcoming',
-  },
-  {
-    id: '4',
-    doctorName: 'Dr. Vikram Singh',
-    specialty: 'Neurologist',
-    date: '30 Jan 2026',
-    time: '4:00 PM',
-    status: 'upcoming',
-  },
-];
-
-const PAST_APPOINTMENTS: Appointment[] = [
-  {
-    id: '5',
-    doctorName: 'Dr. Sarah Smith',
-    specialty: 'Dentist',
-    date: '10 Dec 2025',
-    time: '9:00 AM',
-    status: 'past',
-  },
-  {
-    id: '6',
-    doctorName: 'Dr. John Doe',
-    specialty: 'General Physician',
-    date: '15 Nov 2025',
-    time: '5:30 PM',
-    status: 'past',
-  },
-];
-
 export const AppointmentsScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const user = useAppSelector(state => state.user);
+
+  const fetchAppointments = useCallback(async () => {
+    if (!user._id) return;
+    
+    try {
+      setLoading(true);
+      const rawAppointments = await appointmentService.getAppointments({
+        userId: user._id,
+        timeframe: activeTab, // Use the active tab to filter
+        // If "upcoming", the backend might filter >= NOW
+        // If "past", < NOW
+      });
+
+      // Map DTO to UI model
+      const mapped: Appointment[] = rawAppointments.map(dto => {
+        const dateObj = new Date(dto.currentStartAt);
+        const dateStr = dateObj.toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        }); // e.g. "24 Jan 2026"
+        
+        const timeStr = dateObj.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        }); // e.g. "10:30 AM"
+
+        // Determine UI status
+        // If bookingStatus is 'cancelled', show 'cancelled'
+        // Else if activeTab is past, force 'past'? Or rely on timeframe?
+        // Let's rely on bookingStatus unless we want to override for past tab visual
+        let status: 'upcoming' | 'past' | 'cancelled' = 'upcoming';
+        
+        if (dto.bookingStatus === 'cancelled') {
+           status = 'cancelled';
+        } else if (activeTab === 'past') {
+           status = 'past';
+        } else {
+           status = 'upcoming';
+        }
+
+        return {
+          id: dto._id,
+          doctorName: dto.doctorId?.doctorName || 'Unknown Doctor',
+          specialty: dto.doctorId?.specialisation || 'Specialist',
+          date: dateStr,
+          time: timeStr,
+          status: status
+        };
+      });
+
+      setAppointments(mapped);
+    } catch (error) {
+      console.error('Failed to fetch appointments', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user._id, activeTab]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAppointments();
+    }, [fetchAppointments])
+  );
 
   const handleBack = () => {
     navigation.goBack();
@@ -96,8 +112,6 @@ export const AppointmentsScreen = () => {
       navigation.navigate(navigationRoutes.AppointmentDetails, { appointmentId: id });
     }
   };
-
-  const data = activeTab === 'upcoming' ? UPCOMING_APPOINTMENTS : PAST_APPOINTMENTS;
 
   return (
     <View style={styles.container}>
@@ -118,22 +132,33 @@ export const AppointmentsScreen = () => {
       <AppointmentTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* List */}
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <AppointmentCard
-            doctorName={item.doctorName}
-            specialty={item.specialty}
-            date={item.date}
-            time={item.time}
-            status={item.status}
-            onPress={() => handleViewMore(item.id, item.status)}
-          />
-        )}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0A5FB4" />
+        </View>
+      ) : (
+        <FlatList
+          data={appointments}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <AppointmentCard
+              doctorName={item.doctorName}
+              specialty={item.specialty}
+              date={item.date}
+              time={item.time}
+              status={item.status}
+              onPress={() => handleViewMore(item.id, item.status)}
+            />
+          )}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+               <Text style={styles.emptyText}>No {activeTab} appointments found.</Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 };
@@ -168,5 +193,21 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 16,
     paddingBottom: 24,
+    flexGrow: 1,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40,
+  },
+  emptyText: {
+    color: '#6B7280',
+    fontSize: 16,
+  }
 });

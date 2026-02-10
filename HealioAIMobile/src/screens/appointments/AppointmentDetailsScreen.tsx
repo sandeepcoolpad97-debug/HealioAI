@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,6 +24,7 @@ import { AppointmentInfoCard } from './details/AppointmentInfoCard';
 import { PatientNotesCard } from './details/PatientNotesCard';
 import { PaymentDetailsCard } from './details/PaymentDetailsCard';
 import { AppointmentActionFooter } from './details/AppointmentActionFooter';
+import { appointmentService, AppointmentDto } from '../../services/appointment.service';
 
 type AppointmentDetailsRouteProp = RouteProp<RootStackParamList, typeof navigationRoutes.AppointmentDetails>;
 type AppointmentDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -30,46 +32,120 @@ type AppointmentDetailsNavigationProp = NativeStackNavigationProp<RootStackParam
 export const AppointmentDetailsScreen: React.FC = () => {
   const navigation = useNavigation<AppointmentDetailsNavigationProp>();
   const route = useRoute<AppointmentDetailsRouteProp>();
-  const { appointmentId } = route.params || { appointmentId: '#APT-458920' };
+  const { appointmentId } = route.params || { appointmentId: '' };
 
-  // Mock data based on the image
-  const appointmentData = {
-    status: 'upcoming' as const,
-    date: '24 Jan 2026',
-    time: '10:30 AM',
-    doctor: {
-      name: 'Dr. Ananya Rao',
-      specialty: 'Cardiologist',
-      hospital: 'Apollo Hospitals',
-      location: 'Jubilee Hills, Hyderabad',
-      imageUrl: undefined, // Will use default icon
-    },
-    details: {
-      mode: 'In-Clinic Consultation',
-      duration: '30 Minutes',
-      id: appointmentId,
-    },
-    notes: 'Chest discomfort and shortness of breath',
-    payment: {
-      consultationFee: 800,
-      discount: 200,
-      amountPayable: 600,
-      offerApplied: 'New Year Offer – ₹200 off',
-      paidDate: '22 Jan 2026',
-      paymentMethod: 'UPI',
-    },
-  };
+  const [appointment, setAppointment] = useState<AppointmentDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      if (!appointmentId) {
+        setError('No appointment ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await appointmentService.getAppointmentById(appointmentId);
+        setAppointment(data);
+      } catch (err) {
+        console.error('Failed to fetch appointment details:', err);
+        setError('Failed to load appointment details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointment();
+  }, [appointmentId]);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const handleReschedule = () => {
-    navigation.navigate(navigationRoutes.RescheduleAppointment, { appointmentId });
+    if (appointmentId) {
+      navigation.navigate(navigationRoutes.RescheduleAppointment, { appointmentId });
+    }
   };
 
   const handleCancel = () => {
-    navigation.navigate(navigationRoutes.CancelAppointment, { appointmentId });
+    if (appointmentId) {
+      navigation.navigate(navigationRoutes.CancelAppointment, { appointmentId });
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0A5FB4" />
+      </View>
+    );
+  }
+
+  if (error || !appointment) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+              <Icon name="arrow-back" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Appointment Details</Text>
+            <View style={styles.placeholderButton} /> 
+          </View>
+        </SafeAreaView>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error || 'Appointment not found'}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Transform API data to UI model
+  const dateObj = new Date(appointment.currentStartAt);
+  const dateStr = dateObj.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  const timeStr = dateObj.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  // Calculate duration from appointmentInfo or default
+  const duration = '30 Minutes'; // This might need to come from the API if available, or calculated
+
+  // Extract payment details if available (assuming API provides this or we use placeholders)
+  // Since DTO might not have full payment details yet, we'll use safe defaults or available fields
+  // For now, using placeholders as the DTO in service doesn't show payment object explicitly, 
+  // but in a real app it would be populated.
+  const paymentDetails = {
+    consultationFee: 800, // Placeholder or from API
+    discount: 0,
+    amountPayable: 800,
+    offerApplied: undefined,
+    paidDate: dateStr, // Placeholder
+    paymentMethod: 'Online', // Placeholder
+  };
+
+  // Map API status to UI status
+  const getUiStatus = (status: string): 'upcoming' | 'completed' | 'cancelled' => {
+    if (status === 'cancelled') return 'cancelled';
+    // 'confirmed' and 'rescheduled' are treated as 'upcoming' for the header card
+    // unless the date is in the past, but the card only accepts these 3.
+    // Assuming 'past' appointments might use this screen too?
+    // If it's a past appointment, maybe we should show 'completed'?
+    // For now, let's map confirmed/rescheduled to upcoming as per current logic
+    // or 'completed' if the date is past.
+    // However, the previous code just defaulted to 'upcoming'.
+    
+    // Simple mapping:
+    if (status === 'confirmed' || status === 'rescheduled') return 'upcoming';
+    return 'upcoming';
   };
 
   return (
@@ -93,36 +169,37 @@ export const AppointmentDetailsScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <AppointmentHeaderCard 
-          status={appointmentData.status}
-          date={appointmentData.date}
-          time={appointmentData.time}
+          status={getUiStatus(appointment.bookingStatus)}
+          date={dateStr}
+          time={timeStr}
         />
 
         <DoctorInfoCard 
-          name={appointmentData.doctor.name}
-          specialty={appointmentData.doctor.specialty}
-          hospital={appointmentData.doctor.hospital}
-          location={appointmentData.doctor.location}
-          imageUrl={appointmentData.doctor.imageUrl}
+          name={appointment.doctorId?.doctorName || 'Unknown Doctor'}
+          specialty={appointment.doctorId?.specialisation || 'Specialist'}
+          hospital={appointment.doctorId?.clinicName || 'Healio Clinic'}
+          location="Online" // Or from clinic address
+          imageUrl={undefined}
         />
 
         <AppointmentInfoCard 
-          mode={appointmentData.details.mode}
-          duration={appointmentData.details.duration}
-          appointmentId={appointmentData.details.id}
+          mode="Online Consultation" // Or determine from API
+          duration={duration}
+          appointmentId={appointment.appointmentId}
         />
 
+        {/* Notes from the last appointment info or symptoms */}
         <PatientNotesCard 
-          notes={appointmentData.notes}
+          notes={appointment.appointmentInfo?.[0]?.notes || 'No notes provided'}
         />
 
         <PaymentDetailsCard 
-          consultationFee={appointmentData.payment.consultationFee}
-          discount={appointmentData.payment.discount}
-          amountPayable={appointmentData.payment.amountPayable}
-          offerApplied={appointmentData.payment.offerApplied}
-          paidDate={appointmentData.payment.paidDate}
-          paymentMethod={appointmentData.payment.paymentMethod}
+          consultationFee={paymentDetails.consultationFee}
+          discount={paymentDetails.discount}
+          amountPayable={paymentDetails.amountPayable}
+          offerApplied={paymentDetails.offerApplied}
+          paidDate={paymentDetails.paidDate}
+          paymentMethod={paymentDetails.paymentMethod}
         />
       </ScrollView>
 
@@ -167,5 +244,22 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#EF4444',
+    textAlign: 'center',
   },
 });

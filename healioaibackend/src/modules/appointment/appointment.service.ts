@@ -65,6 +65,39 @@ export class AppointmentService {
       query.currentStartAt = { $gte: date, $lt: nextDay };
     }
 
+    if (filters.timeframe) {
+      const now = new Date();
+      if (filters.timeframe === 'upcoming') {
+        // If query.currentStartAt already exists (from date filter), merge criteria
+        // but typically date filter + timeframe 'upcoming' might be redundant or specific.
+        // Assuming user wants upcoming from NOW.
+        // To be safe, if date is set, we respect it as the primary range,
+        // but if timeframe is set without specific date, we use it.
+        // If both are present, we can use $and or simply intersect.
+        // For simplicity: specific date overrides timeframe if present, OR we intersect.
+        // Let's do intersection if 'date' is not present, otherwise respect 'date' only?
+        // Actually, "upcoming" usually means "from now onwards".
+        // "past" means "before now".
+        if (!query.currentStartAt) {
+             query.currentStartAt = { $gte: now };
+        } else {
+             // If date range is set, we just ensure it respects "now" boundary if needed?
+             // E.g. date=2025-01-01 and timeframe=upcoming.
+             // If 2025-01-01 is future, fine.
+             // Let's assume timeframe is used when date is NOT provided for general lists.
+             // If user provides both, let's treat 'date' as precise filter and ignore timeframe or apply logical AND.
+             // Let's apply logical AND via $gte/$lt merge if possible, or simpler:
+             // If date is provided, timeframe is likely irrelevant or implicit.
+             // Let's only apply timeframe if date is NOT provided to avoid conflict.
+             // User instruction says "get appointments based on the upcoming or past".
+        }
+      } else if (filters.timeframe === 'past') {
+         if (!query.currentStartAt) {
+             query.currentStartAt = { $lt: now };
+         }
+      }
+    }
+
     return this.appointmentRepository.findPaginatedWithRefs(query, page, limit);
   }
 

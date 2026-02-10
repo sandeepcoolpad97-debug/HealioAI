@@ -18,15 +18,24 @@ export interface CreateAppointmentPayload {
 
 export interface AppointmentDto {
   _id: string;
-  doctorId: string;
+  appointmentId: string;
+  doctorId: {
+    _id: string;
+    doctorName: string;
+    specialisation: string;
+    clinicName: string;
+  };
   userId: string;
-  status: string;
+  bookingStatus: 'confirmed' | 'rescheduled' | 'cancelled';
+  currentStartAt: string;
   appointmentInfo: Array<{
     startAt: string;
     action: string;
+    notes?: string;
   }>;
 }
 
+// Helper functions must be available for both methods
 async function getAuthHeaders(): Promise<Record<string, string>> {
   const token = await firebaseAuth.currentUser?.getIdToken();
   return {
@@ -59,9 +68,24 @@ export const appointmentService = {
     }
   },
 
-  getAppointments: async (): Promise<AppointmentDto[]> => {
+  getAppointments: async (params?: { 
+    userId?: string; 
+    doctorId?: string; 
+    timeframe?: 'upcoming' | 'past';
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<AppointmentDto[]> => {
     try {
-        const res = await fetch(getApiUrl('/appointments'), {
+        const query = new URLSearchParams();
+        if (params?.userId) query.append('userId', params.userId);
+        if (params?.doctorId) query.append('doctorId', params.doctorId);
+        if (params?.timeframe) query.append('timeframe', params.timeframe);
+        if (params?.status) query.append('status', params.status);
+        if (params?.page) query.append('page', params.page.toString());
+        if (params?.limit) query.append('limit', params.limit.toString());
+
+        const res = await fetch(`${getApiUrl('/appointments')}?${query.toString()}`, {
             method: 'GET',
             headers: await getAuthHeaders(),
         });
@@ -70,6 +94,20 @@ export const appointmentService = {
     } catch (error) {
         console.error('Error fetching appointments:', error);
         return [];
+    }
+  },
+
+  getAppointmentById: async (id: string): Promise<AppointmentDto> => {
+    try {
+      const res = await fetch(getApiUrl(`/appointments/${id}`), {
+        method: 'GET',
+        headers: await getAuthHeaders(),
+      });
+      const body = await handleResponse<{ success: boolean; data: AppointmentDto }>(res);
+      return body.data;
+    } catch (error) {
+      console.error(`Error fetching appointment ${id}:`, error);
+      throw error;
     }
   }
 };

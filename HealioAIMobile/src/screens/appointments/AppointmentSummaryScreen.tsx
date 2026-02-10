@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -20,6 +21,7 @@ import { SummaryDoctorCard } from './summary/SummaryDoctorCard';
 import { VisitSummaryCard } from './summary/VisitSummaryCard';
 import { ReportsCard } from './summary/ReportsCard';
 import { SummaryActionFooter } from './summary/SummaryActionFooter';
+import { appointmentService, AppointmentDto } from '../../services/appointment.service';
 
 type AppointmentSummaryRouteProp = RouteProp<RootStackParamList, typeof navigationRoutes.AppointmentSummary>;
 type AppointmentSummaryNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -27,28 +29,33 @@ type AppointmentSummaryNavigationProp = NativeStackNavigationProp<RootStackParam
 export const AppointmentSummaryScreen: React.FC = () => {
   const navigation = useNavigation<AppointmentSummaryNavigationProp>();
   const route = useRoute<AppointmentSummaryRouteProp>();
-  const { appointmentId } = route.params || { appointmentId: 'unknown' };
+  const { appointmentId } = route.params || { appointmentId: '' };
 
-  // Mock data matching the image
-  const summaryData = {
-    date: '12 Jan 2026',
-    time: '11:00 AM',
-    doctor: {
-      name: 'Dr. Ananya Rao',
-      specialty: 'Cardiologist',
-      hospital: 'Apollo Hospitals',
-      location: 'Jubilee Hills, Hyderabad',
-      imageUrl: undefined, // Default placeholder
-    },
-    visit: {
-      diagnosis: 'Mild Hypertension',
-      notes: 'Patient shows mild elevation in blood pressure. Recommended lifestyle modifications including regular exercise and dietary changes. Monitor BP regularly and follow-up in 4 weeks.',
-      medicines: [
-        { name: 'Amlodipine', dosage: '5mg - Once daily' },
-        { name: 'Metoprolol', dosage: '25mg - Twice daily' },
-      ],
-    },
-  };
+  const [appointment, setAppointment] = useState<AppointmentDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      if (!appointmentId) {
+        setError('No appointment ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await appointmentService.getAppointmentById(appointmentId);
+        setAppointment(data);
+      } catch (err) {
+        console.error('Failed to fetch appointment summary:', err);
+        setError('Failed to load appointment summary');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointment();
+  }, [appointmentId]);
 
   const handleBack = () => {
     navigation.goBack();
@@ -66,6 +73,52 @@ export const AppointmentSummaryScreen: React.FC = () => {
   const handleDownloadPrescription = () => {
     console.log('Download prescription for', appointmentId);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0A5FB4" />
+      </View>
+    );
+  }
+
+  if (error || !appointment) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+              <Icon name="arrow-back" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Appointment Summary</Text>
+            <View style={styles.placeholderButton} /> 
+          </View>
+        </SafeAreaView>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error || 'Appointment not found'}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Transform API data to UI model
+  const dateObj = new Date(appointment.currentStartAt);
+  const dateStr = dateObj.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  const timeStr = dateObj.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  // Extract diagnosis and medicines from notes or structured data if available
+  // Currently assuming basic structure, in future API might have specific diagnosis field
+  const diagnosis = 'No Daignosis yet'; // Placeholder or extract from notes
+  const notes = 'No notes provided';
+  const medicines: Array<{ name: string; dosage: string }> = [ { name: 'Medication 1', dosage: '500mg' }, { name: 'Medication 2', dosage: '200mg' }]; // Placeholder
 
   return (
     <View style={styles.container}>
@@ -88,22 +141,22 @@ export const AppointmentSummaryScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
       >
         <SummaryHeaderCard 
-          date={summaryData.date}
-          time={summaryData.time}
+          date={dateStr}
+          time={timeStr}
         />
 
         <SummaryDoctorCard 
-          name={summaryData.doctor.name}
-          specialty={summaryData.doctor.specialty}
-          hospital={summaryData.doctor.hospital}
-          location={summaryData.doctor.location}
-          imageUrl={summaryData.doctor.imageUrl}
+          name={appointment.doctorId?.doctorName || 'Unknown Doctor'}
+          specialty={appointment.doctorId?.specialisation || 'Specialist'}
+          hospital={appointment.doctorId?.clinicName || 'Healio Clinic'}
+          location="Online" // Or from clinic address
+          imageUrl={undefined}
         />
 
         <VisitSummaryCard 
-          diagnosis={summaryData.visit.diagnosis}
-          notes={summaryData.visit.notes}
-          medicines={summaryData.visit.medicines}
+          diagnosis={diagnosis}
+          notes={notes}
+          medicines={medicines}
         />
 
         <ReportsCard 
@@ -152,5 +205,22 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#EF4444', // Red color for error
+    textAlign: 'center',
   },
 });
