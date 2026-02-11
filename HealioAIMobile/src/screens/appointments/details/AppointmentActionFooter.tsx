@@ -4,12 +4,29 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 interface AppointmentActionFooterProps {
   onReschedule: () => void;
   onCancel: () => void;
+  onViewRefundStatus?: () => void;
+  status?: string;
 }
 
 export const AppointmentActionFooter: React.FC<AppointmentActionFooterProps> = ({
   onReschedule,
   onCancel,
+  onViewRefundStatus,
+  status,
 }) => {
+  if (status === 'cancelled') {
+    return (
+      <View style={styles.container}>
+        <TouchableOpacity 
+          style={[styles.button, styles.refundButton]} 
+          onPress={onViewRefundStatus}
+        >
+          <Text style={styles.refundText}>View Refund Status</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity 
@@ -54,6 +71,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#EF4444', // Red border
   },
+  refundButton: {
+    backgroundColor: '#0A5FB4', // Primary Blue
+  },
   rescheduleText: {
     color: '#FFFFFF',
     fontSize: 16,
@@ -61,6 +81,11 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: '#EF4444', // Red text
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  refundText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
   },

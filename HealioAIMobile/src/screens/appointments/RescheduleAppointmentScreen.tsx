@@ -75,6 +75,12 @@ export const RescheduleAppointmentScreen: React.FC = () => {
         setLoading(true);
         const data = await appointmentService.getAppointmentById(appointmentId);
         
+        if (data.bookingStatus === 'cancelled') {
+          Alert.alert('Error', 'This appointment has been cancelled and cannot be rescheduled.');
+          navigation.goBack();
+          return;
+        }
+
         // Map API data to UI model
         setCurrentAppointment({
           doctorName: data.doctorId?.doctorName || 'Unknown Doctor',
@@ -90,6 +96,7 @@ export const RescheduleAppointmentScreen: React.FC = () => {
             hour12: true
           }),
           id: data.appointmentId,
+          mongoId: data._id,
           doctorId: data.doctorId?._id
         });
       } catch (error) {
@@ -251,7 +258,7 @@ export const RescheduleAppointmentScreen: React.FC = () => {
         date: selectedDate,
         time: selectedTime,
         specialty: currentAppointment.specialty,
-        appointmentId: currentAppointment.id,
+        appointmentId: currentAppointment.mongoId,
       });
     } catch (error: any) {
       console.error('Reschedule failed:', error);

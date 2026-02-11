@@ -242,7 +242,7 @@ export const BookAppointmentScreen = () => {
       });
 
       // 2. Create Appointment with real paymentId
-      await appointmentService.createAppointment({
+      const appointment = await appointmentService.createAppointment({
         doctorId,
         userId: user._id, 
         paymentId: payment._id,
@@ -263,7 +263,7 @@ export const BookAppointmentScreen = () => {
         date: selectedDate,
         time: selectedTimeSlot,
         specialty: specialty || 'Specialist',
-        appointmentId: '#APT-' + Math.floor(Math.random() * 10000)
+        appointmentId: appointment._id
       });
     } catch (error) {
       console.error('Booking failed:', error);

@@ -8,6 +8,7 @@ import {
   Platform,
   StatusBar,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -74,6 +75,10 @@ export const AppointmentDetailsScreen: React.FC = () => {
     if (appointmentId) {
       navigation.navigate(navigationRoutes.CancelAppointment, { appointmentId });
     }
+  };
+
+  const handleViewRefundStatus = () => {
+    Alert.alert('Refund Status', 'Your refund is being processed and will be credited to your account within 5-7 business days.');
   };
 
   if (loading) {
@@ -206,6 +211,8 @@ export const AppointmentDetailsScreen: React.FC = () => {
       <AppointmentActionFooter 
         onReschedule={handleReschedule}
         onCancel={handleCancel}
+        onViewRefundStatus={handleViewRefundStatus}
+        status={appointment.bookingStatus}
       />
     </View>
   );

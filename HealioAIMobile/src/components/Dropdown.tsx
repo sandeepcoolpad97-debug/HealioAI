@@ -123,13 +123,18 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#374151',
-    marginBottom: 6,
+    marginBottom: 12,
   },
   required: {
     color: '#EF4444',
@@ -139,17 +144,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: '#F9FAFB',
   },
   selectorError: {
     borderColor: '#EF4444',
   },
   valueText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#1F2937',
   },
   placeholder: {
