@@ -15,6 +15,8 @@ import { discountRoutes } from './modules/discount';
 import { paymentRoutes } from './modules/payment';
 import { reviewRoutes } from './modules/reviews';
 import { slotTrackerRoutes } from './modules/slotTracker';
+import { notificationTypeRoutes } from './modules/notificationType';
+import { notificationRoutes } from './modules/notifications';
 
 // Routes
 const router = Router();
@@ -46,6 +48,8 @@ router.use('/discounts', discountRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/slots', slotTrackerRoutes);
+router.use('/notification-types', notificationTypeRoutes);
+router.use('/notifications', notificationRoutes);
 
 
 export function registerRoutes(app: Application): void {

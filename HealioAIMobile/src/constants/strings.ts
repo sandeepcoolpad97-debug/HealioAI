@@ -60,6 +60,7 @@ export const navigationRoutes = {
   AppointmentSuccess: 'AppointmentSuccess',
   ReviewDoctor: 'ReviewDoctor',
   ReviewSuccess: 'ReviewSuccess',
+  Notifications: 'Notifications',
 } as const;
 
 export const signInStrings = {

@@ -83,4 +83,5 @@ export type RootStackParamList = {
     appointmentId: string;
     reviewText?: string;
   };
+  [navigationRoutes.Notifications]: undefined;
 };

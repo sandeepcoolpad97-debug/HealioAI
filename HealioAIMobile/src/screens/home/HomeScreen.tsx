@@ -7,10 +7,16 @@ import { AIHealthServices } from './AIHealthServices';
 import { RecommendedDoctors } from './RecommendedDoctors';
 import { RecommendedLaboratories } from './RecommendedLaboratories';
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../navigation/types';
+import { navigationRoutes } from '../../constants/strings';
+
 export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const handleNotificationPress = () => {
-    console.log('Notifications pressed');
-    // TODO: Navigate to notifications screen
+    navigation.navigate(navigationRoutes.Notifications);
   };
 
   return (

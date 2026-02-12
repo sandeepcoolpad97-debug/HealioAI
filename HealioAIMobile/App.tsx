@@ -52,6 +52,7 @@ import { CancellationSuccessScreen } from './src/screens/appointments/Cancellati
 import { AppointmentSuccessScreen } from './src/screens/appointments/AppointmentSuccessScreen';
 import { ReviewDoctorScreen } from './src/screens/review/ReviewDoctorScreen';
 import { ReviewSuccessScreen } from './src/screens/review/ReviewSuccessScreen';
+import { NotificationsScreen } from './src/screens/notifications/NotificationsScreen';
 import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
@@ -224,6 +225,11 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.ReviewSuccess}
           component={ReviewSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.Notifications}
+          component={NotificationsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
