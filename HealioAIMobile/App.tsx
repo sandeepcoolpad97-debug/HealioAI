@@ -53,6 +53,10 @@ import { AppointmentSuccessScreen } from './src/screens/appointments/Appointment
 import { ReviewDoctorScreen } from './src/screens/review/ReviewDoctorScreen';
 import { ReviewSuccessScreen } from './src/screens/review/ReviewSuccessScreen';
 import { NotificationsScreen } from './src/screens/notifications/NotificationsScreen';
+import { CustomerSupportScreen } from './src/screens/customerSupport/CustomerSupportScreen';
+import { CreateTicketScreen } from './src/screens/customerSupport/CreateTicketScreen';
+import { TicketDetailsScreen } from './src/screens/customerSupport/TicketDetailsScreen';
+import { SupportSuccessScreen } from './src/screens/customerSupport/SupportSuccessScreen';
 import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
@@ -230,6 +234,26 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.Notifications}
           component={NotificationsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CustomerSupport}
+          component={CustomerSupportScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CreateTicket}
+          component={CreateTicketScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.TicketDetails}
+          component={TicketDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.SupportSuccess}
+          component={SupportSuccessScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { HomeScreen } from '../screens/home/HomeScreen';
 import { AppointmentsScreen } from '../screens/appointments/AppointmentsScreen';
-import { ContactScreen } from '../screens/contact/ContactScreen';
+import { CustomerSupportScreen } from '../screens/customerSupport/CustomerSupportScreen';
 import { ProfileScreen } from '../screens/profile/ProfileScreen';
 import { navigationRoutes } from '../constants/strings';
 import { colors } from '../constants/colors';
@@ -46,7 +46,7 @@ export const BottomTabNavigator = () => {
     >
       <Tab.Screen name={navigationRoutes.Home} component={HomeScreen} />
       <Tab.Screen name={navigationRoutes.Appointments} component={AppointmentsScreen} />
-      <Tab.Screen name={navigationRoutes.Contact} component={ContactScreen} />
+      <Tab.Screen name={navigationRoutes.Contact} component={CustomerSupportScreen} />
       <Tab.Screen name={navigationRoutes.Profile} component={ProfileScreen} />
     </Tab.Navigator>
   );

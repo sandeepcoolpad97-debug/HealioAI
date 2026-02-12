@@ -84,4 +84,13 @@ export type RootStackParamList = {
     reviewText?: string;
   };
   [navigationRoutes.Notifications]: undefined;
+  [navigationRoutes.CustomerSupport]: undefined;
+  [navigationRoutes.CreateTicket]: undefined;
+  [navigationRoutes.TicketDetails]: {
+    ticketId: string;
+  };
+  [navigationRoutes.SupportSuccess]: {
+    ticketId: string;
+    status: string;
+  };
 };

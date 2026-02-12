@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   ActivityIndicator,
+  ViewStyle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -25,6 +26,7 @@ interface DropdownProps {
   loading?: boolean;
   error?: string;
   required?: boolean;
+  containerStyle?: ViewStyle;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -36,10 +38,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
   loading = false,
   error,
   required = false,
+  containerStyle,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
-
-  console.log('Dropdown props:', { label, placeholder, options, value, onSelect, loading, error, required });
 
   const selectedOption = options.find((opt) => opt.value === value);
 
@@ -49,7 +50,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <Text style={styles.label}>
         {label} {required && <Text style={styles.required}>*</Text>}
       </Text>

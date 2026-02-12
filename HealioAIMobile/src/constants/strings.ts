@@ -61,6 +61,10 @@ export const navigationRoutes = {
   ReviewDoctor: 'ReviewDoctor',
   ReviewSuccess: 'ReviewSuccess',
   Notifications: 'Notifications',
+  CustomerSupport: 'CustomerSupport',
+  CreateTicket: 'CreateTicket',
+  TicketDetails: 'TicketDetails',
+  SupportSuccess: 'SupportSuccess',
 } as const;
 
 export const signInStrings = {

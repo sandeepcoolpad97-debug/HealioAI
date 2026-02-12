@@ -17,6 +17,8 @@ import { reviewRoutes } from './modules/reviews';
 import { slotTrackerRoutes } from './modules/slotTracker';
 import { notificationTypeRoutes } from './modules/notificationType';
 import { notificationRoutes } from './modules/notifications';
+import { supportTicketRoutes } from './modules/supportTicket';
+import { supportTicketHistoryRoutes } from './modules/supportTicketHistory';
 
 // Routes
 const router = Router();
@@ -50,6 +52,8 @@ router.use('/reviews', reviewRoutes);
 router.use('/slots', slotTrackerRoutes);
 router.use('/notification-types', notificationTypeRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/support-tickets', supportTicketRoutes);
+router.use('/support-ticket-history', supportTicketHistoryRoutes);
 
 
 export function registerRoutes(app: Application): void {
