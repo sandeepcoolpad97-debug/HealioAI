@@ -29,3 +29,5 @@ export {
   type LoginEntityType,
   type LoginAsUserOrClinicOrLabResult,
 } from './api.service';
+
+export { reviewService, type ReviewDto, type CreateReviewPayload } from './review.service';

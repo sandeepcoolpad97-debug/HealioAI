@@ -142,6 +142,12 @@ const AppointmentSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+
+    /* ---------------- REVIEW STATUS ---------------- */
+    isReviewAdded: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: false, // ✅ because auditPlugin will manage createdAt/updatedAt
@@ -189,6 +195,7 @@ export interface IAppointment extends Document, IAuditFields {
   cancelledAt?: Date | null;
 
   paymentId: mongoose.Types.ObjectId;
+  isReviewAdded: boolean;
 }
 
 /* ---------------- MODEL ---------------- */

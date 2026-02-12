@@ -72,7 +72,7 @@ export default function ReviewFormDialog({ open, onClose, onSuccess, mode, revie
                 appointmentId: typeof selectedReview.appointmentId === 'object' ? selectedReview.appointmentId._id : selectedReview.appointmentId ?? '',
                 userId: typeof selectedReview.userId === 'object' ? selectedReview.userId._id : selectedReview.userId ?? '',
                 reviewFor: selectedReview.reviewFor ?? 'Clinic',
-                reviewForId: selectedReview.reviewForId ?? '',
+                reviewForId: typeof selectedReview.reviewForId === 'object' ? selectedReview.reviewForId._id : selectedReview.reviewForId ?? '',
                 rating: selectedReview.rating ?? 5,
                 comment: selectedReview.comment ?? '',
                 isActive: selectedReview.isActive !== false,
@@ -102,7 +102,28 @@ export default function ReviewFormDialog({ open, onClose, onSuccess, mode, revie
         setForm((prev) => ({ ...prev, [field]: value }));
     };
 
-    const reviewForOptions = form.reviewFor === 'Clinic' ? clinics : labs;
+    // Ensure selected items are in the options list for display
+    const finalAppointments = [...appointments];
+    if (isEdit && selectedReview?.appointmentId && typeof selectedReview.appointmentId === 'object') {
+        if (!finalAppointments.find(a => a._id === selectedReview.appointmentId._id)) {
+            finalAppointments.push(selectedReview.appointmentId);
+        }
+    }
+
+    const finalUsers = [...users];
+    if (isEdit && selectedReview?.userId && typeof selectedReview.userId === 'object') {
+        if (!finalUsers.find(u => u._id === selectedReview.userId._id)) {
+            finalUsers.push(selectedReview.userId);
+        }
+    }
+
+    const baseOptions = form.reviewFor === 'Clinic' ? clinics : labs;
+    const finalReviewForOptions = [...baseOptions];
+    if (isEdit && selectedReview?.reviewForId && typeof selectedReview.reviewForId === 'object') {
+        if (!finalReviewForOptions.find(o => o._id === selectedReview.reviewForId._id)) {
+            finalReviewForOptions.push(selectedReview.reviewForId);
+        }
+    }
 
     const buildPayload = () => {
         const p = {
@@ -159,9 +180,9 @@ export default function ReviewFormDialog({ open, onClose, onSuccess, mode, revie
                                     label="Appointment"
                                     onChange={(e) => handleChange('appointmentId', e.target.value)}
                                 >
-                                    {appointments.map((a) => (
+                                    {finalAppointments.map((a) => (
                                         <MenuItem key={a._id} value={a._id}>
-                                            {a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString() : a._id}
+                                            {a.appointmentId || (a.appointmentDate ? new Date(a.appointmentDate).toLocaleDateString() : a._id)}
                                         </MenuItem>
                                     ))}
                                 </Select>
@@ -175,7 +196,7 @@ export default function ReviewFormDialog({ open, onClose, onSuccess, mode, revie
                                     label="User"
                                     onChange={(e) => handleChange('userId', e.target.value)}
                                 >
-                                    {users.map((u) => (
+                                    {finalUsers.map((u) => (
                                         <MenuItem key={u._id} value={u._id}>{u.name || u.email || u._id}</MenuItem>
                                     ))}
                                 </Select>
@@ -208,8 +229,10 @@ export default function ReviewFormDialog({ open, onClose, onSuccess, mode, revie
                                     label={form.reviewFor}
                                     onChange={(e) => handleChange('reviewForId', e.target.value)}
                                 >
-                                    {reviewForOptions.map((o) => (
-                                        <MenuItem key={o._id} value={o._id}>{o.name || o._id}</MenuItem>
+                                    {finalReviewForOptions.map((o) => (
+                                        <MenuItem key={o._id} value={o._id}>
+                                            {o.doctorName || o.clinicName || o.name || o._id}
+                                        </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>

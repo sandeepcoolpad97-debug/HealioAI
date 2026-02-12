@@ -13,11 +13,24 @@ import {
 } from '@mui/material';
 
 const getUserName = (review) => review?.userId?.name ?? review?.userId ?? '—';
+
+const getTargetName = (review) => {
+    if (!review?.reviewForId) return '—';
+    const target = review.reviewForId;
+    if (typeof target === 'object') {
+        return target.doctorName || target.clinicName || target.name || '—';
+    }
+    return target;
+};
+
 const getAppointmentInfo = (review) => {
     if (!review?.appointmentId) return '—';
     const apt = review.appointmentId;
-    if (typeof apt === 'object' && apt.appointmentDate) {
-        return `${new Date(apt.appointmentDate).toLocaleDateString()} (${apt.status || '—'})`;
+    if (typeof apt === 'object') {
+        const date = apt.appointmentDate || apt.currentStartAt;
+        const formattedDate = date ? new Date(date).toLocaleDateString() : '—';
+        const id = apt.appointmentId || '—';
+        return `${id} (${formattedDate})`;
     }
     return apt;
 };
@@ -63,6 +76,14 @@ export default function ReviewViewDialog({ open, onClose }) {
                                 <TextField
                                     label="Review For"
                                     value={selectedReview.reviewFor ?? '—'}
+                                    fullWidth
+                                    InputProps={{ readOnly: true }}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <TextField
+                                    label="Entity Name"
+                                    value={getTargetName(selectedReview)}
                                     fullWidth
                                     InputProps={{ readOnly: true }}
                                 />

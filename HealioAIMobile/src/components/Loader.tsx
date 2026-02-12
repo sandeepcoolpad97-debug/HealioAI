@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
     borderRightColor: 'rgba(76, 175, 80, 0.5)', // Fading Green
   },
   logoContainer: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',

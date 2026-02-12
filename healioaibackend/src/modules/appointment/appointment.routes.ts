@@ -89,6 +89,10 @@ router.post('/',    createAppointmentValidation, createAppointment);
  *         name: timeframe
  *         schema: { type: string, enum: [upcoming, past] }
  *         description: Filter by relative time (upcoming = future appointments, past = past appointments)
+ *       - in: query
+ *         name: isReviewAdded
+ *         schema: { type: boolean }
+ *         description: Filter by whether a review has been added
  *     responses:
  *       200:
  *         description: Paginated list of appointments

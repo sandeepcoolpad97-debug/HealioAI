@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../../../constants/colors';
 
@@ -9,6 +9,8 @@ interface SummaryDoctorCardProps {
   hospital: string;
   location: string;
   imageUrl?: string;
+  onAddReview?: () => void;
+  isReviewAdded?: boolean;
 }
 
 export const SummaryDoctorCard: React.FC<SummaryDoctorCardProps> = ({
@@ -17,6 +19,8 @@ export const SummaryDoctorCard: React.FC<SummaryDoctorCardProps> = ({
   hospital,
   location,
   imageUrl,
+  onAddReview,
+  isReviewAdded = false,
 }) => {
   return (
     <View style={styles.container}>
@@ -41,6 +45,18 @@ export const SummaryDoctorCard: React.FC<SummaryDoctorCardProps> = ({
           </View>
         </View>
       </View>
+      {isReviewAdded ? (
+        <View style={styles.reviewAddedContainer}>
+          <Icon name="checkmark-circle" size={16} color="#059669" />
+          <Text style={styles.reviewAddedText}>Review already added</Text>
+        </View>
+      ) : (
+        onAddReview && (
+          <TouchableOpacity style={styles.reviewButton} onPress={onAddReview}>
+            <Text style={styles.reviewButtonText}>Add Review</Text>
+          </TouchableOpacity>
+        )
+      )}
     </View>
   );
 };
@@ -104,5 +120,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginLeft: 4,
+  },
+  reviewButton: {
+    marginTop: 16,
+    backgroundColor: '#0A5FB4',
+    borderRadius: 10,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  reviewButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  reviewAddedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    paddingVertical: 8,
+    backgroundColor: '#ECFDF5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  reviewAddedText: {
+    color: '#059669',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });

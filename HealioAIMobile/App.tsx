@@ -50,6 +50,8 @@ import { RescheduleAppointmentScreen } from './src/screens/appointments/Reschedu
 import { CancelAppointmentScreen } from './src/screens/appointments/CancelAppointmentScreen';
 import { CancellationSuccessScreen } from './src/screens/appointments/CancellationSuccessScreen';
 import { AppointmentSuccessScreen } from './src/screens/appointments/AppointmentSuccessScreen';
+import { ReviewDoctorScreen } from './src/screens/review/ReviewDoctorScreen';
+import { ReviewSuccessScreen } from './src/screens/review/ReviewSuccessScreen';
 import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
@@ -212,6 +214,16 @@ function AppNavigator() {
         <Stack.Screen
           name={navigationRoutes.AppointmentSuccess}
           component={AppointmentSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ReviewDoctor}
+          component={ReviewDoctorScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ReviewSuccess}
+          component={ReviewSuccessScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

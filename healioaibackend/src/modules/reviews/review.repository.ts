@@ -4,8 +4,9 @@ import { getPaginationParams, paginated, PaginatedResult } from '../../common/pa
 import { ReviewModel, IReview } from './review.model';
 
 const REVIEW_REF_POPULATE = [
-    { path: 'appointmentId', select: 'appointmentDate status' },
+    { path: 'appointmentId', select: 'appointmentDate status appointmentId currentStartAt' },
     { path: 'userId', select: 'name email phone' },
+    { path: 'reviewForId', select: 'clinicName doctorName name registrationNumber specialisation' },
 ];
 
 export class ReviewRepository extends BaseRepository<IReview> {
@@ -39,6 +40,7 @@ export class ReviewRepository extends BaseRepository<IReview> {
             .findOne(filter)
             .populate(REVIEW_REF_POPULATE[0])
             .populate(REVIEW_REF_POPULATE[1])
+            .populate(REVIEW_REF_POPULATE[2])
             .exec() as Promise<IReview | null>;
     }
 
@@ -53,6 +55,7 @@ export class ReviewRepository extends BaseRepository<IReview> {
                 .find(filter)
                 .populate(REVIEW_REF_POPULATE[0])
                 .populate(REVIEW_REF_POPULATE[1])
+                .populate(REVIEW_REF_POPULATE[2])
                 .sort({ createdAt: -1 })
                 .skip(params.skip)
                 .limit(params.limit)

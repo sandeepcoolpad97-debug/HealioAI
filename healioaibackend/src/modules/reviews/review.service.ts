@@ -6,9 +6,11 @@ import { ReviewRepository } from './review.repository';
 import { IReview } from './review.model';
 import { CreateReviewInput, UpdateReviewInput } from './review.validation';
 import { v4 as uuidv4 } from 'uuid';
+import { AppointmentRepository } from '../appointment/appointment.repository';
 
 export class ReviewService {
     private readonly reviewRepository = new ReviewRepository();
+    private readonly appointmentRepository = new AppointmentRepository();
 
     async create(data: CreateReviewInput, actorId?: string): Promise<IReview> {
         // Check if review already exists for this appointment
@@ -27,7 +29,16 @@ export class ReviewService {
             updatedBy: actorId || uuidv4(),
         };
 
-        return this.reviewRepository.create(payload as unknown as Partial<IReview>);
+        const review = await this.reviewRepository.create(payload as unknown as Partial<IReview>);
+
+        // Update appointment to set isReviewAdded = true
+        if (review && data.appointmentId) {
+            await this.appointmentRepository.updateById(data.appointmentId, {
+                $set: { isReviewAdded: true }
+            });
+        }
+
+        return review;
     }
 
     async getById(id: string): Promise<IReview> {

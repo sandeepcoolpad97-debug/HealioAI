@@ -28,6 +28,7 @@ export interface AppointmentDto {
   userId: string;
   bookingStatus: 'confirmed' | 'rescheduled' | 'cancelled';
   currentStartAt: string;
+  isReviewAdded: boolean;
   appointmentInfo: Array<{
     startAt: string;
     action: string;

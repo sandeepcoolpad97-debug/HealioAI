@@ -114,6 +114,17 @@ export const AppointmentSummaryScreen: React.FC = () => {
     hour12: true
   });
 
+  const handleAddReview = () => {
+    navigation.navigate(navigationRoutes.ReviewDoctor, {
+      doctorId: appointment.doctorId?._id || '',
+      doctorName: appointment.doctorId?.doctorName || 'Unknown Doctor',
+      specialty: appointment.doctorId?.specialisation || 'Specialist',
+      date: dateStr,
+      time: timeStr,
+      appointmentId: appointment._id,
+    });
+  };
+
   // Extract diagnosis and medicines from notes or structured data if available
   // Currently assuming basic structure, in future API might have specific diagnosis field
   const diagnosis = 'No Daignosis yet'; // Placeholder or extract from notes
@@ -151,6 +162,8 @@ export const AppointmentSummaryScreen: React.FC = () => {
           hospital={appointment.doctorId?.clinicName || 'Healio Clinic'}
           location="Online" // Or from clinic address
           imageUrl={undefined}
+          onAddReview={handleAddReview}
+          isReviewAdded={appointment.isReviewAdded}
         />
 
         <VisitSummaryCard 

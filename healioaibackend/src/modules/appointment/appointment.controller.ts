@@ -54,6 +54,7 @@ export async function listAppointments(
         status: req.query.status,
         date: req.query.date,
         timeframe: req.query.timeframe,
+        isReviewAdded: req.query.isReviewAdded !== undefined ? req.query.isReviewAdded === 'true' : undefined,
     };
     const result = await appointmentService.list(page, limit, filters);
     res.status(HTTP_STATUS.OK).json({ success: true, ...result });

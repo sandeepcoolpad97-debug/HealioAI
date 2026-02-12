@@ -58,6 +58,8 @@ export const navigationRoutes = {
   CancelAppointment: 'CancelAppointment',
   CancellationSuccess: 'CancellationSuccess',
   AppointmentSuccess: 'AppointmentSuccess',
+  ReviewDoctor: 'ReviewDoctor',
+  ReviewSuccess: 'ReviewSuccess',
 } as const;
 
 export const signInStrings = {

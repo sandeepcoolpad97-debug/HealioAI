@@ -58,6 +58,7 @@ export class AppointmentService {
     if (filters.doctorId) query.doctorId = filters.doctorId;
     if (filters.userId) query.userId = filters.userId;
     if (filters.status) query.bookingStatus = filters.status;
+    if (filters.isReviewAdded !== undefined) query.isReviewAdded = filters.isReviewAdded;
     if (filters.date) {
       const date = new Date(filters.date);
       const nextDay = new Date(date);

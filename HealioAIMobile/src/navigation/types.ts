@@ -63,4 +63,24 @@ export type RootStackParamList = {
     specialty: string;
     appointmentId?: string;
   };
+  [navigationRoutes.ReviewDoctor]: {
+    doctorId: string;
+    doctorName: string;
+    specialty: string;
+    date: string;
+    time: string;
+    appointmentId?: string;
+    initialRating?: number;
+    initialReview?: string;
+  };
+  [navigationRoutes.ReviewSuccess]: {
+    doctorId: string;
+    doctorName: string;
+    specialty: string;
+    date: string;
+    time: string;
+    rating: number;
+    appointmentId: string;
+    reviewText?: string;
+  };
 };
