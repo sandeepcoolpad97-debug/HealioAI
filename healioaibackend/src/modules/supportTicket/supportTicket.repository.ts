@@ -4,7 +4,7 @@ import { getPaginationParams, paginated, PaginatedResult } from '../../common/pa
 import { SupportTicketModel, ISupportTicket } from './supportTicket.model';
 
 const SUPPORT_TICKET_REF_POPULATE = [
-    { path: 'raisedById', select: 'name email phone clinicName' },
+    { path: 'raisedById', select: 'name email phone clinicName labName emailId' },
     { path: 'assignedToId', select: 'name email' },
 ];
 
@@ -30,7 +30,11 @@ export class SupportTicketRepository extends BaseRepository<ISupportTicket> {
     }
 
     async findByTicketId(ticketId: string): Promise<ISupportTicket | null> {
-        return this.model.findOne({ ticketId, isDeleted: false } as FilterQuery<ISupportTicket>).exec();
+        return this.model
+            .findOne({ ticketId, isDeleted: false } as FilterQuery<ISupportTicket>)
+            .populate(SUPPORT_TICKET_REF_POPULATE[0])
+            .populate(SUPPORT_TICKET_REF_POPULATE[1])
+            .exec() as Promise<ISupportTicket | null>;
     }
 
     async findByRaisedBy(raisedById: string, raisedByRole: string): Promise<ISupportTicket[]> {

@@ -40,7 +40,35 @@ const router = Router();
  *               performedById: { type: string }
  *               attachments: { type: array }
  *     responses:
- *       201: { description: History entry created }
+ *       201:
+ *         description: History entry created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Created history entry
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     action: { type: string }
+ *                     message: { type: string }
+ *                     oldValue: { type: object }
+ *                     newValue: { type: object }
+ *                     performedByRole: { type: string }
+ *                     performedById: { type: string }
+ *                     attachments:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           fileName: { type: string }
+ *                           fileUrl: { type: string }
+ *                           fileType: { type: string }
+ *                           fileSize: { type: number }
  */
 router.post('/', createHistoryEntryValidation, createHistoryEntry);
 
@@ -62,7 +90,48 @@ router.post('/', createHistoryEntryValidation, createHistoryEntry);
  *         name: limit
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Ticket history retrieved }
+ *       200:
+ *         description: Ticket history retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: History entry
+ *                     properties:
+ *                       _id: { type: string }
+ *                       ticketId: { type: string }
+ *                       action: { type: string }
+ *                       message: { type: string }
+ *                       oldValue: { type: object }
+ *                       newValue: { type: object }
+ *                       performedByRole: { type: string }
+ *                       performedById:
+ *                         oneOf:
+ *                           - type: string
+ *                           - type: object
+ *                             nullable: true
+ *                             properties:
+ *                               _id: { type: string }
+ *                               name: { type: string }
+ *                               email: { type: string }
+ *                               clinicName: { type: string }
+ *                               labName: { type: string }
+ *                               emailId: { type: string }
+ *                       attachments:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             fileName: { type: string }
+ *                             fileUrl: { type: string }
+ *                             fileType: { type: string }
+ *                             fileSize: { type: number }
  */
 router.get('/ticket/:ticketId', getHistoryByTicketIdValidation, getHistoryByTicketId);
 
@@ -89,7 +158,57 @@ router.get('/ticket/:ticketId', getHistoryByTicketIdValidation, getHistoryByTick
  *         name: performedByRole
  *         schema: { type: string }
  *     responses:
- *       200: { description: History list retrieved }
+ *       200:
+ *         description: History list retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: History entry
+ *                     properties:
+ *                       _id: { type: string }
+ *                       ticketId: { type: string }
+ *                       action: { type: string }
+ *                       message: { type: string }
+ *                       oldValue: { type: object }
+ *                       newValue: { type: object }
+ *                       performedByRole: { type: string }
+ *                       performedById:
+ *                         oneOf:
+ *                           - type: string
+ *                           - type: object
+ *                             nullable: true
+ *                             properties:
+ *                               _id: { type: string }
+ *                               name: { type: string }
+ *                               email: { type: string }
+ *                               clinicName: { type: string }
+ *                               labName: { type: string }
+ *                               emailId: { type: string }
+ *                       attachments:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             fileName: { type: string }
+ *                             fileUrl: { type: string }
+ *                             fileType: { type: string }
+ *                             fileSize: { type: number }
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     page: { type: integer }
+ *                     limit: { type: integer }
+ *                     total: { type: integer }
+ *                     totalPages: { type: integer }
+ *                     hasNext: { type: boolean }
+ *                     hasPrev: { type: boolean }
  */
 router.get('/', listHistoryValidation, listHistory);
 

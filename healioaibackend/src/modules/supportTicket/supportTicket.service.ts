@@ -34,6 +34,11 @@ export class SupportTicketService {
 
         const ticket = await this.supportTicketRepository.create(payload as any);
 
+        const ticketWithRefs =
+            (await this.supportTicketRepository.findActiveByIdWithRefs(
+                ticket._id.toString()
+            )) || ticket;
+
         // Create initial history entry
         await this.historyService.create({
             ticketId: ticket._id.toString(),
@@ -43,7 +48,7 @@ export class SupportTicketService {
             performedById: data.raisedById,
         });
 
-        return ticket;
+        return ticketWithRefs;
     }
 
     async getById(id: string): Promise<ISupportTicket> {
@@ -97,7 +102,6 @@ export class SupportTicketService {
                 { ticketId: { $regex: filters.search, $options: 'i' } },
                 { subject: { $regex: filters.search, $options: 'i' } },
                 { description: { $regex: filters.search, $options: 'i' } },
-                { email: { $regex: filters.search, $options: 'i' } },
             ];
         }
 
@@ -144,7 +148,10 @@ export class SupportTicketService {
             performedById: actorId,
         });
 
-        return updated;
+        const updatedWithRefs =
+            (await this.supportTicketRepository.findActiveByIdWithRefs(id)) || updated;
+
+        return updatedWithRefs;
     }
 
     async updateStatus(
@@ -195,7 +202,10 @@ export class SupportTicketService {
             performedById,
         });
 
-        return updated;
+        const updatedWithRefs =
+            (await this.supportTicketRepository.findActiveByIdWithRefs(id)) || updated;
+
+        return updatedWithRefs;
     }
 
     async assignTicket(
@@ -241,7 +251,10 @@ export class SupportTicketService {
             performedById,
         });
 
-        return updated;
+        const updatedWithRefs =
+            (await this.supportTicketRepository.findActiveByIdWithRefs(id)) || updated;
+
+        return updatedWithRefs;
     }
 
     async updatePriority(
@@ -287,7 +300,10 @@ export class SupportTicketService {
             performedById,
         });
 
-        return updated;
+        const updatedWithRefs =
+            (await this.supportTicketRepository.findActiveByIdWithRefs(id)) || updated;
+
+        return updatedWithRefs;
     }
 
     async addReply(id: string, data: AddReplyInput): Promise<void> {

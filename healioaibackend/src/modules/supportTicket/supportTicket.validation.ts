@@ -11,8 +11,6 @@ const attachmentSchema = Joi.object({
 export const createSupportTicketSchema = Joi.object({
     raisedByRole: Joi.string().valid('User', 'Clinic', 'Lab', 'Admin').required(),
     raisedById: Joi.string().hex().length(24).required(),
-    fullName: Joi.string().required().trim().min(1).max(100),
-    email: Joi.string().required().trim().lowercase().email(),
     subject: Joi.string().required().trim().min(1).max(200),
     description: Joi.string().required().trim().min(1).max(2000),
     category: Joi.string().required().trim().min(1).max(100),
@@ -73,8 +71,6 @@ export const listSupportTicketsQuerySchema = paginationQuerySchema.keys({
 export type CreateSupportTicketInput = {
     raisedByRole: 'User' | 'Clinic' | 'Lab' | 'Admin';
     raisedById: string;
-    fullName: string;
-    email: string;
     subject: string;
     description: string;
     category: string;

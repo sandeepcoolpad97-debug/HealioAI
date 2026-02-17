@@ -19,6 +19,7 @@ import { notificationTypeRoutes } from './modules/notificationType';
 import { notificationRoutes } from './modules/notifications';
 import { supportTicketRoutes } from './modules/supportTicket';
 import { supportTicketHistoryRoutes } from './modules/supportTicketHistory';
+import { mediaRoutes } from './modules/media';
 
 // Routes
 const router = Router();
@@ -54,6 +55,7 @@ router.use('/notification-types', notificationTypeRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/support-tickets', supportTicketRoutes);
 router.use('/support-ticket-history', supportTicketHistoryRoutes);
+router.use('/media', mediaRoutes);
 
 
 export function registerRoutes(app: Application): void {

@@ -20,6 +20,7 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import PaymentIcon from '@mui/icons-material/Payment';
 import DiscountIcon from '@mui/icons-material/Discount';
 import RateReviewIcon from '@mui/icons-material/RateReview';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/admin', icon: DashboardIcon },
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { label: 'Payments', path: '/admin/payments', icon: PaymentIcon },
   { label: 'Discounts', path: '/admin/discounts', icon: DiscountIcon },
   { label: 'Reviews', path: '/admin/reviews', icon: RateReviewIcon },
+  { label: 'Support Tickets', path: '/admin/support-tickets', icon: SupportAgentIcon },
 ];
 
 function NavListItem({ label, path, icon: Icon }) {

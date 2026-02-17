@@ -12,6 +12,8 @@ import authReducer from './slices/authSlice';
 import adminsReducer from './slices/adminsSlice';
 import discountsReducer from './slices/discountsSlice';
 import reviewsReducer from './slices/reviewsSlice';
+import supportTicketsReducer from './slices/supportTicketsSlice';
+import supportTicketHistoryReducer from './slices/supportTicketHistorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +30,8 @@ export const store = configureStore({
     categories: categoriesReducer,
     services: servicesReducer,
     payments: paymentsReducer,
+    supportTickets: supportTicketsReducer,
+    supportTicketHistory: supportTicketHistoryReducer,
   },
 });
 

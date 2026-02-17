@@ -43,21 +43,70 @@ const router = Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [raisedByRole, raisedById, fullName, email, subject, description, category, subCategory]
+ *             required: [raisedByRole, raisedById, subject, description, category, subCategory]
  *             properties:
  *               raisedByRole: { type: string, enum: [User, Clinic, Lab, Admin] }
- *               raisedById: { type: string }
- *               fullName: { type: string }
- *               email: { type: string }
+ *               raisedById:
+ *                 type: string
+ *                 description: MongoDB ObjectId of the user/clinic/lab/admin who raised the ticket
  *               subject: { type: string }
  *               description: { type: string }
  *               category: { type: string }
  *               subCategory: { type: string }
  *               priority: { type: string, enum: [low, medium, high, urgent], default: medium }
- *               reference: { type: object }
+ *               reference:
+ *                 type: object
+ *                 description: Optional linked entity for ticket context
+ *                 properties:
+ *                   refType:
+ *                     type: string
+ *                     enum: [Appointment, Payment, LabOrder, Prescription, General]
+ *                     default: General
+ *                   refId:
+ *                     type: string
+ *                     nullable: true
+ *                     description: MongoDB ObjectId of the linked entity or null
  *               attachments: { type: array }
  *     responses:
- *       201: { description: Ticket created successfully }
+ *       201:
+ *         description: Ticket created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.post('/', createTicketValidation, createTicket);
 
@@ -96,7 +145,56 @@ router.post('/', createTicketValidation, createTicket);
  *         name: search
  *         schema: { type: string }
  *     responses:
- *       200: { description: Tickets retrieved successfully }
+ *       200:
+ *         description: Tickets retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     description: Support ticket with populated references
+ *                     properties:
+ *                       _id: { type: string }
+ *                       ticketId: { type: string }
+ *                       raisedById:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           _id: { type: string }
+ *                           name: { type: string }
+ *                           email: { type: string }
+ *                           phone: { type: string }
+ *                           clinicName: { type: string }
+ *                           labName: { type: string }
+ *                           emailId: { type: string }
+ *                       assignedToId:
+ *                         type: object
+ *                         nullable: true
+ *                         properties:
+ *                           _id: { type: string }
+ *                           name: { type: string }
+ *                           email: { type: string }
+ *                       subject: { type: string }
+ *                       description: { type: string }
+ *                       category: { type: string }
+ *                       subCategory: { type: string }
+ *                       priority: { type: string }
+ *                       status: { type: string }
+ *                       reference: { type: object }
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     page: { type: integer }
+ *                     limit: { type: integer }
+ *                     total: { type: integer }
+ *                     totalPages: { type: integer }
+ *                     hasNext: { type: boolean }
+ *                     hasPrev: { type: boolean }
  */
 router.get('/', listTicketsValidation, listTickets);
 
@@ -112,7 +210,45 @@ router.get('/', listTicketsValidation, listTickets);
  *         required: true
  *         schema: { type: string, pattern: '^SUP-\d{5}$' }
  *     responses:
- *       200: { description: Ticket retrieved successfully }
+ *       200:
+ *         description: Ticket retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.get('/ticket/:ticketId', getTicketByTicketIdValidation, getTicketByTicketId);
 
@@ -128,7 +264,45 @@ router.get('/ticket/:ticketId', getTicketByTicketIdValidation, getTicketByTicket
  *         required: true
  *         schema: { type: string }
  *     responses:
- *       200: { description: Ticket retrieved successfully }
+ *       200:
+ *         description: Ticket retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.get('/:id', getTicketByIdValidation, getTicketById);
 
@@ -155,7 +329,45 @@ router.get('/:id', getTicketByIdValidation, getTicketById);
  *               category: { type: string }
  *               subCategory: { type: string }
  *     responses:
- *       200: { description: Ticket updated successfully }
+ *       200:
+ *         description: Ticket updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Updated support ticket with populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.patch('/:id', updateTicketValidation, updateTicket);
 
@@ -182,7 +394,45 @@ router.patch('/:id', updateTicketValidation, updateTicket);
  *               performedByRole: { type: string }
  *               performedById: { type: string }
  *     responses:
- *       200: { description: Status updated successfully }
+ *       200:
+ *         description: Status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with updated status and populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.patch('/:id/status', updateStatusValidation, updateStatus);
 
@@ -210,7 +460,45 @@ router.patch('/:id/status', updateStatusValidation, updateStatus);
  *               performedByRole: { type: string }
  *               performedById: { type: string }
  *     responses:
- *       200: { description: Ticket assigned successfully }
+ *       200:
+ *         description: Ticket assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with updated assignee and populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.patch('/:id/assign', assignTicketValidation, assignTicket);
 
@@ -237,7 +525,45 @@ router.patch('/:id/assign', assignTicketValidation, assignTicket);
  *               performedByRole: { type: string }
  *               performedById: { type: string }
  *     responses:
- *       200: { description: Priority updated successfully }
+ *       200:
+ *         description: Priority updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data:
+ *                   type: object
+ *                   description: Support ticket with updated priority and populated references
+ *                   properties:
+ *                     _id: { type: string }
+ *                     ticketId: { type: string }
+ *                     raisedById:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                         phone: { type: string }
+ *                         clinicName: { type: string }
+ *                         labName: { type: string }
+ *                         emailId: { type: string }
+ *                     assignedToId:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         _id: { type: string }
+ *                         name: { type: string }
+ *                         email: { type: string }
+ *                     subject: { type: string }
+ *                     description: { type: string }
+ *                     category: { type: string }
+ *                     subCategory: { type: string }
+ *                     priority: { type: string }
+ *                     status: { type: string }
+ *                     reference: { type: object }
  */
 router.patch('/:id/priority', updatePriorityValidation, updatePriority);
 
@@ -265,7 +591,15 @@ router.patch('/:id/priority', updatePriorityValidation, updatePriority);
  *               performedById: { type: string }
  *               attachments: { type: array }
  *     responses:
- *       200: { description: Reply added successfully }
+ *       200:
+ *         description: Reply added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 message: { type: string }
  */
 router.post('/:id/reply', addReplyValidation, addReply);
 

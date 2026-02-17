@@ -45,21 +45,6 @@ const SupportTicketSchema = new mongoose.Schema(
       index: true,
     },
 
-    /* ---------------- CONTACT INFO ---------------- */
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-      index: true,
-    },
-
     /* ---------------- TICKET CONTENT ---------------- */
     subject: {
       type: String,
@@ -177,9 +162,6 @@ export interface ISupportTicket extends Document, IAuditFields {
 
   raisedByRole: "User" | "Clinic" | "Lab" | "Admin";
   raisedById: mongoose.Types.ObjectId;
-
-  fullName: string;
-  email: string;
 
   subject: string;
   description: string;

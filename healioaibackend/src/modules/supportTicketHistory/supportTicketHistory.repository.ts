@@ -5,7 +5,7 @@ import { SupportTicketHistoryModel, ISupportTicketHistory } from './supportTicke
 
 const HISTORY_REF_POPULATE = [
     { path: 'ticketId', select: 'ticketId subject status' },
-    { path: 'performedById', select: 'name email' },
+    { path: 'performedById', select: 'name email clinicName labName emailId' },
 ];
 
 export class SupportTicketHistoryRepository extends BaseRepository<ISupportTicketHistory> {
