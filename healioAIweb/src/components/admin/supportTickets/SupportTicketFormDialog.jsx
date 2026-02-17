@@ -17,11 +17,18 @@ import {
     Grid,
     Typography,
     Autocomplete,
+    Chip,
+    IconButton,
 } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import CloseIcon from '@mui/icons-material/Close';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { createSupportTicket, updateSupportTicket } from '../../../store/slices/supportTicketsSlice';
 import { fetchUsers } from '../../../store/slices/usersSlice';
 import { fetchClinics } from '../../../store/slices/clinicsSlice';
 import { fetchLabs } from '../../../store/slices/labsSlice';
+import { uploadMedia, deleteMedia } from '../../../store/slices/mediaSlice';
 
 export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode, ticketId }) {
     const dispatch = useDispatch();
@@ -29,6 +36,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
     const { list: users } = useSelector((state) => state.users);
     const { list: clinics } = useSelector((state) => state.clinics);
     const { list: labs } = useSelector((state) => state.labs);
+    const { loading: mediaLoading } = useSelector((state) => state.media);
 
     const [formData, setFormData] = useState({
         raisedByRole: 'User',
@@ -41,6 +49,8 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
     });
 
     const [selectedEntity, setSelectedEntity] = useState(null);
+    const [attachments, setAttachments] = useState([]);
+    const [uploadedMediaIds, setUploadedMediaIds] = useState([]);
 
     // Fetch data when dialog opens
     useEffect(() => {
@@ -86,12 +96,57 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
         setFormData({ ...formData, raisedById: newValue?._id || '' });
     };
 
+    const handleFileChange = async (event) => {
+        const files = Array.from(event.target.files);
+
+        for (const file of files) {
+            try {
+                const formDataUpload = new FormData();
+                formDataUpload.append('file', file);
+                formDataUpload.append('folder', 'support-tickets');
+                formDataUpload.append('ownerType', 'SupportTicket');
+
+                const result = await dispatch(uploadMedia(formDataUpload)).unwrap();
+
+                setUploadedMediaIds(prev => [...prev, result._id]);
+                setAttachments(prev => [...prev, {
+                    file,
+                    mediaId: result._id,
+                    url: result.secureUrl || result.url,
+                    resourceType: result.resourceType,
+                    originalFilename: result.originalFilename || file.name
+                }]);
+            } catch (error) {
+                console.error('Failed to upload file:', error);
+            }
+        }
+
+        // Reset file input
+        event.target.value = '';
+    };
+
+    const handleRemoveAttachment = async (index) => {
+        const attachment = attachments[index];
+        try {
+            await dispatch(deleteMedia(attachment.mediaId)).unwrap();
+            setAttachments(prev => prev.filter((_, i) => i !== index));
+            setUploadedMediaIds(prev => prev.filter(id => id !== attachment.mediaId));
+        } catch (error) {
+            console.error('Failed to delete attachment:', error);
+        }
+    };
+
     const handleSubmit = async () => {
         try {
+            const payload = {
+                ...formData,
+                attachments: uploadedMediaIds
+            };
+
             if (mode === 'create') {
-                await dispatch(createSupportTicket(formData)).unwrap();
+                await dispatch(createSupportTicket(payload)).unwrap();
             } else {
-                await dispatch(updateSupportTicket({ id: ticketId, payload: formData })).unwrap();
+                await dispatch(updateSupportTicket({ id: ticketId, payload })).unwrap();
             }
             onSuccess();
             setFormData({
@@ -104,6 +159,8 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                 priority: 'medium',
             });
             setSelectedEntity(null);
+            setAttachments([]);
+            setUploadedMediaIds([]);
         } catch (err) {
             // Error handled by Redux
         }
@@ -130,39 +187,6 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
             default:
                 return [];
         }
-    };
-
-    const getEntityLabel = (entity) => {
-        if (!entity) return '';
-        const name = entity.name || entity.clinicName || entity.labName || '';
-        const email = entity.email || entity.emailId || '';
-
-        // Handle phone - it might be an object with {countryCode, number, verified}
-        let phone = '';
-        if (entity.phone) {
-            if (typeof entity.phone === 'object' && entity.phone.number) {
-                phone = entity.phone.countryCode
-                    ? `${entity.phone.countryCode} ${entity.phone.number}`
-                    : entity.phone.number;
-            } else if (typeof entity.phone === 'string') {
-                phone = entity.phone;
-            }
-        } else if (entity.phoneNumber) {
-            if (typeof entity.phoneNumber === 'object' && entity.phoneNumber.number) {
-                phone = entity.phoneNumber.countryCode
-                    ? `${entity.phoneNumber.countryCode} ${entity.phoneNumber.number}`
-                    : entity.phoneNumber.number;
-            } else if (typeof entity.phoneNumber === 'string') {
-                phone = entity.phoneNumber;
-            }
-        }
-
-        // Build display string with available info
-        let display = name;
-        if (email) display += ` (${email})`;
-        if (phone) display += ` - ${phone}`;
-
-        return display || 'Unknown';
     };
 
     const renderEntityOption = (props, entity) => {
@@ -233,7 +257,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                         Raised By Information
                     </Typography>
                     <Grid container spacing={2} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={3}>
                             <FormControl fullWidth size="small">
                                 <InputLabel>Role *</InputLabel>
                                 <Select
@@ -249,7 +273,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid size={4}>
                             {formData.raisedByRole === 'Admin' ? (
                                 <TextField
                                     fullWidth
@@ -284,7 +308,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
 
                         {/* Display selected entity details */}
                         {selectedEntity && formData.raisedByRole !== 'Admin' && (
-                            <Grid item xs={12}>
+                            <Grid size={4}>
                                 <Box sx={{
                                     p: 2,
                                     bgcolor: 'background.default',
@@ -353,7 +377,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                         Classification
                     </Typography>
                     <Grid container spacing={2} sx={{ mb: 3 }}>
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={4}>
                             <TextField
                                 fullWidth
                                 size="small"
@@ -365,7 +389,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={4}>
                             <TextField
                                 fullWidth
                                 size="small"
@@ -377,7 +401,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={4}>
                             <FormControl fullWidth size="small">
                                 <InputLabel>Priority</InputLabel>
                                 <Select
@@ -398,8 +422,9 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                     <Typography variant="body1" color="primary" sx={{ mb: 2, fontWeight: 600 }}>
                         Ticket Details
                     </Typography>
+
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <TextField
                                 fullWidth
                                 size="small"
@@ -411,7 +436,7 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <TextField
                                 fullWidth
                                 label="Description *"
@@ -424,6 +449,49 @@ export default function SupportTicketFormDialog({ open, onClose, onSuccess, mode
                             />
                         </Grid>
                     </Grid>
+
+                    {/* Attachments Section */}
+                    <Box sx={{ mt: 3 }}>
+                        <Typography variant="body1" color="primary" sx={{ mb: 2, fontWeight: 600 }}>
+                            Attachments (Optional)
+                        </Typography>
+
+                        <Button
+                            variant="outlined"
+                            component="label"
+                            startIcon={<AttachFileIcon />}
+                            disabled={mediaLoading}
+                        >
+                            {mediaLoading ? 'Uploading...' : 'Upload Files'}
+                            <input
+                                type="file"
+                                hidden
+                                multiple
+                                accept="image/*,application/pdf,.doc,.docx"
+                                onChange={handleFileChange}
+                            />
+                        </Button>
+
+                        {attachments.length > 0 && (
+                            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                {attachments.map((attachment, index) => {
+                                    const isImage = attachment.resourceType === 'image' || attachment.file.type.startsWith('image/');
+                                    const isPdf = attachment.file.type === 'application/pdf';
+
+                                    return (
+                                        <Chip
+                                            key={index}
+                                            icon={isImage ? <ImageIcon /> : isPdf ? <PictureAsPdfIcon /> : <AttachFileIcon />}
+                                            label={attachment.originalFilename || attachment.file.name}
+                                            onDelete={() => handleRemoveAttachment(index)}
+                                            deleteIcon={<CloseIcon />}
+                                            sx={{ maxWidth: 250 }}
+                                        />
+                                    );
+                                })}
+                            </Box>
+                        )}
+                    </Box>
                 </Box>
             </DialogContent>
             <DialogActions sx={{ px: 3, py: 2, borderTop: 1, borderColor: 'divider', bgcolor: '#fafafa' }}>

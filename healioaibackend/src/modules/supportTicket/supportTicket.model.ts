@@ -2,24 +2,6 @@ import mongoose, { Document } from "mongoose";
 import { auditPlugin } from "../../common/schemas/audit.schema";
 import { IAuditFields } from "../../common/types/audit.types";
 
-/* =========================
-   SUB SCHEMA: Attachments
-========================= */
-
-const SupportAttachmentSchema = new mongoose.Schema(
-  {
-    fileName: { type: String, required: true, trim: true },
-    fileUrl: { type: String, required: true, trim: true },
-    fileType: { type: String, required: true, trim: true }, // pdf/png/jpg
-    fileSize: { type: Number, required: true }, // bytes
-  },
-  { _id: true, timestamps: true }
-);
-
-/* =========================
-   MAIN: Support Ticket Schema
-========================= */
-
 const SupportTicketSchema = new mongoose.Schema(
   {
     ticketId: {
@@ -119,9 +101,13 @@ const SupportTicketSchema = new mongoose.Schema(
       },
     },
 
-    /* ---------------- ATTACHMENTS ---------------- */
     attachments: {
-      type: [SupportAttachmentSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Media",
+        },
+      ],
       default: [],
     },
 
@@ -143,19 +129,6 @@ SupportTicketSchema.plugin(auditPlugin);
 
 SupportTicketSchema.index({ raisedById: 1, status: 1, lastUpdatedAt: -1 });
 SupportTicketSchema.index({ ticketId: 1, status: 1 });
-
-/* =========================
-   Types
-========================= */
-
-export interface ISupportAttachment {
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
 
 export interface ISupportTicket extends Document, IAuditFields {
   ticketId: string;
@@ -180,7 +153,7 @@ export interface ISupportTicket extends Document, IAuditFields {
     refId?: mongoose.Types.ObjectId | null;
   };
 
-  attachments?: ISupportAttachment[];
+  attachments?: mongoose.Types.ObjectId[];
 
   lastUpdatedAt: Date;
 }

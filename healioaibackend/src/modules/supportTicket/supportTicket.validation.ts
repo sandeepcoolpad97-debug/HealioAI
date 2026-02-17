@@ -1,13 +1,6 @@
 import Joi from 'joi';
 import { paginationQuerySchema } from '../../common/pagination/pagination';
 
-const attachmentSchema = Joi.object({
-    fileName: Joi.string().required().trim(),
-    fileUrl: Joi.string().required().trim().uri(),
-    fileType: Joi.string().required().trim(),
-    fileSize: Joi.number().required().positive(),
-});
-
 export const createSupportTicketSchema = Joi.object({
     raisedByRole: Joi.string().valid('User', 'Clinic', 'Lab', 'Admin').required(),
     raisedById: Joi.string().hex().length(24).required(),
@@ -20,7 +13,7 @@ export const createSupportTicketSchema = Joi.object({
         refType: Joi.string().valid('Appointment', 'Payment', 'LabOrder', 'Prescription', 'General').default('General'),
         refId: Joi.string().hex().length(24).allow(null).optional(),
     }).optional(),
-    attachments: Joi.array().items(attachmentSchema).default([]),
+    attachments: Joi.array().items(Joi.string().hex().length(24)).default([]),
 });
 
 export const updateSupportTicketSchema = Joi.object({
@@ -47,7 +40,7 @@ export const addReplySchema = Joi.object({
     message: Joi.string().required().trim().min(1).max(2000),
     performedByRole: Joi.string().valid('User', 'Clinic', 'Lab', 'Admin', 'SupportAgent').required(),
     performedById: Joi.string().hex().length(24).required(),
-    attachments: Joi.array().items(attachmentSchema).default([]),
+    attachments: Joi.array().items(Joi.string().hex().length(24)).default([]),
 });
 
 export const supportTicketIdParamSchema = Joi.object({
@@ -80,12 +73,7 @@ export type CreateSupportTicketInput = {
         refType?: 'Appointment' | 'Payment' | 'LabOrder' | 'Prescription' | 'General';
         refId?: string | null;
     };
-    attachments?: {
-        fileName: string;
-        fileUrl: string;
-        fileType: string;
-        fileSize: number;
-    }[];
+    attachments?: string[];
 };
 
 export type UpdateSupportTicketInput = {
@@ -112,10 +100,5 @@ export type AddReplyInput = {
     message: string;
     performedByRole: 'User' | 'Clinic' | 'Lab' | 'Admin' | 'SupportAgent';
     performedById: string;
-    attachments?: {
-        fileName: string;
-        fileUrl: string;
-        fileType: string;
-        fileSize: number;
-    }[];
+    attachments?: string[];
 };

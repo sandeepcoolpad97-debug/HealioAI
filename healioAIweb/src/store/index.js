@@ -14,6 +14,7 @@ import discountsReducer from './slices/discountsSlice';
 import reviewsReducer from './slices/reviewsSlice';
 import supportTicketsReducer from './slices/supportTicketsSlice';
 import supportTicketHistoryReducer from './slices/supportTicketHistorySlice';
+import mediaReducer from './slices/mediaSlice';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     payments: paymentsReducer,
     supportTickets: supportTicketsReducer,
     supportTicketHistory: supportTicketHistoryReducer,
+    media: mediaReducer,
   },
 });
 

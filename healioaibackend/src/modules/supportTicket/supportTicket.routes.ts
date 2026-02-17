@@ -66,7 +66,12 @@ const router = Router();
  *                     type: string
  *                     nullable: true
  *                     description: MongoDB ObjectId of the linked entity or null
- *               attachments: { type: array }
+ *               attachments:
+ *                 type: array
+ *                 description: List of media attachment IDs
+ *                 items:
+ *                   type: string
+ *                   description: Media document ID
  *     responses:
  *       201:
  *         description: Ticket created successfully
@@ -589,7 +594,12 @@ router.patch('/:id/priority', updatePriorityValidation, updatePriority);
  *               message: { type: string }
  *               performedByRole: { type: string }
  *               performedById: { type: string }
- *               attachments: { type: array }
+ *               attachments:
+ *                 type: array
+ *                 description: List of media attachment IDs
+ *                 items:
+ *                   type: string
+ *                   description: Media document ID
  *     responses:
  *       200:
  *         description: Reply added successfully

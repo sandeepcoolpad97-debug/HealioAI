@@ -1,13 +1,6 @@
 import Joi from 'joi';
 import { paginationQuerySchema } from '../../common/pagination/pagination';
 
-const historyAttachmentSchema = Joi.object({
-    fileName: Joi.string().required(),
-    fileUrl: Joi.string().required().uri(),
-    fileType: Joi.string().required(),
-    fileSize: Joi.number().required().positive(),
-});
-
 export const createHistoryEntrySchema = Joi.object({
     ticketId: Joi.string().hex().length(24).required(),
     action: Joi.string()
@@ -30,7 +23,7 @@ export const createHistoryEntrySchema = Joi.object({
         .valid('User', 'Clinic', 'Lab', 'Admin', 'SupportAgent', 'System')
         .required(),
     performedById: Joi.string().hex().length(24).allow(null).optional(),
-    attachments: Joi.array().items(historyAttachmentSchema).default([]),
+    attachments: Joi.array().items(Joi.string().hex().length(24)).default([]),
 });
 
 export const ticketIdParamSchema = Joi.object({

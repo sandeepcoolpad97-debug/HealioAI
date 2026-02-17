@@ -6,6 +6,11 @@ import { SupportTicketModel, ISupportTicket } from './supportTicket.model';
 const SUPPORT_TICKET_REF_POPULATE = [
     { path: 'raisedById', select: 'name email phone clinicName labName emailId' },
     { path: 'assignedToId', select: 'name email' },
+    {
+        path: 'attachments',
+        select:
+            'publicId url secureUrl resourceType format bytes width height folder originalFilename tags context',
+    },
 ];
 
 export class SupportTicketRepository extends BaseRepository<ISupportTicket> {
@@ -34,6 +39,7 @@ export class SupportTicketRepository extends BaseRepository<ISupportTicket> {
             .findOne({ ticketId, isDeleted: false } as FilterQuery<ISupportTicket>)
             .populate(SUPPORT_TICKET_REF_POPULATE[0])
             .populate(SUPPORT_TICKET_REF_POPULATE[1])
+            .populate(SUPPORT_TICKET_REF_POPULATE[2])
             .exec() as Promise<ISupportTicket | null>;
     }
 
@@ -74,6 +80,7 @@ export class SupportTicketRepository extends BaseRepository<ISupportTicket> {
             .findOne(filter)
             .populate(SUPPORT_TICKET_REF_POPULATE[0])
             .populate(SUPPORT_TICKET_REF_POPULATE[1])
+            .populate(SUPPORT_TICKET_REF_POPULATE[2])
             .exec() as Promise<ISupportTicket | null>;
     }
 
@@ -88,6 +95,7 @@ export class SupportTicketRepository extends BaseRepository<ISupportTicket> {
                 .find(filter)
                 .populate(SUPPORT_TICKET_REF_POPULATE[0])
                 .populate(SUPPORT_TICKET_REF_POPULATE[1])
+                .populate(SUPPORT_TICKET_REF_POPULATE[2])
                 .sort({ lastUpdatedAt: -1 })
                 .skip(params.skip)
                 .limit(params.limit)

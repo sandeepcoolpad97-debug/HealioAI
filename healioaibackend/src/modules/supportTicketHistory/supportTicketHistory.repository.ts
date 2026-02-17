@@ -6,6 +6,11 @@ import { SupportTicketHistoryModel, ISupportTicketHistory } from './supportTicke
 const HISTORY_REF_POPULATE = [
     { path: 'ticketId', select: 'ticketId subject status' },
     { path: 'performedById', select: 'name email clinicName labName emailId' },
+    {
+        path: 'attachments',
+        select:
+            'publicId url secureUrl resourceType format bytes width height folder originalFilename tags context',
+    },
 ];
 
 export class SupportTicketHistoryRepository extends BaseRepository<ISupportTicketHistory> {
@@ -17,6 +22,7 @@ export class SupportTicketHistoryRepository extends BaseRepository<ISupportTicke
         return this.model
             .find({ ticketId, isDeleted: false } as FilterQuery<ISupportTicketHistory>)
             .populate(HISTORY_REF_POPULATE[1])
+            .populate(HISTORY_REF_POPULATE[2])
             .sort({ createdAt: 1 }) // Chronological order
             .exec();
     }
@@ -33,6 +39,7 @@ export class SupportTicketHistoryRepository extends BaseRepository<ISupportTicke
             this.model
                 .find(filter)
                 .populate(HISTORY_REF_POPULATE[1])
+                .populate(HISTORY_REF_POPULATE[2])
                 .sort({ createdAt: 1 })
                 .skip(params.skip)
                 .limit(params.limit)
@@ -61,6 +68,7 @@ export class SupportTicketHistoryRepository extends BaseRepository<ISupportTicke
                 .find(filter)
                 .populate(HISTORY_REF_POPULATE[0])
                 .populate(HISTORY_REF_POPULATE[1])
+                .populate(HISTORY_REF_POPULATE[2])
                 .sort({ createdAt: -1 })
                 .skip(params.skip)
                 .limit(params.limit)

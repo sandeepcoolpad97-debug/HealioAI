@@ -9,11 +9,14 @@ import {
     Box,
     Typography,
     Chip,
-    Divider,
     CircularProgress,
     Alert,
     Grid,
+    Card,
+    CardMedia,
 } from '@mui/material';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { fetchTicketHistory } from '../../../store/slices/supportTicketHistorySlice';
 import TicketHistoryTimeline from './TicketHistoryTimeline';
 
@@ -228,6 +231,69 @@ export default function SupportTicketViewDialog({ open, onClose }) {
                                     </Box>
                                 </Grid>
                             </Grid>
+
+                            {/* Attachments Section */}
+                            {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
+                                <Box sx={{ mt: 3, p: 2, bgcolor: 'background.default', borderRadius: 2 }}>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 600 }}>
+                                        Attachments ({selectedTicket.attachments.length})
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2 }}>
+                                        {selectedTicket.attachments.map((media, index) => {
+                                            const isImage = media.resourceType === 'image';
+                                            const isPdf = media.format === 'pdf';
+
+                                            return (
+                                                <Box key={media._id || index}>
+                                                    {isImage ? (
+                                                        <Card sx={{ maxWidth: 200 }}>
+                                                            <CardMedia
+                                                                component="a"
+                                                                href={media.secureUrl || media.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                sx={{
+                                                                    display: 'block',
+                                                                    cursor: 'pointer',
+                                                                    '&:hover': { opacity: 0.8 }
+                                                                }}
+                                                            >
+                                                                <img
+                                                                    src={media.secureUrl || media.url}
+                                                                    alt={media.originalFilename || 'Attachment'}
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        height: 'auto',
+                                                                        maxHeight: 200,
+                                                                        objectFit: 'cover',
+                                                                        borderRadius: 8
+                                                                    }}
+                                                                />
+                                                            </CardMedia>
+                                                            <Box sx={{ p: 1, bgcolor: 'background.paper' }}>
+                                                                <Typography variant="caption" noWrap>
+                                                                    {media.originalFilename || 'Image'}
+                                                                </Typography>
+                                                            </Box>
+                                                        </Card>
+                                                    ) : (
+                                                        <Chip
+                                                            icon={isPdf ? <PictureAsPdfIcon /> : <DescriptionIcon />}
+                                                            label={media.originalFilename || 'File'}
+                                                            component="a"
+                                                            href={media.secureUrl || media.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            clickable
+                                                            sx={{ maxWidth: 250 }}
+                                                        />
+                                                    )}
+                                                </Box>
+                                            );
+                                        })}
+                                    </Box>
+                                </Box>
+                            )}
                         </Box>
 
                         {/* Right Panel - History Timeline */}

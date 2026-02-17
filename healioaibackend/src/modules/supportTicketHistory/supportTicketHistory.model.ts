@@ -2,24 +2,6 @@ import mongoose, { Document } from "mongoose";
 import { auditPlugin } from "../../common/schemas/audit.schema";
 import { IAuditFields } from "../../common/types/audit.types";
 
-/* =========================
-   SUB SCHEMA: Reply Attachments
-========================= */
-
-const TicketHistoryAttachmentSchema = new mongoose.Schema(
-  {
-    fileName: { type: String, required: true },
-    fileUrl: { type: String, required: true },
-    fileType: { type: String, required: true },
-    fileSize: { type: Number, required: true },
-  },
-  { _id: true, timestamps: true }
-);
-
-/* =========================
-   Ticket History Schema
-========================= */
-
 const SupportTicketHistorySchema = new mongoose.Schema(
   {
     ticketId: {
@@ -76,7 +58,12 @@ const SupportTicketHistorySchema = new mongoose.Schema(
     },
 
     attachments: {
-      type: [TicketHistoryAttachmentSchema],
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Media",
+        },
+      ],
       default: [],
     },
   },
@@ -109,12 +96,7 @@ export interface ISupportTicketHistory extends Document, IAuditFields {
   performedByRole: "User" | "Clinic" | "Lab" | "Admin" | "SupportAgent" | "System";
   performedById?: mongoose.Types.ObjectId | null;
 
-  attachments?: {
-    fileName: string;
-    fileUrl: string;
-    fileType: string;
-    fileSize: number;
-  }[];
+  attachments?: mongoose.Types.ObjectId[];
 }
 
 export const SupportTicketHistoryModel = mongoose.model<ISupportTicketHistory>(

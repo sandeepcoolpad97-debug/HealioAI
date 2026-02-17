@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
+import multer from 'multer';
 import {
   createMedia,
   getMediaById,
@@ -11,6 +12,30 @@ import {
 } from './media.controller';
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
+
+function attachFileToBody(req: Request, _res: Response, next: NextFunction) {
+  const anyReq = req as any;
+  const file = anyReq.file as any;
+  if (file && file.buffer && file.mimetype && !anyReq.body.file) {
+    const base64 = file.buffer.toString('base64');
+    anyReq.body.file = `data:${file.mimetype};base64,${base64}`;
+  }
+  const body: any = anyReq.body;
+  if (typeof body.tags === 'string') {
+    body.tags = [body.tags];
+  }
+  if (typeof body.context === 'string') {
+    try {
+      const parsed = JSON.parse(body.context);
+      if (parsed && typeof parsed === 'object') {
+        body.context = parsed;
+      }
+    } catch (_err) {
+    }
+  }
+  next();
+}
 
 /**
  * @openapi
@@ -21,14 +46,15 @@ const router = Router();
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required: [file]
  *             properties:
  *               file:
  *                 type: string
- *                 description: Base64 string or remote URL for Cloudinary upload
+ *                 format: binary
+ *                 description: Image or file to upload to Cloudinary
  *               folder:
  *                 type: string
  *                 description: Optional Cloudinary folder
@@ -79,7 +105,7 @@ const router = Router();
  *                     ownerId: { type: string }
  *                     description: { type: string }
  */
-router.post('/', createMediaValidation, createMedia);
+router.post('/', upload.single('file'), attachFileToBody, createMediaValidation, createMedia);
 
 /**
  * @openapi
@@ -143,13 +169,14 @@ router.get('/:id', getMediaByIdValidation, getMediaById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               file:
  *                 type: string
- *                 description: New file (base64 or URL). Re-uploads to Cloudinary.
+ *                 format: binary
+ *                 description: New file. Re-uploads to Cloudinary.
  *               folder:
  *                 type: string
  *               ownerType:
@@ -199,7 +226,13 @@ router.get('/:id', getMediaByIdValidation, getMediaById);
  *       404:
  *         description: Media not found
  */
-router.patch('/:id', updateMediaValidation, updateMedia);
+router.patch(
+  '/:id',
+  upload.single('file'),
+  attachFileToBody,
+  updateMediaValidation,
+  updateMedia
+);
 
 /**
  * @openapi
