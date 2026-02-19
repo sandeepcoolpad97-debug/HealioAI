@@ -14,6 +14,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
+import { GridToolbar } from "@mui/x-data-grid";
+
 import {
   fetchUsers,
   fetchUserById,
@@ -25,8 +27,7 @@ import UserViewDialog from '../users/UserViewDialog';
 import UserFormDialog from '../users/UserFormDialog';
 import UserDeleteDialog from '../users/UserDeleteDialog';
 
-const phoneDisplay = (row) =>
-  row.phone ? `${row.phone.countryCode || ''} ${row.phone.number}`.trim() : '—';
+const phoneDisplay = (row) => row.phone ? `${row.phone.countryCode || ''} ${row.phone.number}`.trim() : '—';
 const emailDisplay = (row) => (row.email && row.email.trim()) ? row.email : '—';
 const roleName = (row) => (row.roleId && (row.roleId.name ?? row.roleId)) || '—';
 const subName = (row) =>
@@ -36,7 +37,7 @@ const subName = (row) =>
 
 const activeStatusChip = (isActive) => {
   if (isActive === true) {
-    return <Chip label="Active" color="success" variant="filled" size="small" />;
+    return <Chip label="Active" color="success" variant="outlined" size="small" />;
   }
   if (isActive === false) {
     return <Chip label="Inactive" color="default" variant="outlined" size="small" />;
@@ -44,16 +45,9 @@ const activeStatusChip = (isActive) => {
   return '—';
 };
 
-const subscriptionStatusChip = (status) => {
-  if (!status) return '—';
-  const config = {
-    active: { label: 'Active', color: 'success', variant: 'filled' },
-    expired: { label: 'Expired', color: 'warning', variant: 'filled' },
-    cancelled: { label: 'Cancelled', color: 'error', variant: 'filled' },
-    trial: { label: 'Trial', color: 'info', variant: 'filled' },
-  };
-  const { label, color, variant } = config[status] ?? { label: status, color: 'default', variant: 'outlined' };
-  return <Chip label={label} color={color} variant={variant} size="small" />;
+const formatDate = (dateStr) => {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleString();
 };
 
 export default function AdminUsersScreen() {
@@ -158,10 +152,10 @@ export default function AdminUsersScreen() {
       renderCell: (params) => activeStatusChip(params.row.isActive),
     },
     {
-      field: 'subscriptionStatus',
-      headerName: 'Subscription status',
-      width: 140,
-      renderCell: (params) => subscriptionStatusChip(params.row.subscriptionStatus),
+      field: 'lastLogin',
+      headerName: 'Last Login',
+      width: 180,
+      valueGetter: (_, row) => formatDate(row.lastLogin),
     },
     {
       field: 'actions',
@@ -230,12 +224,45 @@ export default function AdminUsersScreen() {
           pageSizeOptions={[5, 10, 25]}
           disableRowSelectionOnClick
           autoHeight
+          disableColumnSelector
+          isCellEditable={() => false}
+          disableColumnMenu
+          showToolbar
           sx={{
             minHeight: 400,
+
+            // Full header row background
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+            },
+
+            // Each header cell background + text color
+            '& .MuiDataGrid-columnHeader': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: '#fff',
+            },
+
+            // Header title
+            '& .MuiDataGrid-columnHeaderTitle': {
+              color: '#fff',
+              fontWeight: 'bold',
+            },
+
+            // Sort + menu icons
+            '& .MuiDataGrid-sortIcon, & .MuiDataGrid-menuIconButton': {
+              color: '#fff',
+            },
+
             '& .MuiDataGrid-cell:focus': { outline: 'none' },
             '& .MuiDataGrid-columnHeader:focus': { outline: 'none' },
           }}
+
           slots={{
+            toolbar: () => (
+              <Box sx={{ p: 1 }}>
+                <GridToolbar />
+              </Box>
+            ),
             noRowsOverlay: () => (
               <Box
                 sx={{

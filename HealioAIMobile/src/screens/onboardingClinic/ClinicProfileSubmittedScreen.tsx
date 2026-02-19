@@ -45,7 +45,7 @@ export const ClinicProfileSubmittedScreen: React.FC<ClinicProfileSubmittedScreen
   navigation,
 }) => {
   const handleGoToDashboard = () => {
-    navigation.replace(navigationRoutes.Home);
+    navigation.replace(navigationRoutes.MainTabs);
   };
 
   return (

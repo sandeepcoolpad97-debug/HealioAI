@@ -15,7 +15,7 @@ export default function RoleViewDialog({ open, onClose }) {
   const { selectedRole, loading } = useSelector((state) => state.roles);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: 'primary.main',
@@ -38,10 +38,10 @@ export default function RoleViewDialog({ open, onClose }) {
                   label="Name"
                   value={selectedRole.name ?? '—'}
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
-                  size="small"
+                  InputProps={{
+                    readOnly: true
+                  }}
+                    
                 />
               </Grid>
               {/* Row 2: Description */}
@@ -50,24 +50,35 @@ export default function RoleViewDialog({ open, onClose }) {
                   label="Description"
                   value={selectedRole.description ?? '—'}
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
+                  InputProps={{
+                    readOnly: true
+                  }}
                   multiline
                   rows={2}
-                  size="small"
+                    
                 />
               </Grid>
-              {/* Row 3: System role */}
-              <Grid size={{ xs: 12 }}>
+              {/* Row 3: System role & Active */}
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   label="System role"
                   value={selectedRole.isSystemRole ? 'Yes' : 'No'}
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
-                  size="small"
+                  InputProps={{
+                    readOnly: true
+                  }}
+                    
+                />
+              </Grid>
+              <Grid size={{ xs: 6 }}>
+                <TextField
+                  label="Active status"
+                  value={selectedRole.isActive ? 'Active' : 'Inactive'}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true
+                  }}
+                    
                 />
               </Grid>
               {/* Row 4: Permissions */}
@@ -80,12 +91,12 @@ export default function RoleViewDialog({ open, onClose }) {
                       : '—'
                   }
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
+                  InputProps={{
+                    readOnly: true
+                  }}
                   multiline
                   minRows={1}
-                  size="small"
+                    
                 />
               </Grid>
             </Grid>

@@ -19,6 +19,8 @@ import {
   PhoneInput,
   ScreenHeader,
 } from '../../components';
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../store/userSlice';
 import { colors } from '../../constants/colors';
 import {
   navigationRoutes,
@@ -51,6 +53,7 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
   navigation,
   route,
 }) => {
+  const dispatch = useAppDispatch();
   const phone = route.params?.phone ?? '+91 ';
   const masked = maskPhone(phone);
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
@@ -67,7 +70,7 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
       if (!user?.phoneNumber) {
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
         setLoadingOtp(false);
         return;
@@ -75,14 +78,24 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
       const idToken = await user.getIdToken(true);
       const { countryCode, number } = parsePhoneE164(user.phoneNumber);
       try {
-        await loginAsUserOrClinicOrLab({
+        const res = await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           phone: { countryCode, number },
         });
+        
+        dispatch(setUser({
+          _id: res.data._id as string,
+          firebaseUid: user.uid,
+          name: res.data.name as string,
+          email: res.data.email as string,
+          phone: typeof res.data.phone === 'object' ? (res.data.phone as any).number : res.data.phone as string,
+          role: res.type as 'user' | 'clinic' | 'lab',
+        }));
+
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
       } catch (loginErr: unknown) {
         const status = (loginErr as { status?: number })?.status;
@@ -120,11 +133,20 @@ export const VerifyOTPScreen: React.FC<VerifyOTPScreenProps> = ({
       }
       const idToken = await user.getIdToken(true);
       try {
-        await loginAsUserOrClinicOrLab({
+        const res = await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           email: user.email ?? undefined,
         });
+
+        dispatch(setUser({
+          _id: res.data._id as string,
+          firebaseUid: user.uid,
+          name: res.data.name as string,
+          email: res.data.email as string,
+          role: res.type as 'user' | 'clinic' | 'lab',
+        }));
+
         navigation.reset({
           index: 0,
           routes: [{ name: navigationRoutes.Home }],

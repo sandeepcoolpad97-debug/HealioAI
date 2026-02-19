@@ -51,6 +51,14 @@ export class LabService {
         'Lab with this registration number already exists'
       );
     }
+    const existsPhone = await this.labRepository.existsByPhoneNumber(data.phone.number);
+    if (existsPhone) {
+      throw new AppError(
+        ErrorCode.CONFLICT,
+        HTTP_STATUS.CONFLICT,
+        'Lab with this phone number already exists'
+      );
+    }
     if (data.emailId?.trim()) {
       const existsEmail = await this.labRepository.existsByEmailId(data.emailId.trim());
       if (existsEmail) {
@@ -107,6 +115,21 @@ export class LabService {
           ErrorCode.CONFLICT,
           HTTP_STATUS.CONFLICT,
           'Lab with this registration number already exists'
+        );
+      }
+    }
+    if (
+      data.phone?.number &&
+      data.phone.number.trim() !== lab.phone.number
+    ) {
+      const exists = await this.labRepository.existsByPhoneNumber(
+        data.phone.number.trim()
+      );
+      if (exists) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          HTTP_STATUS.CONFLICT,
+          'Lab with this phone number already exists'
         );
       }
     }

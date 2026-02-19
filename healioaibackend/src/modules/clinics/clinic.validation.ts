@@ -28,7 +28,11 @@ export const createClinicSchema = Joi.object({
       if (Number.isNaN(d.getTime())) return undefined;
       return d;
     }),
-  contactNumber: Joi.string().min(1).max(20).required().trim(),
+  phone: Joi.object({
+    countryCode: Joi.string().default('+91').trim(),
+    number: Joi.string().min(1).max(20).required().trim(),
+    verified: Joi.boolean().default(false),
+  }).required(),
   emailId: Joi.string().email().trim().lowercase().allow('').optional(),
   operatingHours: Joi.array().items(operatingHoursItemSchema).default([]),
   specialisation: Joi.array().items(Joi.string()).default([]),
@@ -50,7 +54,11 @@ export const updateClinicSchema = Joi.object({
       if (Number.isNaN(d.getTime())) return undefined;
       return d;
     }),
-  contactNumber: Joi.string().min(1).max(20).trim(),
+  phone: Joi.object({
+    countryCode: Joi.string().trim(),
+    number: Joi.string().min(1).max(20).trim(),
+    verified: Joi.boolean(),
+  }),
   emailId: Joi.string().email().trim().lowercase().allow(''),
   operatingHours: Joi.array().items(operatingHoursItemSchema).optional(),
   specialisation: Joi.array().items(Joi.string()),
@@ -103,7 +111,11 @@ export type CreateClinicInput = {
   roleId: string;
   address?: string;
   establishmentDate?: Date;
-  contactNumber: string;
+  phone: {
+    countryCode: string;
+    number: string;
+    verified: boolean;
+  };
   emailId?: string;
   operatingHours?: {
     day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';
@@ -127,7 +139,11 @@ export type UpdateClinicInput = {
   roleId?: string;
   address?: string;
   establishmentDate?: Date;
-  contactNumber?: string;
+  phone?: {
+    countryCode?: string;
+    number?: string;
+    verified?: boolean;
+  };
   emailId?: string;
   operatingHours?: {
     day: 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | 'Sun';

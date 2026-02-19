@@ -48,7 +48,7 @@ const OnboardingSuccessScreen: React.FC<OnboardingSuccessScreenProps> = ({
   navigation,
 }) => {
   const handleGoToDashboard = () => {
-    navigation.replace(navigationRoutes.Home);
+    navigation.replace(navigationRoutes.MainTabs);
   };
 
   return (

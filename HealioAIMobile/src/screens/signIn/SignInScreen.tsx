@@ -16,8 +16,12 @@ import {
   DividerWithOr,
   FooterLink,
   GoogleSignInButton,
+  FormInput,
+  ScreenHeader,
   PhoneInput,
 } from '../../components';
+import { useAppDispatch } from '../../store/hooks';
+import { setUser } from '../../store/userSlice';
 import { colors } from '../../constants/colors';
 import { navigationRoutes, signInStrings } from '../../constants/strings';
 import {
@@ -36,6 +40,7 @@ type SignInScreenProps = {
 };
 
 export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
   const [phone, setPhone] = useState('');
   const [loadingOtp, setLoadingOtp] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -70,14 +75,23 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
       }
       const idToken = await user.getIdToken(true);
       try {
-        await loginAsUserOrClinicOrLab({
+        const res = await loginAsUserOrClinicOrLab({
           firebaseUid: user.uid,
           idToken,
           email: user.email ?? undefined,
         });
+        
+        dispatch(setUser({
+          _id: res.data._id as string,
+          firebaseUid: user.uid,
+          name: res.data.name as string,
+          email: res.data.email as string,
+          role: res.type as 'user' | 'clinic' | 'lab',
+        }));
+
         navigation.reset({
           index: 0,
-          routes: [{ name: navigationRoutes.Home }],
+          routes: [{ name: navigationRoutes.MainTabs }],
         });
       } catch (loginErr: unknown) {
         const status = (loginErr as { status?: number })?.status;

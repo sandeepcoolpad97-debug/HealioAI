@@ -54,14 +54,19 @@ router.post('/login', loginLabValidation, loginLab);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [firebaseUid, labName, registrationNumber, roleId, contactNumber, consents]
+ *             required: [firebaseUid, labName, registrationNumber, roleId, phone, consents]
  *             properties:
  *               firebaseUid: { type: string, description: Firebase UID }
  *               labName: { type: string }
  *               registrationNumber: { type: string }
  *               roleId: { type: string, description: MongoDB ObjectId (24 hex chars) }
  *               address: { type: string, description: Optional address }
- *               contactNumber: { type: string }
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode: { type: string, default: "+91" }
+ *                   number: { type: string }
+ *                   verified: { type: boolean, default: false }
  *               emailId: { type: string, format: email }
  *               operatingHours:
  *                 description: Optional array of operating hours per day
@@ -149,7 +154,12 @@ router.get('/:id', authMiddleware, getLabByIdValidation, getLabById);
  *               registrationNumber: { type: string }
  *               roleId: { type: string }
  *               address: { type: string }
- *               contactNumber: { type: string }
+ *               phone:
+ *                 type: object
+ *                 properties:
+ *                   countryCode: { type: string }
+ *                   number: { type: string }
+ *                   verified: { type: boolean }
  *               emailId: { type: string, format: email }
  *               operatingHours: { type: array }
  *               services: { type: object }

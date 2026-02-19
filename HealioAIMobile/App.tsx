@@ -6,23 +6,24 @@
  */
 
 import React, { useEffect } from 'react';
-import {StatusBar, StyleSheet, useColorScheme} from 'react-native';
+import { StatusBar, useColorScheme } from 'react-native';
 import { Provider } from 'react-redux';
 import { GOOGLE_WEB_CLIENT_ID } from './src/config/auth.config';
 import { store } from './src/store';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {navigationRoutes} from './src/constants/strings';
-import {InitialScreen} from './src/screens/InitialScreen';
-import {WelcomeOne} from './src/screens/welcome/WelcomeOne';
-import {WelcomeTwo} from './src/screens/welcome/WelcomeTwo';
-import {WelcomeThree} from './src/screens/welcome/WelcomeThree';
-import {SignInScreen} from './src/screens/signIn/SignInScreen';
-import {VerifyOTPScreen} from './src/screens/signIn/VerifyOTPScreen';
-import {CreateAccountScreen} from './src/screens/signUp/CreateAccountScreen';
-import {VerifyNumberScreen} from './src/screens/signUp/VerifyNumberScreen';
-import {RoleSelectionScreen} from './src/screens/roleSelect/RoleSelectionScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { navigationRoutes } from './src/constants/strings';
+import { RootStackParamList } from './src/navigation/types';
+import { InitialScreen } from './src/screens/InitialScreen';
+import { WelcomeOne } from './src/screens/welcome/WelcomeOne';
+import { WelcomeTwo } from './src/screens/welcome/WelcomeTwo';
+import { WelcomeThree } from './src/screens/welcome/WelcomeThree';
+import { SignInScreen } from './src/screens/signIn/SignInScreen';
+import { VerifyOTPScreen } from './src/screens/signIn/VerifyOTPScreen';
+import { CreateAccountScreen } from './src/screens/signUp/CreateAccountScreen';
+import { VerifyNumberScreen } from './src/screens/signUp/VerifyNumberScreen';
+import { RoleSelectionScreen } from './src/screens/roleSelect/RoleSelectionScreen';
 import {
   PersonalDetailsScreen,
   HealthInfoScreen,
@@ -41,7 +42,22 @@ import {
   LabTermsConsentsScreen,
   LabProfileSubmittedScreen,
 } from './src/screens/onboardingLab';
-import {HomeScreen} from './src/screens/HomeScreen';
+import { DoctorProfileScreen } from './src/screens/doctor/DoctorProfileScreen';
+import { BookAppointmentScreen } from './src/screens/doctor/BookAppointmentScreen';
+import { AppointmentDetailsScreen } from './src/screens/appointments/AppointmentDetailsScreen';
+import { AppointmentSummaryScreen } from './src/screens/appointments/AppointmentSummaryScreen';
+import { RescheduleAppointmentScreen } from './src/screens/appointments/RescheduleAppointmentScreen';
+import { CancelAppointmentScreen } from './src/screens/appointments/CancelAppointmentScreen';
+import { CancellationSuccessScreen } from './src/screens/appointments/CancellationSuccessScreen';
+import { AppointmentSuccessScreen } from './src/screens/appointments/AppointmentSuccessScreen';
+import { ReviewDoctorScreen } from './src/screens/review/ReviewDoctorScreen';
+import { ReviewSuccessScreen } from './src/screens/review/ReviewSuccessScreen';
+import { NotificationsScreen } from './src/screens/notifications/NotificationsScreen';
+import { CustomerSupportScreen } from './src/screens/customerSupport/CustomerSupportScreen';
+import { CreateTicketScreen } from './src/screens/customerSupport/CreateTicketScreen';
+import { TicketDetailsScreen } from './src/screens/customerSupport/TicketDetailsScreen';
+import { SupportSuccessScreen } from './src/screens/customerSupport/SupportSuccessScreen';
+import { BottomTabNavigator } from './src/navigation/BottomTabNavigator';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -66,31 +82,6 @@ function App() {
     </Provider>
   );
 }
-
-type RootStackParamList = {
-  [navigationRoutes.Initial]: undefined;
-  [navigationRoutes.WelcomeOne]: undefined;
-  [navigationRoutes.WelcomeTwo]: undefined;
-  [navigationRoutes.WelcomeThree]: undefined;
-  [navigationRoutes.SignIn]: undefined;
-  [navigationRoutes.VerifyOTP]: {phone: string};
-  [navigationRoutes.CreateAccount]: undefined;
-  [navigationRoutes.VerifyNumber]: {phone: string};
-  [navigationRoutes.RoleSelection]: undefined;
-  [navigationRoutes.PersonalDetails]: {role?: string};
-  [navigationRoutes.ClinicDetails]: {role?: string};
-  [navigationRoutes.ClinicServices]: undefined;
-  [navigationRoutes.ClinicTermsConsents]: undefined;
-  [navigationRoutes.ClinicProfileSubmitted]: undefined;
-  [navigationRoutes.LabDetails]: {role?: string};
-  [navigationRoutes.LabServices]: undefined;
-  [navigationRoutes.LabTermsConsents]: undefined;
-  [navigationRoutes.LabProfileSubmitted]: undefined;
-  [navigationRoutes.HealthInfo]: undefined;
-  [navigationRoutes.Consent]: undefined;
-  [navigationRoutes.OnboardingSuccess]: undefined;
-  [navigationRoutes.Home]: {role?: string};
-};
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -186,16 +177,88 @@ function AppNavigator() {
           name={navigationRoutes.OnboardingSuccess}
           component={OnboardingSuccessScreen}
         />
-        <Stack.Screen name={navigationRoutes.Home} component={HomeScreen} />
+        <Stack.Screen
+          name={navigationRoutes.MainTabs}
+          component={BottomTabNavigator}
+        />
+        <Stack.Screen
+          name={navigationRoutes.DoctorProfile}
+          component={DoctorProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.BookAppointment}
+          component={BookAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentDetails}
+          component={AppointmentDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentSummary}
+          component={AppointmentSummaryScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.RescheduleAppointment}
+          component={RescheduleAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CancelAppointment}
+          component={CancelAppointmentScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CancellationSuccess}
+          component={CancellationSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.AppointmentSuccess}
+          component={AppointmentSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ReviewDoctor}
+          component={ReviewDoctorScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.ReviewSuccess}
+          component={ReviewSuccessScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.Notifications}
+          component={NotificationsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CustomerSupport}
+          component={CustomerSupportScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.CreateTicket}
+          component={CreateTicketScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.TicketDetails}
+          component={TicketDetailsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={navigationRoutes.SupportSuccess}
+          component={SupportSuccessScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

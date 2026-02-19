@@ -24,7 +24,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
       : '—';
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: 'primary.main',
@@ -50,7 +50,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                     InputProps={{
     readOnly: true
   }}
-                  size="small"
+                    
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
@@ -61,7 +61,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                     InputProps={{
     readOnly: true
   }}
-                  size="small"
+                    
                 />
               </Grid>
               {/* Row 2: Price, Currency, Duration (days) */}
@@ -73,7 +73,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                     InputProps={{
     readOnly: true
   }}
-                  size="small"
+                    
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
@@ -84,7 +84,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                     InputProps={{
     readOnly: true
   }}
-                  size="small"
+                    
                 />
               </Grid>
               <Grid size={{ xs: 12, sm: 4 }}>
@@ -95,19 +95,30 @@ export default function SubscriptionViewDialog({ open, onClose }) {
                     InputProps={{
     readOnly: true
   }}
-                  size="small"
+                    
                 />
               </Grid>
-              {/* Row 3: System plan */}
-              <Grid size={{ xs: 12 }}>
+              {/* Row 3: System plan & Active status */}
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="System plan"
                   value={selectedSubscription.isSystemPlan ? 'Yes' : 'No'}
                   fullWidth
-                    InputProps={{
-    readOnly: true
-  }}
-                  size="small"
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  label="Active status"
+                  value={selectedSubscription.isActive ? 'Active' : 'Inactive'}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true
+                  }}
+                  
                 />
               </Grid>
               {/* Row 4: Features */}
@@ -121,7 +132,7 @@ export default function SubscriptionViewDialog({ open, onClose }) {
   }}
                   multiline
                   minRows={1}
-                  size="small"
+                    
                 />
               </Grid>
             </Grid>

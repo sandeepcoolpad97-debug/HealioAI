@@ -3,10 +3,18 @@ import { useSelector } from 'react-redux';
 import { selectIsAuthenticated } from '../store/slices/authSlice';
 import AdminDashboardScreen from '../components/admin/screens/AdminDashboardScreen';
 import AdminUsersScreen from '../components/admin/screens/AdminUsersScreen';
+import AdminAdminsScreen from '../components/admin/screens/AdminAdminsScreen';
 import AdminSubscriptionsScreen from '../components/admin/screens/AdminSubscriptionsScreen';
 import AdminRolesScreen from '../components/admin/screens/AdminRolesScreen';
 import AdminClinicsScreen from '../components/admin/screens/AdminClinicsScreen';
 import AdminLabsScreen from '../components/admin/screens/AdminLabsScreen';
+import AdminAppointmentsScreen from '../components/admin/screens/AdminAppointmentsScreen';
+import AdminCategoriesScreen from '../components/admin/screens/AdminCategoriesScreen';
+import AdminServicesScreen from '../components/admin/screens/AdminServicesScreen';
+import AdminPaymentsScreen from '../components/admin/screens/AdminPaymentsScreen';
+import AdminDiscountsScreen from '../components/admin/screens/AdminDiscountsScreen';
+import AdminReviewsScreen from '../components/admin/screens/AdminReviewsScreen';
+import AdminSupportTicketsScreen from '../components/admin/screens/AdminSupportTicketsScreen';
 import AdminLogin from '../components/admin/screens/AdminLogin';
 import AdminLayout from '../components/admin/layout/AdminLayout';
 
@@ -19,19 +27,30 @@ export default function AdminRoutes() {
 
   return (
     <Routes>
-      <Route 
-        path="login" 
-        element={isAuthenticated ? <Navigate to="/admin" replace /> : <AdminLogin />} 
+      <Route
+        path="login"
+        element={isAuthenticated ? <Navigate to="/admin" replace /> : <AdminLogin />}
       />
 
       <Route element={isAuthenticated ? <AdminLayout /> : <Navigate to="/admin/login" replace />}>
         <Route index element={<AdminDashboardScreen />} />
         <Route path="users" element={<AdminUsersScreen />} />
+        <Route path="admins" element={<AdminAdminsScreen />} />
         <Route path="subscriptions" element={<AdminSubscriptionsScreen />} />
         <Route path="roles" element={<AdminRolesScreen />} />
         <Route path="clinics" element={<AdminClinicsScreen />} />
         <Route path="labs" element={<AdminLabsScreen />} />
+        <Route path="appointments" element={<AdminAppointmentsScreen />} />
+        <Route path="categories" element={<AdminCategoriesScreen />} />
+        <Route path="services" element={<AdminServicesScreen />} />
+        <Route path="payments" element={<AdminPaymentsScreen />} />
+        <Route path="discounts" element={<AdminDiscountsScreen />} />
+        <Route path="reviews" element={<AdminReviewsScreen />} />
+        <Route path="support-tickets" element={<AdminSupportTicketsScreen />} />
       </Route>
     </Routes>
   );
 }
+
+
+

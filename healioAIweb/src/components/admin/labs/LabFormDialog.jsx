@@ -20,6 +20,7 @@ import {
 } from '@mui/material';
 import { fetchLabById, createLab, updateLab, clearError } from '../../../store/slices/labsSlice';
 import { api } from '../../../api/client';
+import OperatingHoursEditor from '../common/OperatingHoursEditor';
 
 const TEST_CATEGORIES = ['blood_tests', 'urine_tests', 'radiology', 'pathology', 'full_body_checkup'];
 const REPORT_DELIVERY = ['pdf', 'in_app'];
@@ -33,12 +34,14 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
     registrationNumber: '',
     roleId: '',
     address: '',
-    contactNumber: '',
+    phone: { countryCode: '+91', number: '', verified: false },
     emailId: '',
     testCategories: [],
     homeSampleCollection: false,
     reportDeliveryType: [],
+    isActive: true,
     consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+    operatingHours: [],
   });
 
   const isEdit = mode === 'edit';
@@ -54,12 +57,14 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
         registrationNumber: '',
         roleId: '',
         address: '',
-        contactNumber: '',
+        phone: { countryCode: '+91', number: '', verified: false },
         emailId: '',
         testCategories: [],
         homeSampleCollection: false,
         reportDeliveryType: [],
+        isActive: true,
         consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
+        operatingHours: [],
       });
     }
   }, [open, isEdit, labId, dispatch]);
@@ -72,11 +77,22 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
         registrationNumber: selectedLab.registrationNumber ?? '',
         roleId: typeof selectedLab.roleId === 'object' ? selectedLab.roleId?._id : selectedLab.roleId ?? '',
         address: selectedLab.address ?? '',
-        contactNumber: selectedLab.contactNumber ?? '',
+        phone: {
+          countryCode: selectedLab.phone?.countryCode ?? '+91',
+          number: selectedLab.phone?.number ?? '',
+          verified: selectedLab.phone?.verified ?? false,
+        },
         emailId: selectedLab.emailId ?? '',
         testCategories: selectedLab.services?.testCategories ?? [],
         homeSampleCollection: selectedLab.services?.homeSampleCollection ?? false,
         reportDeliveryType: selectedLab.services?.reportDeliveryType ?? [],
+        isActive: selectedLab.isActive !== false,
+        consents: {
+          termsAndConditions: selectedLab.consents?.termsAndConditions ?? true,
+          policyTerms: selectedLab.consents?.policyTerms ?? true,
+          medicalDisclaimer: selectedLab.consents?.medicalDisclaimer ?? true,
+        },
+        operatingHours: selectedLab.operatingHours ?? [],
       }));
     }
   }, [isEdit, selectedLab]);
@@ -108,30 +124,25 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
       homeSampleCollection: form.homeSampleCollection,
       reportDeliveryType: form.reportDeliveryType,
     },
-    operatingHours: [],
   });
 
   const handleSubmit = () => {
     const payload = buildPayload();
-    const createPayload = {
-      ...payload,
-      consents: { termsAndConditions: true, policyTerms: true, medicalDisclaimer: true },
-    };
     if (isEdit && labId) {
       dispatch(updateLab({ id: labId, payload }))
         .unwrap()
         .then(() => onSuccess?.())
         .catch(() => {});
     } else {
-      if (!createPayload.roleId || !createPayload.labName || !createPayload.registrationNumber || !createPayload.address || !createPayload.contactNumber) return;
-      dispatch(createLab(createPayload))
+      if (!payload.roleId || !payload.labName || !payload.registrationNumber || !payload.address || !payload.phone?.number) return;
+      dispatch(createLab(payload))
         .unwrap()
         .then(() => onSuccess?.())
         .catch(() => {});
     }
   };
 
-  const valid = form.labName?.trim() && form.registrationNumber?.trim() && form.roleId && form.address?.trim() && form.contactNumber?.trim();
+  const valid = form.labName?.trim() && form.registrationNumber?.trim() && form.roleId && form.address?.trim() && form.phone?.number?.trim();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -162,7 +173,21 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
               <TextField label="Address" value={form.address} onChange={(e) => handleChange('address', e.target.value)} required fullWidth />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Contact number" value={form.contactNumber} onChange={(e) => handleChange('contactNumber', e.target.value)} required fullWidth />
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <TextField
+                  label="Code"
+                  value={form.phone.countryCode}
+                  onChange={(e) => setForm((prev) => ({ ...prev, phone: { ...prev.phone, countryCode: e.target.value } }))}
+                  sx={{ width: 80 }}
+                />
+                <TextField
+                  label="Phone Number"
+                  value={form.phone.number}
+                  onChange={(e) => setForm((prev) => ({ ...prev, phone: { ...prev.phone, number: e.target.value } }))}
+                  required
+                  fullWidth
+                />
+              </Box>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Email" type="email" value={form.emailId} onChange={(e) => handleChange('emailId', e.target.value)} fullWidth />
@@ -177,10 +202,20 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
                 </Select>
               </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControlLabel control={<Checkbox checked={form.homeSampleCollection} onChange={(e) => handleChange('homeSampleCollection', e.target.checked)} />} label="Home sample collection" />
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth>
+                <InputLabel>Home sample collection</InputLabel>
+                <Select
+                  value={form.homeSampleCollection ? 'Yes' : 'No'}
+                  label="Home sample collection"
+                  onChange={(e) => handleChange('homeSampleCollection', e.target.value === 'Yes')}
+                >
+                  <MenuItem value="Yes">Yes</MenuItem>
+                  <MenuItem value="No">No</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Report delivery</InputLabel>
                 <Select multiple value={form.reportDeliveryType} label="Report delivery" onChange={(e) => handleMultiSelect('reportDeliveryType', e.target.value)} renderValue={(v) => v.join(', ')}>
@@ -190,15 +225,32 @@ export default function LabFormDialog({ open, onClose, onSuccess, mode, labId })
                 </Select>
               </FormControl>
             </Grid>
-            {!isEdit && (
-              <Grid size={{ xs: 12 }}>
-                <FormGroup>
-                  <FormControlLabel control={<Checkbox checked={!!form.consents?.termsAndConditions} onChange={(e) => handleConsentChange('termsAndConditions', e.target.checked)} />} label="Terms and conditions" />
-                  <FormControlLabel control={<Checkbox checked={!!form.consents?.policyTerms} onChange={(e) => handleConsentChange('policyTerms', e.target.checked)} />} label="Policy terms" />
-                  <FormControlLabel control={<Checkbox checked={!!form.consents?.medicalDisclaimer} onChange={(e) => handleConsentChange('medicalDisclaimer', e.target.checked)} />} label="Medical disclaimer" />
-                </FormGroup>
-              </Grid>
-            )}
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth>
+                <InputLabel>Active status</InputLabel>
+                <Select
+                  value={form.isActive ? 'Active' : 'Inactive'}
+                  label="Active status"
+                  onChange={(e) => handleChange('isActive', e.target.value === 'Active')}
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <OperatingHoursEditor
+                value={form.operatingHours}
+                onChange={(newHours) => handleChange('operatingHours', newHours)}
+              />
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <FormGroup row>
+                <FormControlLabel control={<Checkbox checked={!!form.consents?.termsAndConditions} onChange={(e) => handleConsentChange('termsAndConditions', e.target.checked)} />} label="Terms and conditions" />
+                <FormControlLabel control={<Checkbox checked={!!form.consents?.policyTerms} onChange={(e) => handleConsentChange('policyTerms', e.target.checked)} />} label="Policy terms" />
+                <FormControlLabel control={<Checkbox checked={!!form.consents?.medicalDisclaimer} onChange={(e) => handleConsentChange('medicalDisclaimer', e.target.checked)} />} label="Medical disclaimer" />
+              </FormGroup>
+            </Grid>
           </Grid>
         </Box>
       </DialogContent>

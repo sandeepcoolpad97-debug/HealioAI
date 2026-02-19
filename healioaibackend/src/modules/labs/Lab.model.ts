@@ -33,9 +33,20 @@ const LabSchema = new mongoose.Schema(
             type: String
         },
 
-        contactNumber: {
-            type: String,
-            required: true
+        phone: {
+            countryCode: {
+              type: String,
+              default: "+91"
+            },
+            number: {
+              type: String,
+              required: true,
+              unique: true
+            },
+            verified: {
+              type: Boolean,
+              default: false
+            }
         },
 
         emailId: {
@@ -113,12 +124,6 @@ const LabSchema = new mongoose.Schema(
                 type: Date,
                 default: Date.now
             }
-        },
-
-        /* ---------------- SYSTEM FLAGS ---------------- */
-        isActive: {
-            type: Boolean,
-            default: true
         }
     },
     {
@@ -145,7 +150,11 @@ export interface ILab extends Document, IAuditFields {
   labName: string;
     registrationNumber: string;
     address?: string;
-    contactNumber: string;
+    phone: {
+        countryCode: string;
+        number: string;
+        verified: boolean;
+      };
     emailId?: string;
 
     roleId: mongoose.Types.ObjectId;
@@ -169,8 +178,6 @@ export interface ILab extends Document, IAuditFields {
         medicalDisclaimer: boolean;
         acceptedAt?: Date;
     };
-
-    isActive: boolean;
 }
 
 /* =========================

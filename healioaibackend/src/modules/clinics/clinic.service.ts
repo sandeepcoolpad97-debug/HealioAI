@@ -51,6 +51,14 @@ export class ClinicService {
         'Clinic with this registration number already exists'
       );
     }
+    const existsPhone = await this.clinicRepository.existsByPhoneNumber(data.phone.number);
+    if (existsPhone) {
+      throw new AppError(
+        ErrorCode.CONFLICT,
+        HTTP_STATUS.CONFLICT,
+        'Clinic with this phone number already exists'
+      );
+    }
     if (data.emailId?.trim()) {
       const existsEmail = await this.clinicRepository.existsByEmailId(data.emailId.trim());
       if (existsEmail) {
@@ -107,6 +115,21 @@ export class ClinicService {
           ErrorCode.CONFLICT,
           HTTP_STATUS.CONFLICT,
           'Clinic with this registration number already exists'
+        );
+      }
+    }
+    if (
+      data.phone?.number &&
+      data.phone.number.trim() !== clinic.phone.number
+    ) {
+      const exists = await this.clinicRepository.existsByPhoneNumber(
+        data.phone.number.trim()
+      );
+      if (exists) {
+        throw new AppError(
+          ErrorCode.CONFLICT,
+          HTTP_STATUS.CONFLICT,
+          'Clinic with this phone number already exists'
         );
       }
     }

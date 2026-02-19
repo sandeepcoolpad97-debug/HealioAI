@@ -12,6 +12,10 @@ export class LabRepository extends BaseRepository<ILab> {
     return this.findOne({ registrationNumber: registrationNumber.trim() } as FilterQuery<ILab>);
   }
 
+  async findByPhoneNumber(number: string): Promise<ILab | null> {
+    return this.findOne({ 'phone.number': number.trim() } as FilterQuery<ILab>);
+  }
+
   async findByFirebaseUid(firebaseUid: string): Promise<ILab | null> {
     return this.findOne({ firebaseUid } as FilterQuery<ILab>);
   }
@@ -19,6 +23,13 @@ export class LabRepository extends BaseRepository<ILab> {
   async existsByRegistrationNumber(registrationNumber: string): Promise<boolean> {
     const count = await this.count({
       registrationNumber: registrationNumber.trim(),
+    } as FilterQuery<ILab>);
+    return count > 0;
+  }
+
+  async existsByPhoneNumber(number: string): Promise<boolean> {
+    const count = await this.count({
+      'phone.number': number.trim(),
     } as FilterQuery<ILab>);
     return count > 0;
   }
