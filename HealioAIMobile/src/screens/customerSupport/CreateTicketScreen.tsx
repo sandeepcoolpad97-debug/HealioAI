@@ -16,30 +16,89 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../navigation/types';
 import { navigationRoutes } from '../../constants/strings';
 import { colors } from '../../constants/colors';
-import { SupportForm } from './create/SupportForm';
-import { AttachmentUpload } from './create/AttachmentUpload';
+import { SupportForm, type SupportFormValues } from './create/SupportForm';
+import { AttachmentUpload, type SelectedAttachment } from './create/AttachmentUpload';
 import { Loader } from '../../components';
+import { useAppSelector } from '../../store/hooks';
+import { supportTicketService } from '../../services';
 
 type CreateTicketNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const CreateTicketScreen: React.FC = () => {
   const navigation = useNavigation<CreateTicketNavigationProp>();
   const [loading, setLoading] = useState(false);
+  const [formValues, setFormValues] = useState<SupportFormValues | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<SelectedAttachment[]>([]);
+  const user = useAppSelector((state) => state.user);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSubmit = (formData: any) => {
+  const handleSubmit = async () => {
+    if (!user._id || !user.role) {
+      setError('User information is missing.');
+      return;
+    }
+
+    if (!formValues) {
+      setError('Please fill all required fields.');
+      return;
+    }
+
+    if (!formValues.subject.trim()) {
+      setError('Subject is required.');
+      return;
+    }
+    if (!formValues.category) {
+      setError('Category is required.');
+      return;
+    }
+    if (!formValues.subCategory) {
+      setError('Sub category is required.');
+      return;
+    }
+    if (!formValues.description.trim()) {
+      setError('Description is required.');
+      return;
+    }
+
+    setError(null);
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      navigation.navigate(navigationRoutes.SupportSuccess, {
-        ticketId: 'HL-SUP-24567',
-        status: 'Open',
+    try {
+      const raisedByRole =
+        user.role === 'user'
+          ? 'User'
+          : user.role === 'clinic'
+          ? 'Clinic'
+          : user.role === 'lab'
+          ? 'Lab'
+          : 'User';
+
+      const result = await supportTicketService.createTicket({
+        raisedByRole,
+        raisedById: user._id,
+        subject: formValues.subject.trim(),
+        description: formValues.description.trim(),
+        category: formValues.category,
+        subCategory: formValues.subCategory,
+        priority: formValues.priority,
+        attachments: attachments.map((a) => a.id),
       });
-    }, 1500);
+
+      setLoading(false);
+
+      navigation.navigate(navigationRoutes.SupportSuccess, {
+        ticketId: result.data.ticketId,
+        status: result.data.status === 'in_progress' ? 'In Progress' : result.data.status === 'closed' ? 'Closed' : 'Open',
+      });
+    } catch (e) {
+      setLoading(false);
+      const message = e instanceof Error ? e.message : 'Failed to create support ticket';
+      setError(message);
+    }
   };
 
   return (
@@ -82,17 +141,18 @@ export const CreateTicketScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.cardContainer}>
-            <SupportForm onSubmit={handleSubmit} />
-            <AttachmentUpload />
+            <SupportForm onChange={setFormValues} />
+            <AttachmentUpload onChange={setAttachments} />
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={() => handleSubmit({})}
+                onPress={handleSubmit}
                 activeOpacity={0.8}
               >
                 <Text style={styles.submitButtonText}>Submit Request</Text>
               </TouchableOpacity>
+              {error && <Text style={styles.errorText}>{error}</Text>}
             </View>
           </View>
 
@@ -178,6 +238,7 @@ const styles = StyleSheet.create({
 
   content: {
     flex: 1,
+    paddingTop: 60
   },
 
   /* ✅ added paddingTop so overlap looks clean */
@@ -202,6 +263,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     marginBottom: 10,
+  },
+
+  errorText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#EF4444',
+    textAlign: 'center',
   },
 
   submitButton: {

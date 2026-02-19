@@ -4,22 +4,36 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
 } from 'react-native';
 
 import { Dropdown } from '../../../components';
+import { useAppSelector } from '../../../store/hooks';
+
+export type SupportFormValues = {
+  subject: string;
+  category: string;
+  subCategory: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  description: string;
+};
 
 interface SupportFormProps {
-  onSubmit: (data: any) => void;
+  onChange?: (data: SupportFormValues) => void;
 }
 
-export const SupportForm: React.FC<SupportFormProps> = ({ onSubmit }) => {
-  const [fullName, setFullName] = useState('Sandeep Kumar');
-  const [email, setEmail] = useState('sandeep.k@example.com');
+export const SupportForm: React.FC<SupportFormProps> = ({ onChange }) => {
+  const user = useAppSelector((state) => state.user);
+  const fullName = user.name ?? '';
+  const email = user.email ?? '';
+  const phone = user.phone ?? '';
+
   const [subject, setSubject] = useState('');
+  const [category, setCategory] = useState('');
+  const [subCategory, setSubCategory] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
   const [description, setDescription] = useState('');
 
-  const subjects = [
+  const categoryOptions = [
     { label: 'Appointments', value: 'appointments' },
     { label: 'Payments', value: 'payments' },
     { label: 'Laboratory Services', value: 'lab' },
@@ -27,8 +41,30 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onSubmit }) => {
     { label: 'Prescriptions', value: 'prescriptions' },
   ];
 
-  const handleSubmit = () => {
-    onSubmit({ fullName, email, subject, description });
+  const subCategoryOptions = [
+    { label: 'Booking Issues', value: 'booking_issues' },
+    { label: 'Refunds and Billing', value: 'refunds_billing' },
+    { label: 'Reports and Results', value: 'reports_results' },
+    { label: 'Technical Issues', value: 'technical_issues' },
+    { label: 'Other', value: 'other' },
+  ];
+
+  const priorityOptions = [
+    { label: 'Low', value: 'low' },
+    { label: 'Medium', value: 'medium' },
+    { label: 'High', value: 'high' },
+    { label: 'Urgent', value: 'urgent' },
+  ];
+
+  const notifyChange = (next: Partial<SupportFormValues>) => {
+    const values: SupportFormValues = {
+      subject: next.subject ?? subject,
+      category: next.category ?? category,
+      subCategory: next.subCategory ?? subCategory,
+      priority: next.priority ?? priority,
+      description: next.description ?? description,
+    };
+    onChange?.(values);
   };
 
   return (
@@ -36,20 +72,19 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onSubmit }) => {
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Full Name</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, styles.readOnlyInput]}
           value={fullName}
-          onChangeText={setFullName}
-          placeholder="Enter your full name"
+          editable={false}
+          placeholder="Your full name"
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Email Address</Text>
         <TextInput
-          style={[styles.input, styles.emailInput]}
+          style={[styles.input, styles.readOnlyInput]}
           value={email}
-          onChangeText={setEmail}
-          placeholder="Enter your email"
+          placeholder="Your email address"
           keyboardType="email-address"
           editable={false}
         />
@@ -57,12 +92,70 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onSubmit }) => {
       </View>
 
       <View style={styles.inputGroup}>
-        <Dropdown
-          label="Subject"
-          placeholder="Select or enter subject"
-          options={subjects}
+        <Text style={styles.label}>Phone Number</Text>
+        <TextInput
+          style={[styles.input, styles.readOnlyInput]}
+          value={phone}
+          placeholder="Your phone number"
+          keyboardType="phone-pad"
+          editable={false}
+        />
+        <Text style={styles.helperText}>We may contact you on this number</Text>
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Subject</Text>
+        <TextInput
+          style={styles.input}
           value={subject}
-          onSelect={setSubject}
+          onChangeText={(value) => {
+            setSubject(value);
+            notifyChange({ subject: value });
+          }}
+          placeholder="Enter a short subject for your issue"
+          returnKeyType="next"
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Dropdown
+          label="Category"
+          placeholder="Select category"
+          options={categoryOptions}
+          value={category}
+          onSelect={(value) => {
+            setCategory(value);
+            notifyChange({ category: value });
+          }}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Dropdown
+          label="Sub Category"
+          placeholder="Select sub category"
+          options={subCategoryOptions}
+          value={subCategory}
+          onSelect={(value) => {
+            setSubCategory(value);
+            notifyChange({ subCategory: value });
+          }}
+          containerStyle={styles.dropdownContainer}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Dropdown
+          label="Priority"
+          placeholder="Select priority"
+          options={priorityOptions}
+          value={priority}
+          onSelect={(value) => {
+            const next = value as 'low' | 'medium' | 'high' | 'urgent';
+            setPriority(next);
+            notifyChange({ priority: next });
+          }}
           containerStyle={styles.dropdownContainer}
         />
       </View>
@@ -72,7 +165,10 @@ export const SupportForm: React.FC<SupportFormProps> = ({ onSubmit }) => {
         <TextInput
           style={[styles.input, styles.textArea]}
           value={description}
-          onChangeText={setDescription}
+          onChangeText={(value) => {
+            setDescription(value);
+            notifyChange({ description: value });
+          }}
           placeholder="Describe your issue in detail"
           multiline
           numberOfLines={6}
@@ -106,7 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1F2937',
   },
-  emailInput: {
+  readOnlyInput: {
     backgroundColor: '#F9FAFB',
     borderColor: '#F3F4F6',
     color: '#6B7280',

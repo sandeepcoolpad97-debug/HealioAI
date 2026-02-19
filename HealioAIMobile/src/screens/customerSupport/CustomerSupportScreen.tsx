@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -16,56 +16,16 @@ import { navigationRoutes } from '../../constants/strings';
 import { colors } from '../../constants/colors';
 import { EmptyTickets } from './listings/EmptyTickets';
 import { TicketCard, TicketData } from './listings/TicketCard';
+import { supportTicketService } from '../../services';
+import { useAppSelector } from '../../store/hooks';
 
 type CustomerSupportNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-// Mock data
-const MOCK_TICKETS: TicketData[] = [
-  {
-    id: '1',
-    ticketNumber: '#SUP-10234',
-    subject: 'Unable to cancel appointment',
-    category: 'Appointments',
-    status: 'Open',
-    lastUpdated: '24 Jan 2026, 2:15 PM',
-  },
-  {
-    id: '2',
-    ticketNumber: '#SUP-10198',
-    subject: 'Refund not received for lab test',
-    category: 'Payments',
-    status: 'In Progress',
-    lastUpdated: '23 Jan 2026, 11:30 AM',
-  },
-  {
-    id: '3',
-    ticketNumber: '#SUP-10156',
-    subject: 'Lab report download issue',
-    category: 'Laboratory Services',
-    status: 'Closed',
-    lastUpdated: '22 Jan 2026, 4:45 PM',
-  },
-  {
-    id: '4',
-    ticketNumber: '#SUP-10089',
-    subject: "Doctor's profile not loading",
-    category: 'App Issues',
-    status: 'Open',
-    lastUpdated: '21 Jan 2026, 9:20 AM',
-  },
-  {
-    id: '5',
-    ticketNumber: '#SUP-10034',
-    subject: 'Prescription upload failed',
-    category: 'Prescriptions',
-    status: 'Closed',
-    lastUpdated: '20 Jan 2026, 1:15 PM',
-  },
-];
-
 export const CustomerSupportScreen: React.FC = () => {
   const navigation = useNavigation<CustomerSupportNavigationProp>();
-  const [tickets] = useState<TicketData[]>(MOCK_TICKETS); // Toggle this to [] to see empty state
+  const user = useAppSelector((state) => state.user);
+  const [tickets, setTickets] = useState<TicketData[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleBack = () => {
     navigation.goBack();
@@ -74,6 +34,72 @@ export const CustomerSupportScreen: React.FC = () => {
   const handleCreateTicket = () => {
     navigation.navigate(navigationRoutes.CreateTicket);
   };
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (!user._id || !user.role) {
+        setTickets([]);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const result = await supportTicketService.listTickets({
+          raisedById: user._id,
+          raisedByRole:
+            user.role === 'user'
+              ? 'User'
+              : user.role === 'clinic'
+              ? 'Clinic'
+              : 'Lab',
+          page: 1,
+          limit: 50,
+        });
+
+        const mapped: TicketData[] = (result.data || []).map((t) => {
+          const updatedAt = t.lastUpdatedAt || t.createdAt;
+          let lastUpdated = '';
+
+          if (updatedAt) {
+            const d = new Date(updatedAt);
+            const dateStr = d.toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            });
+            const timeStr = d.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            });
+            lastUpdated = `${dateStr}, ${timeStr}`;
+          }
+
+          let status: TicketData['status'] = 'Open';
+          if (t.status === 'in_progress') status = 'In Progress';
+          else if (t.status === 'closed') status = 'Closed';
+
+          return {
+            id: t._id,
+            ticketNumber: t.ticketId,
+            subject: t.subject,
+            category: t.category,
+            status,
+            lastUpdated,
+          };
+        });
+
+        setTickets(mapped);
+      } catch (error) {
+        console.error('Error loading support tickets', error);
+        setTickets([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, [user._id, user.role]);
 
   const handleViewDetails = (id: string) => {
     navigation.navigate(navigationRoutes.TicketDetails, { ticketId: id });
@@ -94,7 +120,11 @@ export const CustomerSupportScreen: React.FC = () => {
       </SafeAreaView>
 
       <View style={styles.content}>
-        {tickets.length === 0 ? (
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading tickets...</Text>
+          </View>
+        ) : tickets.length === 0 ? (
           <EmptyTickets onCreateTicket={handleCreateTicket} />
         ) : (
           <FlatList
@@ -155,6 +185,15 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 16,
     paddingBottom: 80,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#6B7280',
   },
   fab: {
     position: 'absolute',
